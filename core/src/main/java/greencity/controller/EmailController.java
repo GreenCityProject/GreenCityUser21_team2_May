@@ -56,6 +56,10 @@ public class EmailController {
      * @param message - object with all necessary data for sending email
      * @author Taras Kavkalo
      */
+    @Operation(summary = "Sending notification to User about status change")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED)
+    })
     @PostMapping("/changePlaceStatus")
     public ResponseEntity<Object> changePlaceStatus(@RequestBody SendChangePlaceStatusEmailMessage message) {
         emailService.sendChangePlaceStatusEmail(message.getAuthorFirstName(), message.getPlaceName(),

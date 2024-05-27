@@ -2,6 +2,8 @@ package greencity.controller;
 
 
 import greencity.config.SecurityConfig;
+import greencity.dto.user.UserProfileDtoRequest;
+import greencity.dto.user.UserVO;
 import greencity.repository.UserRepo;
 import greencity.security.jwt.JwtTool;
 import greencity.service.UserService;
@@ -20,6 +22,10 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
+import java.util.List;
+
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -57,13 +63,11 @@ class UserControllerSecurityTest {
     }
 
     @Test
-    @DisplayName("ADMIN trying to get into PUT users/{id} (200 OK expected)")
+    @DisplayName("ADMIN trying to get into PUT users/{id} (404 NOT FOUND expected)")
     @WithMockUser(roles = "ADMIN")
     void updateUserManagementTestAdmin() throws Exception {
-        /// when ...
-
-        mockMvc.perform(put("/user/{id}", 1L))
-                .andExpect(status().isOk());
+        mockMvc.perform(put("/user/{id}", 43L))
+                .andExpect(status().isNotFound());
     }
 
     @Test

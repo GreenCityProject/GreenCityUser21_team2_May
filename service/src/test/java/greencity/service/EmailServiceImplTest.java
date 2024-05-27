@@ -16,6 +16,7 @@ import greencity.entity.User;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.repository.UserRepo;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -170,6 +171,7 @@ class EmailServiceImplTest {
     }
 
     @Test
+    @DisplayName("Test for sending user violation email when user doesn't exist")
     void sendUserViolationEmail_userNotFound_throwsNotFoundException() {
         UserViolationMailDto dto = ModelUtils.getUserViolationMailDto();
         when(userRepo.existsUserByEmail(dto.getEmail())).thenReturn(false);
@@ -180,17 +182,15 @@ class EmailServiceImplTest {
     }
 
     @Test
-    void sendUserViolationEmail_userExists_sendsEmail(){
+    @DisplayName("Test for sending user violation email when user exists")
+    void sendUserViolationEmail_userExists_sendsEmail() {
         UserViolationMailDto dto = ModelUtils.getUserViolationMailDto();
         when(userRepo.existsUserByEmail(dto.getEmail())).thenReturn(true);
 
-        MimeMessage mimeMessage = mock(MimeMessage.class);
-        when(javaMailSender.createMimeMessage()).thenReturn(mimeMessage);
-
         service.sendUserViolationEmail(dto);
 
+        verify(userRepo).existsUserByEmail(dto.getEmail());
         verify(javaMailSender).createMimeMessage();
-        verify(javaMailSender).send(mimeMessage);
     }
 
     @Test

@@ -2,6 +2,8 @@ package greencity.service;
 
 import greencity.ModelUtils;
 import static greencity.ModelUtils.getUser;
+
+import greencity.TestConst;
 import greencity.dto.category.CategoryDto;
 import greencity.dto.econews.AddEcoNewsDtoResponse;
 import greencity.dto.econews.EcoNewsForSendEmailDto;
@@ -16,6 +18,7 @@ import greencity.entity.User;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.repository.UserRepo;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -30,8 +33,7 @@ import java.util.concurrent.Executors;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 class EmailServiceImplTest {
@@ -140,9 +142,29 @@ class EmailServiceImplTest {
     }
 
     @Test
-    void sendHabitNotification() {
-        service.sendHabitNotification("userName", "userEmail");
+    @DisplayName("Test sendHabitNotification method when user exists")
+    void sendHabitNotification_userExists_sendsEmail(){
+        when(userRepo.existsUserByEmail("taras@gmail.com")).thenReturn(true);
+
+        MimeMessage mimeMessage = mock(MimeMessage.class);
+        when(javaMailSender.createMimeMessage()).thenReturn(mimeMessage);
+
+        service.sendHabitNotification(TestConst.NAME, TestConst.EMAIL);
+
         verify(javaMailSender).createMimeMessage();
+        verify(javaMailSender).send(mimeMessage);
+    }
+
+    @Test
+    @DisplayName("Test sendHabitNotification method when user not found")
+    void sendHabitNotification_userNotFound_throwsNotFoundException() {
+        when(userRepo.findByEmail(TestConst.EMAIL)).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class, () ->
+                service.sendHabitNotification(TestConst.NAME, TestConst.EMAIL)
+        );
+
+        verify(javaMailSender, never()).createMimeMessage();
     }
 
     @Test

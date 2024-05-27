@@ -30,8 +30,7 @@ import java.util.concurrent.Executors;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 class EmailServiceImplTest {
@@ -171,10 +170,27 @@ class EmailServiceImplTest {
     }
 
     @Test
-    void sendUserViolationEmailTest() {
+    void sendUserViolationEmail_userNotFound_throwsNotFoundException() {
         UserViolationMailDto dto = ModelUtils.getUserViolationMailDto();
+        when(userRepo.existsUserByEmail(dto.getEmail())).thenReturn(false);
+
+        assertThrows(NotFoundException.class, () -> service.sendUserViolationEmail(dto));
+
+        verify(javaMailSender, never()).createMimeMessage();
+    }
+
+    @Test
+    void sendUserViolationEmail_userExists_sendsEmail(){
+        UserViolationMailDto dto = ModelUtils.getUserViolationMailDto();
+        when(userRepo.existsUserByEmail(dto.getEmail())).thenReturn(true);
+
+        MimeMessage mimeMessage = mock(MimeMessage.class);
+        when(javaMailSender.createMimeMessage()).thenReturn(mimeMessage);
+
         service.sendUserViolationEmail(dto);
+
         verify(javaMailSender).createMimeMessage();
+        verify(javaMailSender).send(mimeMessage);
     }
 
     @Test

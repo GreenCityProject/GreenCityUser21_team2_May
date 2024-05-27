@@ -224,9 +224,6 @@ public class EmailServiceImpl implements EmailService {
 
     private void sendEmail(String receiverEmail, String subject, String content) {
         log.info(LogMessage.IN_SEND_EMAIL, receiverEmail, subject);
-        if (!userRepo.existsUserByEmail(receiverEmail)) {
-            throw new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + receiverEmail);
-        }
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
         MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage);
         try {
@@ -244,7 +241,11 @@ public class EmailServiceImpl implements EmailService {
     public void sendHabitNotification(String name, String email) {
         String subject = "Notification about not marked habits";
         String content = "Dear " + name + ", you haven't marked any habit during last 3 days";
-        sendEmail(email, subject, content);
+        if (!userRepo.existsUserByEmail(email)) {
+            throw new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email);
+        }else {
+            sendEmail(email, subject, content);
+        }
     }
 
     @Override

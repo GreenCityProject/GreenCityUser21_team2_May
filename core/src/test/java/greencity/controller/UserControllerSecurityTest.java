@@ -29,10 +29,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest
 class UserControllerSecurityTest {
 
-    static final String USER_LINK = "/user";
-    static final String ROLE_USER = "USER";
-    static final String ROLE_ADMIN = "ADMIN";
-
     @MockBean
     UserService userService;
 
@@ -54,7 +50,7 @@ class UserControllerSecurityTest {
 
     @Test
     @DisplayName("USER trying to get into PUT users/{id} (403 Forbidden expected)")
-    @WithMockUser(roles = ROLE_USER)
+    @WithMockUser(roles = "USER")
     void updateUserManagementTestUser() throws Exception {
         mockMvc.perform(put("/user/{id}", 1L))
                 .andExpect(status().isForbidden());
@@ -62,11 +58,18 @@ class UserControllerSecurityTest {
 
     @Test
     @DisplayName("ADMIN trying to get into PUT users/{id} (200 OK expected)")
-    @WithMockUser(roles = ROLE_ADMIN)
+    @WithMockUser(roles = "ADMIN")
     void updateUserManagementTestAdmin() throws Exception {
         /// when ...
 
-        mockMvc.perform(put("/user/{id}", 3L))
+        mockMvc.perform(put("/user/{id}", 1L))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("UNAUTHORIZED trying to get into PUT users/{id} (401 Unauthorized expected)")
+    void updateUserManagementTestUnauthorized() throws Exception {
+        mockMvc.perform(put("/user/{id}", 1L))
+                .andExpect(status().isUnauthorized());
     }
 }

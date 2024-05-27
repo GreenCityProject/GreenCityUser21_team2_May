@@ -224,6 +224,9 @@ public class EmailServiceImpl implements EmailService {
 
     private void sendEmail(String receiverEmail, String subject, String content) {
         log.info(LogMessage.IN_SEND_EMAIL, receiverEmail, subject);
+        if (!userRepo.existsUserByEmail(receiverEmail)) {
+            throw new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + receiverEmail);
+        }
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
         MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage);
         try {

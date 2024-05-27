@@ -2,9 +2,6 @@ package greencity.controller;
 
 
 import greencity.config.SecurityConfig;
-import greencity.dto.user.UserProfileDtoRequest;
-import greencity.dto.user.UserVO;
-import greencity.repository.UserRepo;
 import greencity.security.jwt.JwtTool;
 import greencity.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
@@ -22,11 +19,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import java.util.List;
-
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -37,9 +29,6 @@ class UserControllerSecurityTest {
 
     @MockBean
     UserService userService;
-
-    @MockBean
-    UserRepo userRepo;
 
     @Autowired
     WebApplicationContext context;

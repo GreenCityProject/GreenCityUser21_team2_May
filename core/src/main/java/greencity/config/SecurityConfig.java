@@ -106,6 +106,7 @@ public class SecurityConfig {
                                 "/swagger-ui.html")
                         .permitAll()
                         .requestMatchers(
+                                "/error",
                                 "/swagger-resources/**",
                                 "/webjars/**",
                                 "/swagger-ui/**")

@@ -12,23 +12,14 @@ import greencity.dto.PageableAdvancedDto;
 import greencity.dto.filter.FilterUserDto;
 import greencity.dto.language.LanguageVO;
 import greencity.dto.ubs.UbsTableCreationDto;
-import greencity.dto.user.UserManagementUpdateDto;
-import greencity.dto.user.UserManagementVO;
-import greencity.dto.user.UserManagementViewDto;
-import greencity.dto.user.UserProfileDtoRequest;
-import greencity.dto.user.UserStatusDto;
-import greencity.dto.user.UserUpdateDto;
-import greencity.dto.user.UserVO;
+import greencity.dto.user.*;
 import greencity.enums.EmailNotification;
 import greencity.enums.Role;
 import greencity.repository.UserRepo;
 import greencity.service.UserService;
 import java.security.Principal;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
@@ -52,6 +43,10 @@ import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMultipartHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -320,6 +315,48 @@ class UserControllerTest {
             .headers(headers))
             .andExpect(status().isOk());
         verify(userService).getUserProfileStatistics((1L));
+    }
+
+    @Test
+    void whenAuthorizedUserAccessOwnProfileStatistics_thenSucceedsWith200() throws Exception {
+        Long userId = 1L;  // ID пользователя
+        UserProfileStatisticsDto statisticsDto = new UserProfileStatisticsDto(10L, 20L, 5L);
+        when(userService.getUserProfileStatistics(userId)).thenReturn(statisticsDto);
+
+        SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
+        securityContext.setAuthentication(new UsernamePasswordAuthenticationToken(
+                userId, null, Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER"))));
+        SecurityContextHolder.setContext(securityContext);
+
+        mockMvc.perform(get(userLink + "/{userId}/profileStatistics/", userId))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.amountHabitsInProgress").value(10))
+                .andExpect(jsonPath("$.amountHabitsAcquired").value(20))
+                .andExpect(jsonPath("$.amountPublishedNews").value(5));
+
+        verify(userService).getUserProfileStatistics(userId);
+    }
+
+    @Test
+    void whenAuthorizedUserAccessOtherUserProfileStatistics_thenFailsWithForbidden() throws Exception {
+        Long authorizedUserId = 1L;  // ID аутентифицированного пользователя
+        Long otherUserId = 2L;       // ID другого пользователя
+
+        SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
+        securityContext.setAuthentication(new UsernamePasswordAuthenticationToken(
+                authorizedUserId, null, Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER"))));
+        SecurityContextHolder.setContext(securityContext);
+
+        mockMvc.perform(get(userLink + "/{userId}/profileStatistics/", otherUserId))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void whenUnauthenticatedUserAccessProfileStatistics_thenFailsWithUnauthorized() throws Exception {
+        Long userId = 1L;
+
+        mockMvc.perform(get(userLink + "/{userId}/profileStatistics/", userId))
+                .andExpect(status().isUnauthorized());
     }
 
     @Test

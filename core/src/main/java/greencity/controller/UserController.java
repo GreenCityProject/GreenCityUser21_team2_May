@@ -463,7 +463,7 @@ public class UserController {
     }
 
     private static void pageableValidation(Pageable pageable, Class<?> classToValidateWith) {
-        var userProperties = Arrays.stream(classToValidateWith.getDeclaredFields())
+        var allProperties = Arrays.stream(classToValidateWith.getDeclaredFields())
                 .map(Field::getName)
                 .collect(Collectors.toSet());
         var inputProperties = pageable.getSort()
@@ -471,7 +471,7 @@ public class UserController {
                 .map(Sort.Order::getProperty)
                 .collect(Collectors.toSet());
 
-        if (!userProperties.containsAll(inputProperties)) {
+        if (!allProperties.containsAll(inputProperties)) {
             throw new BadRequestException("Some sort property don`t match with User property: " + inputProperties);
         }
     }

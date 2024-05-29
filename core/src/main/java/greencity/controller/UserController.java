@@ -69,7 +69,7 @@ public class UserController {
     })
     @PatchMapping("status")
     public ResponseEntity<UserStatusDto> updateStatus(
-        @Valid @RequestBody UserStatusDto userStatusDto, @ApiIgnore Principal principal) {
+        @Valid @RequestBody UserStatusDto userStatusDto, @Parameter(hidden = true) Principal principal) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(
                 userService.updateStatus(
@@ -98,7 +98,7 @@ public class UserController {
     public ResponseEntity<UserRoleDto> updateRole(
         @PathVariable Long id,
         @NotNull @RequestBody Map<String, String> body,
-        @ApiIgnore Principal principal) {
+        @Parameter(hidden = true) Principal principal) {
         Role role = Role.valueOf(body.get("role"));
         UserRoleDto userRoleDto = new UserRoleDto(id, role);
         return ResponseEntity.status(HttpStatus.OK)
@@ -127,7 +127,7 @@ public class UserController {
     })
     @ApiPageable
     @GetMapping("all")
-    public ResponseEntity<PageableDto<UserForListDto>> getAllUsers(@ApiIgnore Pageable pageable) {
+    public ResponseEntity<PageableDto<UserForListDto>> getAllUsers(@Parameter(hidden = true) Pageable pageable) {
         return ResponseEntity.status(HttpStatus.OK).body(userService.findByPage(pageable));
     }
 
@@ -190,7 +190,7 @@ public class UserController {
     @ApiPageable
     @PostMapping("filter")
     public ResponseEntity<PageableDto<UserForListDto>> getUsersByFilter(
-        @ApiIgnore Pageable pageable, @RequestBody FilterUserDto filterUserDto) {
+        @Parameter(hidden = true) Pageable pageable, @RequestBody FilterUserDto filterUserDto) {
         return ResponseEntity.status(HttpStatus.OK).body(userService.getUsersByFilter(filterUserDto, pageable));
     }
 
@@ -210,7 +210,7 @@ public class UserController {
         @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN)
     })
     @GetMapping
-    public ResponseEntity<UserUpdateDto> getUserByPrincipal(@ApiIgnore @AuthenticationPrincipal Principal principal) {
+    public ResponseEntity<UserUpdateDto> getUserByPrincipal(@Parameter(hidden = true) @AuthenticationPrincipal Principal principal) {
         String email = principal.getName();
         return ResponseEntity.status(HttpStatus.OK).body(userService.getUserUpdateDtoByEmail(email));
     }
@@ -231,7 +231,7 @@ public class UserController {
     })
     @PatchMapping
     public ResponseEntity<UserUpdateDto> updateUser(@Valid @RequestBody UserUpdateDto dto,
-        @ApiIgnore @AuthenticationPrincipal Principal principal) {
+        @Parameter(hidden = true) @AuthenticationPrincipal Principal principal) {
         String email = principal.getName();
         return ResponseEntity.status(HttpStatus.OK).body(userService.update(dto, email));
     }
@@ -293,7 +293,7 @@ public class UserController {
     public ResponseEntity<HttpStatus> updateUserProfilePicture(
         @Parameter(description = "pass image as base64") @RequestPart(required = false) String base64,
         @Parameter(description = "Profile picture") @ImageValidation @RequestPart(required = false) MultipartFile image,
-        @ApiIgnore @AuthenticationPrincipal Principal principal) {
+        @Parameter(hidden = true) @AuthenticationPrincipal Principal principal) {
         String email = principal.getName();
         userService.updateUserProfilePicture(image, email, base64);
         return ResponseEntity.status(HttpStatus.OK).build();
@@ -313,7 +313,7 @@ public class UserController {
     })
     @PatchMapping(path = "/deleteProfilePicture")
     public ResponseEntity<HttpStatus> deleteUserProfilePicture(
-        @ApiIgnore @AuthenticationPrincipal Principal principal) {
+        @Parameter(hidden = true) @AuthenticationPrincipal Principal principal) {
         String email = principal.getName();
         userService.deleteUserProfilePicture(email);
         return ResponseEntity.status(HttpStatus.OK).build();
@@ -335,7 +335,7 @@ public class UserController {
     @PutMapping(path = "/profile")
     public ResponseEntity<String> save(
         @Parameter(required = true) @RequestBody @Valid UserProfileDtoRequest userProfileDtoRequest,
-        @ApiIgnore Principal principal) {
+        @Parameter(hidden = true) Principal principal) {
         return ResponseEntity.status(HttpStatus.OK).body(userService.saveUserProfile(userProfileDtoRequest,
             principal.getName()));
     }
@@ -413,6 +413,7 @@ public class UserController {
         @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
         @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST),
         @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED),
+        @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND)
     })
     @GetMapping("/findByEmail")
     public ResponseEntity<UserVO> findByEmail(@RequestParam String email) {
@@ -452,7 +453,7 @@ public class UserController {
     @GetMapping("/findUserForManagement")
     @ApiPageable
     public ResponseEntity<PageableAdvancedDto<UserManagementDto>> findUserForManagementByPage(
-        @ApiIgnore Pageable pageable) {
+        @Parameter(hidden = true) Pageable pageable) {
         return ResponseEntity.status(HttpStatus.OK).body(userService.findUserForManagementByPage(pageable));
     }
 
@@ -473,7 +474,7 @@ public class UserController {
     @ApiPageable
     public ResponseEntity<PageableAdvancedDto<UserManagementDto>> searchBy(
         @RequestParam(required = false, name = "query") String query,
-        @ApiIgnore Pageable pageable) {
+        @Parameter(hidden = true) Pageable pageable) {
         return ResponseEntity.status(HttpStatus.OK).body(userService.searchBy(pageable, query));
     }
 
@@ -484,7 +485,10 @@ public class UserController {
      * @author Orest Mamchuk
      */
     @Operation(summary = "update via UserManagement")
-    @ApiResponses(value = @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED))
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED),
+        @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND)
+    })
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public void updateUserManagement(
@@ -524,7 +528,7 @@ public class UserController {
     })
     @GetMapping("/createUbsRecord")
     public ResponseEntity<UbsTableCreationDto> createUbsRecord(
-        @ApiIgnore @CurrentUser UserVO userVO) {
+        @Parameter(hidden = true) @CurrentUser UserVO userVO) {
         return ResponseEntity.status(HttpStatus.OK).body(userService.createUbsRecord(userVO));
     }
 
@@ -560,7 +564,7 @@ public class UserController {
         @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN)
     })
     @PutMapping("/updateUserLastActivityTime/{date}")
-    public ResponseEntity<Object> updateUserLastActivityTime(@ApiIgnore @CurrentUser UserVO userVO,
+    public ResponseEntity<Object> updateUserLastActivityTime(@Parameter(hidden = true) @CurrentUser UserVO userVO,
         @PathVariable(value = "date") @DateTimeFormat(
             pattern = "yyyy-MM-dd.HH:mm:ss.SSSSSS") LocalDateTime userLastActivityTime) {
         userService.updateUserLastActivityTime(userVO.getId(), userLastActivityTime);
@@ -605,7 +609,7 @@ public class UserController {
         @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN)
     })
     @GetMapping("/lang")
-    public ResponseEntity<String> getUserLang(@ApiIgnore @CurrentUser UserVO userVO) {
+    public ResponseEntity<String> getUserLang(@Parameter(hidden = true) @CurrentUser UserVO userVO) {
         return ResponseEntity.status(HttpStatus.OK).body(userVO.getLanguageVO().getCode());
     }
 
@@ -615,8 +619,7 @@ public class UserController {
      *
      * @param id        {@link Long} - user's id.
      * @param adminLang {@link String} - current administrator language.
-     * @return {@link List} of {@link String} - reasons for deactivation of the
-     *         current user.
+     * @return {@link List} of {@link String} - reasons for deactivation of the current user.
      * @author Vlad Pikhotskyi
      */
     @Operation(summary = "Get list reasons of deactivating the user")
@@ -646,7 +649,7 @@ public class UserController {
         @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN)
     })
     @PutMapping("/language/{languageId}")
-    public ResponseEntity<Object> setUserLanguage(@ApiIgnore @CurrentUser UserVO userVO,
+    public ResponseEntity<Object> setUserLanguage(@Parameter(hidden = true) @CurrentUser UserVO userVO,
         @PathVariable Long languageId) {
         userService.updateUserLanguage(userVO.getId(), languageId);
         return ResponseEntity.ok().build();
@@ -724,7 +727,7 @@ public class UserController {
         @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN),
     })
     @PostMapping("/search")
-    public ResponseEntity<PageableAdvancedDto<UserManagementVO>> search(@ApiIgnore Pageable pageable,
+    public ResponseEntity<PageableAdvancedDto<UserManagementVO>> search(@Parameter(hidden = true) Pageable pageable,
         @RequestBody UserManagementViewDto userViewDto) {
         PageableAdvancedDto<UserManagementVO> found = userService.search(pageable, userViewDto);
         return ResponseEntity.status(HttpStatus.OK).body(found);

@@ -208,17 +208,10 @@ public class EmailServiceImpl implements EmailService {
         Locale rus = new Locale("ru", "RU");
         Locale ua = new Locale("uk", "UA");
         switch (language) {
-            case "ua":
-                Locale.setDefault(ua);
-                break;
-            case "ru":
-                Locale.setDefault(rus);
-                break;
-            case "en":
-                Locale.setDefault(Locale.ENGLISH);
-                break;
-            default:
-                throw new IllegalStateException("Unexpected value: " + language);
+            case "ua" -> Locale.setDefault(ua);
+            case "ru" -> Locale.setDefault(rus);
+            case "en" -> Locale.setDefault(Locale.ENGLISH);
+            default -> throw new IllegalStateException("Unexpected value: " + language);
         }
     }
 

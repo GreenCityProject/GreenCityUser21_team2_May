@@ -1,6 +1,7 @@
 package greencity.service;
 
 import greencity.ModelUtils;
+import static greencity.ModelUtils.getUser;
 import greencity.dto.category.CategoryDto;
 import greencity.dto.econews.AddEcoNewsDtoResponse;
 import greencity.dto.econews.EcoNewsForSendEmailDto;
@@ -83,6 +84,8 @@ class EmailServiceImplTest {
 
     @Test
     void sendCreatedNewsForAuthorTest() {
+        when(userRepo.findByEmail("test@gmail.com")).thenReturn(Optional.of(getUser()));
+
         EcoNewsForSendEmailDto dto = new EcoNewsForSendEmailDto();
         PlaceAuthorDto placeAuthorDto = new PlaceAuthorDto();
         placeAuthorDto.setEmail("test@gmail.com");

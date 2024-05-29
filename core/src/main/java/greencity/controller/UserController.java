@@ -456,9 +456,7 @@ public class UserController {
     @ApiPageable
     public ResponseEntity<PageableAdvancedDto<UserManagementDto>> findUserForManagementByPage(
             @ApiIgnore Pageable pageable) {
-
-        pageableValidation(pageable, UserVO.class);
-
+        pageableValidation(pageable, UserManagementDto.class);
         return ResponseEntity.status(HttpStatus.OK).body(userService.findUserForManagementByPage(pageable));
     }
 

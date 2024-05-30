@@ -3,11 +3,12 @@ package greencity.security.filters;
 import greencity.dto.user.UserVO;
 import greencity.security.jwt.JwtTool;
 import greencity.service.UserService;
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -31,8 +32,6 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
 class AccessTokenAuthenticationFilterTest {
-    private PrintStream systemOut;
-    private ByteArrayOutputStream systemOutContent;
 
     @Mock
     HttpServletRequest request;
@@ -50,40 +49,57 @@ class AccessTokenAuthenticationFilterTest {
     @InjectMocks
     private AccessTokenAuthenticationFilter authenticationFilter;
 
+    private final ByteArrayOutputStream systemOutContent = new ByteArrayOutputStream();
+
     @BeforeEach
     void setUp() {
-        systemOut = System.out;
-        systemOutContent = new ByteArrayOutputStream();
         System.setOut(new PrintStream(systemOutContent));
     }
 
-    @AfterEach
-    void restoreSystemOutStream() {
-        System.setOut(systemOut);
-    }
-
     @Test
-    void doFilterInternalTest() throws IOException, ServletException {
-        when(jwtTool.getTokenFromHttpServletRequest(request)).thenReturn("SuperSecretAccessToken");
-        when(authenticationManager.authenticate(any()))
-            .thenReturn(new UsernamePasswordAuthenticationToken("test@mail.com", null));
+    void whenDoFilterInternalUsingCookies_thenCorrect() throws IOException, ServletException {
+        String testToken = "testToken";
+        Cookie[] cookies = new Cookie[]{ new Cookie("accessToken", testToken) };
+
+        when(request.getCookies()).thenReturn(cookies);
+        when(request.getRequestURI()).thenReturn("/management/testUri");
+        when(authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(testToken, "")))
+                .thenReturn(new UsernamePasswordAuthenticationToken("test@mail.com", null));
         when(userService.findNotDeactivatedByEmail("test@mail.com"))
-            .thenReturn(Optional.of(UserVO.builder().id(1L).build()));
-        doNothing().when(chain).doFilter(request, response);
+                .thenReturn(Optional.of(new UserVO()));
 
         authenticationFilter.doFilterInternal(request, response, chain);
+
         verify(authenticationManager).authenticate(any());
         verify(chain).doFilter(request, response);
     }
 
     @Test
-    void doFilterInternalAccessDeniedTest() throws IOException, ServletException {
-        String token = "SuperSecretAccessToken";
-        when(jwtTool.getTokenFromHttpServletRequest(request)).thenReturn(token);
-        when(authenticationManager.authenticate(any()))
-            .thenReturn(new UsernamePasswordAuthenticationToken("test@mail.com", null));
-        when(userService.findNotDeactivatedByEmail("test@mail.com")).thenThrow(RuntimeException.class);
+    void whenDoFilterInternalNoToken_thenFilterChainDoFilterCalled() throws ServletException, IOException {
+        when(request.getCookies()).thenReturn(null);
+
         authenticationFilter.doFilterInternal(request, response, chain);
-        assertTrue(systemOutContent.toString().contains("Access denied with token: "));
+
+        verify(chain).doFilter(request, response);
+    }
+
+    @Test
+    void whenDoFilterInternalTokenExpired_thenCorrectLogMessage() throws ServletException, IOException {
+        String expiredToken = "expiredToken";
+        when(jwtTool.getTokenFromHttpServletRequest(request)).thenReturn(expiredToken);
+        when(authenticationManager.authenticate(any())).thenThrow(ExpiredJwtException.class);
+
+        authenticationFilter.doFilterInternal(request, response, chain);
+
+        assertTrue(systemOutContent.toString().contains("Token has expired: " + expiredToken));
+    }
+
+    @Test
+    void whenDoFilterInternalNonManagementPath_thenTokenNotExtractedFromCookies() throws ServletException, IOException {
+        when(request.getRequestURI()).thenReturn("/nonManagement/testUri");
+
+        authenticationFilter.doFilterInternal(request, response, chain);
+
+        verify(jwtTool).getTokenFromHttpServletRequest(request);
     }
 }

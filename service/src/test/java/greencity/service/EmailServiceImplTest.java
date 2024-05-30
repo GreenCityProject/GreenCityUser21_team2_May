@@ -158,12 +158,13 @@ class EmailServiceImplTest {
     @Test
     @DisplayName("Test sendHabitNotification method when user not found")
     void sendHabitNotification_userNotFound_throwsNotFoundException() {
-        when(userRepo.findByEmail(TestConst.EMAIL)).thenReturn(Optional.empty());
+        when(userRepo.existsUserByEmail(TestConst.EMAIL)).thenReturn(false);
 
         assertThrows(NotFoundException.class, () ->
                 service.sendHabitNotification(TestConst.NAME, TestConst.EMAIL)
         );
-
+        verify(userRepo).existsUserByEmail(any());
+        verify(userRepo,never()).findByEmail(any());
         verify(javaMailSender, never()).createMimeMessage();
     }
 

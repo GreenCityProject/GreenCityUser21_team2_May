@@ -395,7 +395,7 @@ public class UserController {
         @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN)
     })
     @GetMapping("/{userId}/profileStatistics/")
-    @PreAuthorize("#userId == principal.id")
+    @PreAuthorize("#userId == authentication.principal.id")
     public ResponseEntity<UserProfileStatisticsDto> getUserProfileStatistics(
         @Parameter(description = "Id of current user. Cannot be empty.") @PathVariable @CurrentUserId Long userId) {
         return ResponseEntity.status(HttpStatus.OK)

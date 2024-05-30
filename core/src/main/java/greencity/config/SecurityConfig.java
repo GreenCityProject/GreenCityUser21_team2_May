@@ -8,8 +8,10 @@ import greencity.security.jwt.JwtTool;
 import greencity.security.providers.JwtAuthenticationProvider;
 import greencity.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -19,6 +21,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -42,29 +45,20 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
 @EnableMethodSecurity
 @EnableGlobalAuthentication
 public class SecurityConfig {
-    private final JwtTool jwtTool;
-    private final UserService userService;
+    private JwtTool jwtTool;
+    private UserService userService;
+    private ApplicationContext applicationContext;
     private static final String USER_LINK = "/user";
-    private final AuthenticationConfiguration authenticationConfiguration;
-
-    /**
-     * Constructor.
-     */
 
     @Autowired
-    public SecurityConfig(JwtTool jwtTool, UserService userService,
-                          AuthenticationConfiguration authenticationConfiguration) {
-        this.jwtTool = jwtTool;
-        this.userService = userService;
-        this.authenticationConfiguration = authenticationConfiguration;
+    public void setApplicationContext(ApplicationContext applicationContext) {
+        this.applicationContext = applicationContext;
     }
 
-    /**
-     * Bean {@link PasswordEncoder} that uses in coding password.
-     */
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
+    @Autowired
+    public SecurityConfig(@Lazy JwtTool jwtTool, @Lazy UserService userService) {
+        this.jwtTool = jwtTool;
+        this.userService = userService;
     }
 
     /**
@@ -226,32 +220,9 @@ public class SecurityConfig {
         return http.build();
     }
 
-    /**
-     * Method for configure type of authentication provider.
-     *
-     * @param auth {@link AuthenticationManagerBuilder}
-     */
-    @Autowired
-    public void configureGlobal(AuthenticationManagerBuilder auth) {
-        auth.authenticationProvider(new JwtAuthenticationProvider(jwtTool));
-    }
-
-    /**
-     * Provides AuthenticationManager.
-     *
-     * @return {@link AuthenticationManager}
-     */
     @Bean
     public AuthenticationManager authenticationManager() throws Exception {
+        AuthenticationConfiguration authenticationConfiguration = applicationContext.getBean(AuthenticationConfiguration.class);
         return authenticationConfiguration.getAuthenticationManager();
-    }
-
-    /**
-     * Bean {@link GoogleIdTokenVerifier} that uses in verify googleIdToken.
-     */
-    @Bean
-    public GoogleIdTokenVerifier googleIdTokenVerifier() {
-        return new GoogleIdTokenVerifier.Builder(new NetHttpTransport(),
-                GsonFactory.getDefaultInstance()).build();
     }
 }

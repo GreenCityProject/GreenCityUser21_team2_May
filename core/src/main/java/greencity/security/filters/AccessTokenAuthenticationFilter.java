@@ -11,11 +11,17 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -35,7 +41,7 @@ public class AccessTokenAuthenticationFilter extends OncePerRequestFilter {
      * Constructor.
      */
     public AccessTokenAuthenticationFilter(JwtTool jwtTool, AuthenticationManager authenticationManager,
-        UserService userService) {
+                                           UserService userService) {
         this.jwtTool = jwtTool;
         this.authenticationManager = authenticationManager;
         this.userService = userService;
@@ -43,9 +49,9 @@ public class AccessTokenAuthenticationFilter extends OncePerRequestFilter {
 
     private String getTokenFromCookies(Cookie[] cookies) {
         return Arrays.stream(cookies)
-            .filter(c -> c.getName().equals("accessToken"))
-            .findFirst()
-            .map(Cookie::getValue).orElse(null);
+                .filter(c -> c.getName().equals("accessToken"))
+                .findFirst()
+                .map(Cookie::getValue).orElse(null);
     }
 
     private String extractToken(HttpServletRequest request) {
@@ -68,22 +74,32 @@ public class AccessTokenAuthenticationFilter extends OncePerRequestFilter {
      */
     @Override
     public void doFilterInternal(@SuppressWarnings("NullableProblems") HttpServletRequest request,
-        @SuppressWarnings("NullableProblems") HttpServletResponse response,
-        @SuppressWarnings("NullableProblems") FilterChain chain)
-        throws IOException, ServletException {
+                                 @SuppressWarnings("NullableProblems") HttpServletResponse response,
+                                 @SuppressWarnings("NullableProblems") FilterChain chain)
+            throws IOException, ServletException {
         String token = extractToken(request);
         log.info("token {}", token);
 
         if (token != null) {
             try {
                 Authentication authentication = authenticationManager
-                    .authenticate(new UsernamePasswordAuthenticationToken(token, ""));
-                Optional<UserVO> user = userService.findNotDeactivatedByEmail((String) authentication.getPrincipal());
-                log.info("user {}", user);
-                if (user.isPresent()) {
-                    log.debug("User successfully authenticate - {}", authentication.getPrincipal());
-                    SecurityContextHolder.getContext().setAuthentication(authentication);
+                        .authenticate(new UsernamePasswordAuthenticationToken(token, ""));
+                Optional<UserVO> optionalUser = userService.findNotDeactivatedByEmail((String) authentication.getPrincipal());
+
+                if (optionalUser.isPresent()) {
+                    UserVO user = optionalUser.get();
+
+                    GrantedAuthority authority = new SimpleGrantedAuthority(user.getRole().name());
+
+                    UsernamePasswordAuthenticationToken authenticationToken =
+                            new UsernamePasswordAuthenticationToken(user, null, Collections.singleton(authority));
+
+                    log.debug("User successfully authenticated - {}", user.getEmail());
+                    SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+                } else {
+                    log.warn("User not found with email - {}", authentication.getPrincipal());
                 }
+
             } catch (ExpiredJwtException e) {
                 log.info("Token has expired: " + token);
             } catch (Exception e) {

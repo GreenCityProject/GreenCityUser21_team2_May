@@ -10,7 +10,6 @@ import greencity.service.UserService;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -46,29 +45,26 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
 @EnableGlobalAuthentication
 public class SecurityConfig {
     private JwtTool jwtTool;
-    private UserService userService;
-    private ApplicationContext applicationContext;
+    private UserService userService;;
     private final PasswordEncoder passwordEncoder;
     private final UserDetailsService userDetailsService;
     private final AuthenticationManagerBuilder authenticationManager;
+    private final AuthenticationConfiguration authenticationConfiguration;
     private static final String USER_LINK = "/user";
-
-    @Autowired
-    public void setApplicationContext(ApplicationContext applicationContext) {
-        this.applicationContext = applicationContext;
-    }
 
     @Autowired
     public SecurityConfig(
             JwtTool jwtTool,
             UserService userService,
             AuthenticationManagerBuilder authenticationManager,
+            AuthenticationConfiguration authenticationConfiguration,
             @Qualifier("passwordEncoderBean") PasswordEncoder passwordEncoder,
             @Qualifier("userDetailsServiceBean") UserDetailsService userDetailsService
     ) {
         this.jwtTool = jwtTool;
         this.userService = userService;
         this.authenticationManager = authenticationManager;
+        this.authenticationConfiguration = authenticationConfiguration;
         this.userDetailsService = userDetailsService;
         this.passwordEncoder = passwordEncoder;
     }
@@ -93,7 +89,7 @@ public class SecurityConfig {
             config.setAllowedHeaders(Collections.singletonList("*"));
             config.setMaxAge(3600L);
             return config;
-            }))
+        }))
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(STATELESS))
                 .addFilterBefore(
@@ -270,7 +266,6 @@ public class SecurityConfig {
      */
     @Bean
     public AuthenticationManager authenticationManager() throws Exception {
-        AuthenticationConfiguration authenticationConfiguration = applicationContext.getBean(AuthenticationConfiguration.class);
         return authenticationConfiguration.getAuthenticationManager();
     }
 }

@@ -1,5 +1,6 @@
-package greencity.controller;
+package greencity.security.service;
 
+import greencity.controller.CustomUserDetails;
 import greencity.entity.User;
 import greencity.repository.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;

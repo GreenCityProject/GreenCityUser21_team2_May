@@ -1,6 +1,6 @@
 package greencity.config.bean;
 
-import greencity.controller.UserDetailsServiceImpl;
+import greencity.security.service.UserDetailsServiceImpl;
 import greencity.repository.UserRepo;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

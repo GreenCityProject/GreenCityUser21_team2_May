@@ -243,9 +243,8 @@ public class EmailServiceImpl implements EmailService {
         String content = "Dear " + name + ", you haven't marked any habit during last 3 days";
         if (!userRepo.existsUserByEmail(email)) {
             throw new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email);
-        }else {
-            sendEmail(email, subject, content);
         }
+        sendEmail(email, subject, content);
     }
 
     @Override

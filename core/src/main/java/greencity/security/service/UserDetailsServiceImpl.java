@@ -17,6 +17,13 @@ import java.util.Collections;
 public class UserDetailsServiceImpl implements UserDetailsService {
     private final UserRepo userRepo;
 
+    /**
+     * Load a user by the email used as the username.
+     *
+     * @param email the user's email used as username
+     * @return details of the user
+     * @throws UsernameNotFoundException if the user could not be found
+     */
     @Autowired
     public UserDetailsServiceImpl(@Lazy UserRepo userRepo) {
         this.userRepo = userRepo;

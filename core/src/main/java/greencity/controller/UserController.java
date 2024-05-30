@@ -68,7 +68,7 @@ public class UserController {
     })
     @PatchMapping("status")
     public ResponseEntity<UserStatusDto> updateStatus(
-        @Valid @RequestBody UserStatusDto userStatusDto, @ApiIgnore Principal principal) {
+        @Valid @RequestBody UserStatusDto userStatusDto, @Parameter(hidden = true) Principal principal) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(
                 userService.updateStatus(

@@ -12,9 +12,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -82,15 +80,11 @@ public class AccessTokenAuthenticationFilter extends OncePerRequestFilter {
 
         if (token != null) {
             try {
-                Authentication authentication = authenticationManager
-                        .authenticate(new UsernamePasswordAuthenticationToken(token, ""));
+                Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(token, ""));
                 Optional<UserVO> optionalUser = userService.findNotDeactivatedByEmail((String) authentication.getPrincipal());
-
                 if (optionalUser.isPresent()) {
                     UserVO user = optionalUser.get();
-
                     GrantedAuthority authority = new SimpleGrantedAuthority(user.getRole().name());
-
                     UsernamePasswordAuthenticationToken authenticationToken =
                             new UsernamePasswordAuthenticationToken(user, null, Collections.singleton(authority));
 
@@ -99,7 +93,6 @@ public class AccessTokenAuthenticationFilter extends OncePerRequestFilter {
                 } else {
                     log.warn("User not found with email - {}", authentication.getPrincipal());
                 }
-
             } catch (ExpiredJwtException e) {
                 log.info("Token has expired: " + token);
             } catch (Exception e) {

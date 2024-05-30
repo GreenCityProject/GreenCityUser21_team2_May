@@ -3,7 +3,6 @@ package greencity.security.filters;
 import greencity.dto.user.UserVO;
 import greencity.security.jwt.JwtTool;
 import greencity.service.UserService;
-import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -76,17 +75,6 @@ class AccessTokenAuthenticationFilterTest {
         verify(authenticationManager).authenticate(any());
         verify(chain).doFilter(request, response);
     }
-
-//    @Test
-//    void doFilterInternalTokenHasExpiredTest() throws IOException, ServletException {
-//        String token = "SuperSecretAccessToken";
-//        when(jwtTool.getTokenFromHttpServletRequest(request)).thenReturn(token);
-//        when(authenticationManager.authenticate(
-//            new UsernamePasswordAuthenticationToken(token, null)))
-//                .thenThrow(ExpiredJwtException.class);
-//        authenticationFilter.doFilterInternal(request, response, chain);
-//        assertTrue(systemOutContent.toString().contains("Token has expired: "));
-//    }
 
     @Test
     void doFilterInternalAccessDeniedTest() throws IOException, ServletException {

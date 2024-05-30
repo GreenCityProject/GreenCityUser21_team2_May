@@ -44,8 +44,8 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
 @EnableMethodSecurity
 @EnableGlobalAuthentication
 public class SecurityConfig {
-    private JwtTool jwtTool;
-    private UserService userService;;
+    private final JwtTool jwtTool;
+    private final UserService userService;;
     private final PasswordEncoder passwordEncoder;
     private final UserDetailsService userDetailsService;
     private final AuthenticationManagerBuilder authenticationManager;

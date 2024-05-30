@@ -2,9 +2,6 @@ package greencity.controller;
 
 import greencity.entity.User;
 import greencity.repository.UserRepo;
-import greencity.service.UserService;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.core.GrantedAuthority;
@@ -15,7 +12,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.Collections;
 
-@Slf4j
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
     private final UserRepo userRepo;

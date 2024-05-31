@@ -106,6 +106,7 @@ public class SecurityConfig {
                                 "/swagger-ui.html")
                         .permitAll()
                         .requestMatchers(
+                                "/error",
                                 "/swagger-resources/**",
                                 "/webjars/**",
                                 "/swagger-ui/**")
@@ -126,6 +127,7 @@ public class SecurityConfig {
                                 "/user/get-user-rating")
                         .permitAll()
                         .requestMatchers(HttpMethod.POST,
+                                "subscriber/subscribe",
                                 "/ownSecurity/signUp",
                                 "/ownSecurity/signIn",
                                 "/ownSecurity/updatePassword")

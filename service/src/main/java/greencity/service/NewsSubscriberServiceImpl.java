@@ -6,11 +6,11 @@ import greencity.entity.NewsSubscriber;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.repository.NewsSubscriberRepo;
 import greencity.security.jwt.JwtTool;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -20,6 +20,7 @@ public class NewsSubscriberServiceImpl implements NewsSubscriberService {
     private final JwtTool jwtTool;
 
     @Override
+    @Transactional
     public NewsSubscriberRequestDto subscribe(NewsSubscriberRequestDto subscriberRequestDto) {
         if (isEmailAlreadySubscribed(subscriberRequestDto.getEmail()))
             throw new BadRequestException("Email subscribed already");
@@ -36,7 +37,7 @@ public class NewsSubscriberServiceImpl implements NewsSubscriberService {
         List<NewsSubscriber> subscribers = this.newsSubscriberRepo.findAll();
         return subscribers.stream()
                 .map(this::mapToDto)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     // todo: refactor as mapper

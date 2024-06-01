@@ -20,7 +20,7 @@ import java.util.List;
 @RequestMapping("/subscriber")
 @AllArgsConstructor
 public class NewsSubscriberController {
-    @Autowired
+
     private final NewsSubscriberService subscriberService;
 
 
@@ -32,11 +32,11 @@ public class NewsSubscriberController {
      */
     @Operation(summary = "Save subscriber")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+            @ApiResponse(responseCode = "201", description = HttpStatuses.CREATED),
             @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST),
     })
     @PostMapping("/subscribe")
-    public ResponseEntity<Object> subscribe(@Valid @RequestParam NewsSubscriberRequestDto newsSubscriberRequestDto) {
+    public ResponseEntity<Object> subscribe(@Valid @RequestBody NewsSubscriberRequestDto newsSubscriberRequestDto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(subscriberService.subscribe(newsSubscriberRequestDto));
     }
 

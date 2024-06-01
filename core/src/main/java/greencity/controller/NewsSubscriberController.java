@@ -2,6 +2,7 @@ package greencity.controller;
 
 import greencity.constant.HttpStatuses;
 import greencity.dto.newssubscriber.NewsSubscriberRequestDto;
+import greencity.dto.newssubscriber.NewsSubscriberResponseDto;
 import greencity.service.EmailService;
 import greencity.service.NewsSubscriberService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -13,6 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/subscriber")
@@ -35,5 +38,21 @@ public class NewsSubscriberController {
     @PostMapping("/subscribe")
     public ResponseEntity<Object> subscribe(@Valid @RequestParam NewsSubscriberRequestDto newsSubscriberRequestDto) {
         return ResponseEntity.status(HttpStatus.OK).body(subscriberService.subscribe(newsSubscriberRequestDto));
+    }
+
+    /**
+     * Method to get all subscribers.
+     *
+     * @return list of {@link NewsSubscriberResponseDto}
+     * @author Dmytro Fedotov
+     */
+    @Operation(summary = "Get all emails for sending news")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+            @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED)
+    })
+    @GetMapping
+    public ResponseEntity<List<NewsSubscriberResponseDto>> getAllSubscribers() {
+        return ResponseEntity.status(HttpStatus.OK).body(subscriberService.getAll());
     }
 }

@@ -2,6 +2,9 @@ package greencity.service;
 
 
 import greencity.dto.newssubscriber.NewsSubscriberRequestDto;
+import greencity.dto.newssubscriber.NewsSubscriberResponseDto;
+
+import java.util.List;
 
 /**
  * Provides the interface to manage sending emails to {@code NewsSubscriber}.
@@ -9,4 +12,6 @@ import greencity.dto.newssubscriber.NewsSubscriberRequestDto;
 
 public interface NewsSubscriberService {
     NewsSubscriberRequestDto subscribe(NewsSubscriberRequestDto subscriberRequestDto);
+
+    List<NewsSubscriberResponseDto> getAll();
 }

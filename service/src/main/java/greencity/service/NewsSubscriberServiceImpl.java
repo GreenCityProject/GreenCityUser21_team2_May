@@ -11,6 +11,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @AllArgsConstructor
@@ -22,13 +23,15 @@ public class NewsSubscriberServiceImpl implements NewsSubscriberService {
     @Override
     @Transactional
     public NewsSubscriberRequestDto subscribe(NewsSubscriberRequestDto subscriberRequestDto) {
-        if (isEmailAlreadySubscribed(subscriberRequestDto.getEmail()))
+
+        // todo: Check user sign-in response, maybe return ResponseDto with token
+        if (isSubscriberExists(subscriberRequestDto.getEmail()))
             throw new BadRequestException("Email subscribed already");
         this.newsSubscriberRepo.save(new NewsSubscriber(null, subscriberRequestDto.getEmail(), jwtTool.generateTokenKey()));
         return subscriberRequestDto;
     }
 
-    private boolean isEmailAlreadySubscribed(String email){
+    private boolean isSubscriberExists(String email){
         return this.newsSubscriberRepo.findByEmail(email).isPresent();
     }
 
@@ -38,6 +41,26 @@ public class NewsSubscriberServiceImpl implements NewsSubscriberService {
         return subscribers.stream()
                 .map(this::mapToDto)
                 .toList();
+    }
+
+    @Override
+    @Transactional
+    public Long unsubscribe(String email, String unsubscribeToken) {
+        if (checkToken(email, unsubscribeToken)) {
+            newsSubscriberRepo.deleteByEmail(email);
+
+            // todo: do i have to return Long?
+            return 1L;
+        }
+        throw new BadRequestException("Token doesn't match");
+    }
+
+    private boolean checkToken(String email, String unsubscribeToken) {
+        Optional<NewsSubscriber> newsSubscriberOptional = newsSubscriberRepo.findByEmail(email);
+        if (newsSubscriberOptional.isPresent()) {
+            NewsSubscriber newsSubscriber = newsSubscriberOptional.get();
+            return newsSubscriber.getUnsubscribeToken().equals(unsubscribeToken);
+        } else return false;
     }
 
     // todo: refactor as mapper

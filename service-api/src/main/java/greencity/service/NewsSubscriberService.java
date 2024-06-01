@@ -14,4 +14,6 @@ public interface NewsSubscriberService {
     NewsSubscriberRequestDto subscribe(NewsSubscriberRequestDto subscriberRequestDto);
 
     List<NewsSubscriberResponseDto> getAll();
+
+    Long unsubscribe(String email, String unsubscribeToken);
 }

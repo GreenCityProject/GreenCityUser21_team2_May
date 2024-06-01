@@ -3,7 +3,6 @@ package greencity.controller;
 import greencity.constant.HttpStatuses;
 import greencity.dto.newssubscriber.NewsSubscriberRequestDto;
 import greencity.dto.newssubscriber.NewsSubscriberResponseDto;
-import greencity.service.EmailService;
 import greencity.service.NewsSubscriberService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -24,6 +23,7 @@ public class NewsSubscriberController {
     @Autowired
     private final NewsSubscriberService subscriberService;
 
+
     /**
      * Method for subscription on interesting news for unregistered user via email.
      *
@@ -37,8 +37,9 @@ public class NewsSubscriberController {
     })
     @PostMapping("/subscribe")
     public ResponseEntity<Object> subscribe(@Valid @RequestParam NewsSubscriberRequestDto newsSubscriberRequestDto) {
-        return ResponseEntity.status(HttpStatus.OK).body(subscriberService.subscribe(newsSubscriberRequestDto));
+        return ResponseEntity.status(HttpStatus.CREATED).body(subscriberService.subscribe(newsSubscriberRequestDto));
     }
+
 
     /**
      * Method to get all subscribers.

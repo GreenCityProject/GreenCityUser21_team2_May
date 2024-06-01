@@ -3,6 +3,7 @@ package greencity.service;
 import greencity.dto.newssubscriber.NewsSubscriberRequestDto;
 import greencity.dto.newssubscriber.NewsSubscriberResponseDto;
 import greencity.entity.NewsSubscriber;
+import greencity.exception.exceptions.BadRequestException;
 import greencity.repository.NewsSubscriberRepo;
 import greencity.security.jwt.JwtTool;
 import lombok.AllArgsConstructor;
@@ -20,8 +21,14 @@ public class NewsSubscriberServiceImpl implements NewsSubscriberService {
 
     @Override
     public NewsSubscriberRequestDto subscribe(NewsSubscriberRequestDto subscriberRequestDto) {
-        // todo: add to db
+        if (isEmailAlreadySubscribed(subscriberRequestDto.getEmail()))
+            throw new BadRequestException("Email subscribed already");
+        this.newsSubscriberRepo.save(new NewsSubscriber(null, subscriberRequestDto.getEmail(), jwtTool.generateTokenKey()));
         return subscriberRequestDto;
+    }
+
+    private boolean isEmailAlreadySubscribed(String email){
+        return this.newsSubscriberRepo.findByEmail(email).isPresent();
     }
 
     @Override

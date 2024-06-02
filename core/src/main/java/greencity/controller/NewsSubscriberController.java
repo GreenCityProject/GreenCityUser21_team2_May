@@ -13,7 +13,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -65,9 +64,8 @@ public class NewsSubscriberController {
     /**
      * Method for unsubscribing.
      *
-     * @param email email of subscriber ({@link NewsSubscriberRequestDto}).
-     * @param unsubscribeToken token that identify email owner.
-     * @return {@link ResponseEntity}.
+     * @param email email of subscriber.
+     * @param unsubscribeToken token of subscriber.
      */
     @Operation(summary = "Deleting an email form subscribe table")
     @ApiResponses(value = {
@@ -77,8 +75,9 @@ public class NewsSubscriberController {
                     content = @Content(schema = @Schema(implementation = NotFoundException.class)))
     })
     @DeleteMapping("/unsubscribe")
-    public ResponseEntity<Long> unsubscribe(@RequestParam @Email String email,
-                                            @RequestParam String unsubscribeToken){
-        return ResponseEntity.status(HttpStatus.OK).body(subscriberService.unsubscribe(email, unsubscribeToken));
+    public ResponseEntity<Long> unsubscribe(@RequestParam @Email String email, @RequestParam String unsubscribeToken){
+        // todo: token transfering is safer in body?
+        subscriberService.unsubscribe(email, unsubscribeToken);
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 }

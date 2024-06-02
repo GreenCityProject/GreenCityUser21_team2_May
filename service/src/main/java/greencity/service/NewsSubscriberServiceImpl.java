@@ -3,7 +3,7 @@ package greencity.service;
 import greencity.dto.newssubscriber.NewsSubscriberRequestDto;
 import greencity.dto.newssubscriber.NewsSubscriberResponseDto;
 import greencity.entity.NewsSubscriber;
-import greencity.exception.exceptions.BadRequestException;
+import greencity.exception.exceptions.SubscribeException;
 import greencity.repository.NewsSubscriberRepo;
 import greencity.security.jwt.JwtTool;
 import jakarta.transaction.Transactional;
@@ -23,10 +23,8 @@ public class NewsSubscriberServiceImpl implements NewsSubscriberService {
     @Override
     @Transactional
     public NewsSubscriberRequestDto subscribe(NewsSubscriberRequestDto subscriberRequestDto) {
-
-        // todo: Check user sign-in response, maybe return ResponseDto with token
         if (isSubscriberExists(subscriberRequestDto.getEmail()))
-            throw new BadRequestException("Email subscribed already");
+            throw new SubscribeException("Email subscribed already");
         this.newsSubscriberRepo.save(new NewsSubscriber(null, subscriberRequestDto.getEmail(), jwtTool.generateTokenKey()));
         return subscriberRequestDto;
     }
@@ -45,14 +43,13 @@ public class NewsSubscriberServiceImpl implements NewsSubscriberService {
 
     @Override
     @Transactional
-    public Long unsubscribe(String email, String unsubscribeToken) {
+    public void unsubscribe(String email, String unsubscribeToken) {
         if (checkToken(email, unsubscribeToken)) {
             newsSubscriberRepo.deleteByEmail(email);
-
-            // todo: do i have to return Long?
-            return 1L;
         }
-        throw new BadRequestException("Token doesn't match");
+        else {
+            throw new SubscribeException("Invalid token");
+        }
     }
 
     private boolean checkToken(String email, String unsubscribeToken) {

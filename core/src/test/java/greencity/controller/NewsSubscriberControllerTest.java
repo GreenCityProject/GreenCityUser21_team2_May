@@ -37,7 +37,6 @@ class NewsSubscriberControllerTest {
     @InjectMocks
     private NewsSubscriberController newsSubscriberController;
 
-
     static final String EMAIL = "test@gmail.com";
     static final String TOKEN = "token";
 

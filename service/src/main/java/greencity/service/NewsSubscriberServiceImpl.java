@@ -24,7 +24,7 @@ public class NewsSubscriberServiceImpl implements NewsSubscriberService {
     @Transactional
     public NewsSubscriberRequestDto subscribe(NewsSubscriberRequestDto subscriberRequestDto) {
         if (isSubscriberExists(subscriberRequestDto.getEmail()))
-            throw new SubscribeException("Email subscribed already");
+            throw new SubscribeException("Email already subscribed");
         this.newsSubscriberRepo.save(new NewsSubscriber(null, subscriberRequestDto.getEmail(), jwtTool.generateTokenKey()));
         return subscriberRequestDto;
     }
@@ -60,7 +60,6 @@ public class NewsSubscriberServiceImpl implements NewsSubscriberService {
         } else return false;
     }
 
-    // todo: refactor as mapper
     private NewsSubscriberResponseDto mapToDto(NewsSubscriber subscriber) {
         return NewsSubscriberResponseDto.builder()
                 .email(subscriber.getEmail())

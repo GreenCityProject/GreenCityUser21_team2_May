@@ -1,9 +1,11 @@
 package greencity.controller;
 
 import greencity.constant.HttpStatuses;
+import greencity.dto.econews.AddEcoNewsDtoResponse;
 import greencity.dto.newssubscriber.NewsSubscriberRequestDto;
 import greencity.dto.newssubscriber.NewsSubscriberResponseDto;
 import greencity.exception.exceptions.NotFoundException;
+import greencity.service.EmailService;
 import greencity.service.NewsSubscriberService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -26,6 +28,7 @@ public class NewsSubscriberController {
 
     private final NewsSubscriberService subscriberService;
 
+    private final EmailService emailService;
 
     /**
      * Method for subscription on interesting news for unregistered user via email.
@@ -65,7 +68,8 @@ public class NewsSubscriberController {
      * Method for unsubscribing.
      *
      * @param email email of subscriber.
-     * @param unsubscribeToken token of subscriber.
+     * @param unsubscribeToken token of subscriber.\
+     * @author Dmytro Fedotov
      */
     @Operation(summary = "Deleting an email form subscribe table")
     @ApiResponses(value = {
@@ -76,8 +80,26 @@ public class NewsSubscriberController {
     })
     @DeleteMapping("/unsubscribe")
     public ResponseEntity<Long> unsubscribe(@RequestParam @Email String email, @RequestParam String unsubscribeToken){
-        // todo: token transfering is safer in body?
+        //token transfer is safer in body?
         subscriberService.unsubscribe(email, unsubscribeToken);
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+
+    /**
+     * Method for sending news for users who subscribed for updates.
+     *
+     * @param message - object with all necessary data for sending email
+     * @author Dmytro Fedotov
+     */
+    @Operation(summary = "Get all emails for sending news")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+            @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED)
+    })
+    @PostMapping("/sendEcoNews")
+    public ResponseEntity<Object> sendEcoNews(@RequestBody AddEcoNewsDtoResponse message) {
+        emailService.sendNewNewsForSubscriber(subscriberService.getAll(), message);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 }

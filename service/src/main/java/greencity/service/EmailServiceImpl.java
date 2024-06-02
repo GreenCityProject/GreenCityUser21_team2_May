@@ -48,6 +48,7 @@ public class EmailServiceImpl implements EmailService {
     private final String clientLink;
     private final String ecoNewsLink;
     private final String serverLink;
+    private final String serverLinkSwagger = "http://localhost:8060";
     private final String senderEmailAddress;
     private static final String PARAM_USER_ID = "&user_id=";
 
@@ -112,7 +113,8 @@ public class EmailServiceImpl implements EmailService {
         model.put(EmailConstants.NEWS_RESULT, newsDto);
         for (NewsSubscriberResponseDto dto : subscribers) {
             try {
-                model.put(EmailConstants.UNSUBSCRIBE_LINK, serverLink + "/newsSubscriber/unsubscribe?email="
+                // todo: change serverLink to serverLinkSwagger to serverLink
+                model.put(EmailConstants.UNSUBSCRIBE_LINK, serverLink + "/subscriber/unsubscribe?email="
                     + URLEncoder.encode(dto.getEmail(), StandardCharsets.UTF_8.toString())
                     + "&unsubscribeToken=" + dto.getUnsubscribeToken());
             } catch (UnsupportedEncodingException e) {

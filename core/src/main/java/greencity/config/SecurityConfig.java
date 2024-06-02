@@ -112,7 +112,6 @@ public class SecurityConfig {
                                 "/swagger-ui/**")
                         .permitAll()
                         .requestMatchers(HttpMethod.GET,
-                                "/subscriber",
                                 "/ownSecurity/verifyEmail",
                                 "/ownSecurity/updateAccessToken",
                                 "/ownSecurity/restorePassword",
@@ -182,7 +181,11 @@ public class SecurityConfig {
                                 "/user/markUserAsDeactivated",
                                 "/user/markUserAsActivated")
                         .hasAnyRole(ADMIN, UBS_EMPLOYEE, MODERATOR, EMPLOYEE)
+                        .requestMatchers(HttpMethod.PUT,
+                        "subscriber/sendEcoNews")
+                        .hasAnyRole(ADMIN, UBS_EMPLOYEE, MODERATOR, EMPLOYEE)
                         .requestMatchers(HttpMethod.GET,
+                                "/subscriber",
                                 "/user/get-all-authorities",
                                 "/user/get-positions-authorities",
                                 "/user/get-employee-login-positions")

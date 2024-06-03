@@ -26,6 +26,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -780,5 +781,94 @@ public class UserController {
     @GetMapping("/findAllUsersCities")
     public ResponseEntity<List<String>> findAllUsersCities() {
         return ResponseEntity.status(HttpStatus.OK).body(userService.findAllUsersCities());
+    }
+
+    /**
+     * Method that find all user's friends.
+     *
+     * @param userId - user id
+     * @param pageable - pageable configuration
+     * @return {@link PageableDto} of {@link FriendDto}
+     */
+    @Operation(summary = "Find all user's friends")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED),
+        @ApiResponse(responseCode = "404", description = HttpStatuses.BAD_REQUEST),
+    })
+    @GetMapping("/{userId}/findAllFriends")
+    public ResponseEntity<PageableDto<FriendDto>> findAllFriends(@PathVariable Long userId, @ParameterObject Pageable pageable) {
+        return ResponseEntity.status(HttpStatus.OK).body(userService.getAllFriendsByUserId(pageable, userId));
+    }
+
+    /**
+     * Method that find all user's friends by user's city.
+     *
+     * @param userId - user id
+     * @param pageable - pageable configuration
+     * @return {@link PageableDto} of {@link FriendDto}
+     */
+    @Operation(summary = "Find all user's friends by user's city")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED),
+        @ApiResponse(responseCode = "404", description = HttpStatuses.BAD_REQUEST),
+    })
+    @GetMapping("/{userId}/findAllFriendsByCity")
+    public ResponseEntity<PageableDto<FriendDto>> findAllFriendsByCity(@PathVariable Long userId, @ParameterObject Pageable pageable) {
+        return ResponseEntity.status(HttpStatus.OK).body(userService.getAllFriendsByUserIdAndCity(pageable, userId));
+    }
+
+    /**
+     * Method that find all user's friends sorted by rating.
+     *
+     * @param userId - user id
+     * @param pageable - pageable configuration
+     * @return {@link PageableDto} of {@link FriendDto}
+     */
+    @Operation(summary = "Find all user's friends sorted by rating")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED),
+        @ApiResponse(responseCode = "404", description = HttpStatuses.BAD_REQUEST),
+    })
+    @GetMapping("/{userId}/findAllFriendsByRating")
+    public ResponseEntity<PageableDto<FriendDto>> findAllFriendsByRating(@PathVariable Long userId, @ParameterObject Pageable pageable) {
+        return ResponseEntity.status(HttpStatus.OK).body(userService.getAllFriendsByUserIdAndRating(pageable, userId));
+    }
+
+    /**
+     * Method that find all user's friends by user's and his/her friends assigned habits.
+     *
+     * @param userId - user id
+     * @param pageable - pageable configuration
+     * @return {@link PageableDto} of {@link FriendDto}
+     */
+    @Operation(summary = "Find all user's friends by user's and his/her friends assigned habits")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED),
+        @ApiResponse(responseCode = "404", description = HttpStatuses.BAD_REQUEST),
+    })
+    @GetMapping("/{userId}/findAllFriendsByHabit")
+    public ResponseEntity<PageableDto<FriendDto>> findAllFriendsByHabit(@PathVariable Long userId, @ParameterObject Pageable pageable) {
+        return ResponseEntity.status(HttpStatus.OK).body(userService.getAllFriendsByUserIdAndHabitsAssigned(pageable, userId));
+    }
+
+    /**
+     * Method that find all user's friends by user's and his/her friends assigned habits.
+     *
+     * @param userId - user id
+     * @return {@link Integer} - total amount of friends
+     */
+    @Operation(summary = "Get total amount of friends by user id")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED),
+        @ApiResponse(responseCode = "404", description = HttpStatuses.BAD_REQUEST),
+    })
+    @GetMapping("/{userId}/totalAmountOfFriends")
+    public ResponseEntity<Integer> getTotalAmountOfFriends(@PathVariable Long userId) {
+        return ResponseEntity.status(HttpStatus.OK).body(userService.getTotalAmountOfFriendsByUserId(userId));
     }
 }

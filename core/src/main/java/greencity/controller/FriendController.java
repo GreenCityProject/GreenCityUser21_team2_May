@@ -4,7 +4,7 @@ package greencity.controller;
 import greencity.annotations.CurrentUser;
 import greencity.constant.HttpStatuses;
 import greencity.dto.PageableDto;
-import greencity.dto.friends.UserFriendDto;
+import greencity.dto.user.FriendDto;
 import greencity.dto.user.UserVO;
 import greencity.service.FriendService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -35,7 +35,7 @@ public class FriendController {
                     content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED)))
     })
     @GetMapping
-    public ResponseEntity<PageableDto<UserFriendDto>> getAllFriendsOfUser(
+    public ResponseEntity<PageableDto<FriendDto>> getAllFriendsOfUser(
             @Parameter(hidden = true) Pageable page,
             @Parameter(hidden = true) @CurrentUser UserVO userVO) {
         return ResponseEntity
@@ -44,7 +44,7 @@ public class FriendController {
     }
 
     @PostMapping("/addFriend/{friendId}")
-    public ResponseEntity<UserFriendDto> addFriendForUser(){
+    public ResponseEntity<FriendDto> addFriendForUser(){
         return ResponseEntity
                 .status(HttpStatus.OK).build();
         }
@@ -61,7 +61,7 @@ public class FriendController {
                     content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
     })
     @DeleteMapping("/deleteFriend/{friendId}")
-    public ResponseEntity<UserFriendDto> deleteFriendForUser(
+    public ResponseEntity<FriendDto> deleteFriendForUser(
             @Parameter(hidden = true) @CurrentUser UserVO userVO,
             @Parameter @PathVariable long friendId) {
         friendService.deleteFriendOfUser( userVO.getId(), friendId);

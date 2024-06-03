@@ -3,19 +3,10 @@ package greencity;
 import greencity.constant.AppConstant;
 import greencity.dto.UbsCustomerDto;
 import greencity.dto.econews.AddEcoNewsDtoResponse;
-import greencity.dto.friends.UserFriendDto;
 import greencity.dto.language.LanguageVO;
 import greencity.dto.ownsecurity.OwnSecurityVO;
 import greencity.dto.ubs.UbsProfileCreationDto;
-import greencity.dto.user.EcoNewsAuthorDto;
-import greencity.dto.user.UserAdminRegistrationDto;
-import greencity.dto.user.UserEmployeeAuthorityDto;
-import greencity.dto.user.UserManagementDto;
-import greencity.dto.user.UserManagementUpdateDto;
-import greencity.dto.user.UserProfileDtoRequest;
-import greencity.dto.user.UserProfilePictureDto;
-import greencity.dto.user.UserProfileStatisticsDto;
-import greencity.dto.user.UserVO;
+import greencity.dto.user.*;
 import greencity.dto.verifyemail.VerifyEmailVO;
 import greencity.dto.violation.UserViolationMailDto;
 
@@ -332,11 +323,10 @@ public class ModelUtils {
             .build();
     }
 
-    public static UserFriendDto getUserFrindDto() {
-        return  UserFriendDto.builder()
+    public static FriendDto getFrindDto() {
+        return  FriendDto.builder()
                 .id(1L)
                 .name(TestConst.NAME)
-                .email(TestConst.EMAIL)
                 .build();
     }
 }

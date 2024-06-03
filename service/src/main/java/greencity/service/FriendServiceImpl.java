@@ -2,7 +2,7 @@ package greencity.service;
 
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
-import greencity.dto.friends.UserFriendDto;
+import greencity.dto.user.FriendDto;
 import greencity.entity.User;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.repository.UserRepo;
@@ -21,13 +21,13 @@ public class FriendServiceImpl implements FriendService{
     private final ModelMapper modelMapper;
 
     @Override
-    public PageableDto<UserFriendDto> getAllFriendsOfUser(long userId, Pageable pageable) {
+    public PageableDto<FriendDto> getAllFriendsOfUser(long userId, Pageable pageable) {
         validateUserExistence(userId);
 
         Page<User> friends =userRepo.getAllFriendsOfUserIdPage(userId, pageable);
 
-        List<UserFriendDto> friendList =
-                friends.stream().map(friend -> modelMapper.map(friend, UserFriendDto.class))
+        List<FriendDto> friendList =
+                friends.stream().map(friend -> modelMapper.map(friend, FriendDto.class))
                         .toList();
 
         return new PageableDto<>(

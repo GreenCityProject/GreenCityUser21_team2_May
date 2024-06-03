@@ -17,6 +17,7 @@ import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser;
+import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 
 @Configuration
@@ -32,8 +33,8 @@ public class SecuritySocialSignInConfig {
             response.setCharacterEncoding("UTF-8");
             response.setContentType("application/json");
 
-            DefaultOidcUser principal = (DefaultOidcUser) authentication.getPrincipal();
-            Map<String, Object> claims = principal.getIdToken().getClaims();
+            DefaultOAuth2User principal = (DefaultOAuth2User) authentication.getPrincipal();
+            Map<String, Object> claims = principal.getAttributes();
 
             String email = (String) claims.get("email");
             if (isUserExist(email)) {

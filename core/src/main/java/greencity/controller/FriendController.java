@@ -43,6 +43,12 @@ public class FriendController {
                 .body(friendService.getAllFriendsOfUser( userVO.getId(), page));
     }
 
+    @PostMapping("/addFriend/{friendId}")
+    public ResponseEntity<UserFriendDto> addFriendForUser(){
+        return ResponseEntity
+                .status(HttpStatus.OK).build();
+        }
+
 
     @Operation(summary = "Delete friend for Current User")
     @ApiResponses(value = {
@@ -63,5 +69,7 @@ public class FriendController {
                 .status(HttpStatus.OK)
                 .build();
     }
+
+
 
 }

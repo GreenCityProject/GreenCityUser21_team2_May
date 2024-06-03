@@ -78,9 +78,8 @@ public class NewsSubscriberController {
             @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
                     content = @Content(schema = @Schema(implementation = NotFoundException.class)))
     })
-    @DeleteMapping("/unsubscribe")
+    @GetMapping("/unsubscribe")
     public ResponseEntity<Long> unsubscribe(@RequestParam @Email String email, @RequestParam String unsubscribeToken){
-        //token transfer is safer in body?
         subscriberService.unsubscribe(email, unsubscribeToken);
         return ResponseEntity.status(HttpStatus.OK).build();
     }

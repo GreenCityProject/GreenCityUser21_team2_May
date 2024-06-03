@@ -100,6 +100,7 @@ public class SecurityConfig {
                         .requestMatchers("/static/css/**", "/static/img/**").permitAll()
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers(
+                                "/subscriber/unsubscribe",
                                 "/v2/api-docs/**",
                                 "/v3/api-docs/**",
                                 "/swagger.json",
@@ -131,9 +132,6 @@ public class SecurityConfig {
                                 "/ownSecurity/signUp",
                                 "/ownSecurity/signIn",
                                 "/ownSecurity/updatePassword")
-                        .permitAll()
-                        .requestMatchers(HttpMethod.DELETE,
-                                "/subscriber/unsubscribe")
                         .permitAll()
                         .requestMatchers(HttpMethod.GET, USER_LINK,
                                 "/user/shopping-list-items/habits/{habitId}/shopping-list",

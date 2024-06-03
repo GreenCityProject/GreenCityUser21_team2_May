@@ -1,5 +1,6 @@
 package greencity.security.controller;
 
+import static greencity.enums.IgnorePassword.DO_NOT_IGNORE_PASSWORD;
 import greencity.exception.exceptions.EmailNotVerified;
 import greencity.exception.exceptions.LowRoleLevelException;
 import greencity.exception.exceptions.UserDeactivatedException;
@@ -74,7 +75,7 @@ public class ManagementSecurityController {
         String email = "email";
         String signInFormEmailError = "signInForm.email";
         try {
-            result = service.signIn(dto);
+            result = service.signIn(dto, DO_NOT_IGNORE_PASSWORD);
 
             userService.findAdminById(result.getUserId());
         } catch (LowRoleLevelException e) {

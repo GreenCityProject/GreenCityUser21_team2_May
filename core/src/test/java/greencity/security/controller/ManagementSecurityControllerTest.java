@@ -75,7 +75,7 @@ class ManagementSecurityControllerTest {
     @Test
     void signIn() throws Exception {
         OwnSignInDto dto = new OwnSignInDto("test@gmail.com", "Vovk@1998");
-        when(ownSecurityService.signIn(any())).thenReturn(successDto);
+        when(ownSecurityService.signIn(any(), any())).thenReturn(successDto);
         when(userService.findAdminById(successDto.getUserId())).thenReturn(TEST_USER_VO);
 
         mockMvc.perform(post(LINK + "/login")
@@ -86,7 +86,7 @@ class ManagementSecurityControllerTest {
     @Test
     void signInWrongEmail() throws Exception {
         OwnSignInDto dto = new OwnSignInDto("tesssweqwest@gmail.com", "Vovk@1998");
-        when(ownSecurityService.signIn(any())).thenThrow(WrongEmailException.class);
+        when(ownSecurityService.signIn(any(), any())).thenThrow(WrongEmailException.class);
 
         mockMvc.perform(post(LINK + "/login")
             .flashAttr("signInForm", dto))
@@ -96,7 +96,7 @@ class ManagementSecurityControllerTest {
     @Test
     void signInWrongPassword() throws Exception {
         OwnSignInDto dto = new OwnSignInDto("tesssweqwest@gmail.com", "Vovk@1998");
-        when(ownSecurityService.signIn(any())).thenThrow(WrongPasswordException.class);
+        when(ownSecurityService.signIn(any(), any())).thenThrow(WrongPasswordException.class);
 
         mockMvc.perform(post(LINK + "/login")
             .flashAttr("signInForm", dto))
@@ -106,7 +106,7 @@ class ManagementSecurityControllerTest {
     @Test
     void signInEmailNotVerified() throws Exception {
         OwnSignInDto dto = new OwnSignInDto("tesssweqwest@gmail.com", "Vovk@1998");
-        when(ownSecurityService.signIn(any())).thenThrow(EmailNotVerified.class);
+        when(ownSecurityService.signIn(any(), any())).thenThrow(EmailNotVerified.class);
 
         mockMvc.perform(post(LINK + "/login")
             .flashAttr("signInForm", dto))
@@ -116,7 +116,7 @@ class ManagementSecurityControllerTest {
     @Test
     void signInUserDeactivated() throws Exception {
         OwnSignInDto dto = new OwnSignInDto("tesssweqwest@gmail.com", "Vovk@1998");
-        when(ownSecurityService.signIn(any())).thenThrow(UserDeactivatedException.class);
+        when(ownSecurityService.signIn(any(), any())).thenThrow(UserDeactivatedException.class);
 
         mockMvc.perform(post(LINK + "/login")
             .flashAttr("signInForm", dto))
@@ -126,7 +126,7 @@ class ManagementSecurityControllerTest {
     @Test
     void signInUserDoNotHaveAuthorities() throws Exception {
         OwnSignInDto dto = new OwnSignInDto("test@mail.com", "Vovk@1998");
-        when(ownSecurityService.signIn(any())).thenReturn(successDto);
+        when(ownSecurityService.signIn(any(), any())).thenReturn(successDto);
         when(userService.findAdminById(1L)).thenThrow(LowRoleLevelException.class);
 
         mockMvc.perform(post(LINK + "/login")

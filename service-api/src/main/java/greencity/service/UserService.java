@@ -9,6 +9,7 @@ import greencity.dto.user.*;
 import greencity.enums.EmailNotification;
 import greencity.enums.Role;
 import greencity.enums.UserStatus;
+import greencity.exception.exceptions.WrongEmailException;
 import java.time.LocalDateTime;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
@@ -74,7 +75,7 @@ public interface UserService {
      * @param email a value of {@link String}
      * @return {@link UserVO} with this email.
      */
-    UserVO findByEmail(String email);
+    UserVO findByEmail(String email) throws WrongEmailException;
 
     /**
      * Method that allow you to find not 'DEACTIVATED' {@link UserVO} by email.

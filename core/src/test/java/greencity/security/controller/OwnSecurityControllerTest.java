@@ -1,6 +1,8 @@
 package greencity.security.controller;
 
 import greencity.ModelUtils;
+import static greencity.enums.IgnorePassword.DO_NOT_IGNORE_PASSWORD;
+import greencity.enums.ValidateEmail;
 import greencity.security.dto.ownsecurity.EmployeeSignUpDto;
 import greencity.security.dto.ownsecurity.OwnRestoreDto;
 import greencity.security.dto.ownsecurity.OwnSignInDto;
@@ -65,7 +67,7 @@ class OwnSecurityControllerTest {
             .andExpect(status().isCreated());
 
         OwnSignUpDto dto = ModelUtils.getObjectMapper().readValue(content, OwnSignUpDto.class);
-        verify(ownSecurityService).signUp(dto, "en");
+        verify(ownSecurityService).signUp(dto, ValidateEmail.VALIDATE_EMAIL, "en");
     }
 
     @Test
@@ -102,7 +104,7 @@ class OwnSecurityControllerTest {
             .andExpect(status().isOk());
 
         OwnSignInDto dto = ModelUtils.getObjectMapper().readValue(content, OwnSignInDto.class);
-        verify(ownSecurityService).signIn(dto);
+        verify(ownSecurityService).signIn(dto, DO_NOT_IGNORE_PASSWORD);
     }
 
     @Test

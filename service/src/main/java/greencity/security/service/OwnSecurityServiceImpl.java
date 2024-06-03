@@ -10,9 +10,9 @@ import greencity.entity.OwnSecurity;
 import greencity.entity.RestorePasswordEmail;
 import greencity.entity.User;
 import greencity.entity.VerifyEmail;
-import greencity.enums.EmailNotification;
-import greencity.enums.Role;
-import greencity.enums.UserStatus;
+import greencity.enums.*;
+import static greencity.enums.IgnorePassword.DO_NOT_IGNORE_PASSWORD;
+import static greencity.enums.ValidateEmail.VALIDATE_EMAIL;
 import greencity.exception.exceptions.BadRefreshTokenException;
 import greencity.exception.exceptions.BadUserStatusException;
 import greencity.exception.exceptions.EmailNotVerified;
@@ -101,16 +101,19 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
      */
     @Transactional
     @Override
-    public SuccessSignUpDto signUp(OwnSignUpDto dto, String language) {
-        User user = createNewRegisteredUser(dto, jwtTool.generateTokenKey(), language);
+    public SuccessSignUpDto signUp(OwnSignUpDto dto, ValidateEmail validateEmail, String language) {
+        User user = createNewRegisteredUser(dto, jwtTool.generateTokenKey(), validateEmail, language);
         setUsersFields(dto, user);
-        user.setVerifyEmail(createVerifyEmail(user, jwtTool.generateTokenKey()));
         user.setUuid(UUID.randomUUID().toString());
         try {
             User savedUser = userRepo.save(user);
             user.setId(savedUser.getId());
-            emailService.sendVerificationEmail(savedUser.getId(), savedUser.getName(), savedUser.getEmail(),
-                savedUser.getVerifyEmail().getToken(), language, dto.isUbs());
+
+            if (validateEmail == VALIDATE_EMAIL) {
+                user.setVerifyEmail(createVerifyEmail(user, jwtTool.generateTokenKey()));
+                emailService.sendVerificationEmail(savedUser.getId(), savedUser.getName(), savedUser.getEmail(),
+                    savedUser.getVerifyEmail().getToken(), language, dto.isUbs());
+            }
         } catch (DataIntegrityViolationException e) {
             throw new UserAlreadyRegisteredException(ErrorMessage.USER_ALREADY_REGISTERED_WITH_THIS_EMAIL);
         }
@@ -120,7 +123,8 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
         return new SuccessSignUpDto(user.getId(), user.getName(), user.getEmail(), true);
     }
 
-    private User createNewRegisteredUser(OwnSignUpDto dto, String refreshTokenKey, String language) {
+    private User createNewRegisteredUser(OwnSignUpDto dto, String refreshTokenKey,
+        ValidateEmail validateEmail, String language) {
         return User.builder()
             .name(dto.getName())
             .firstName(dto.getName())
@@ -129,7 +133,7 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
             .role(Role.ROLE_USER)
             .refreshTokenKey(refreshTokenKey)
             .lastActivityTime(LocalDateTime.now())
-            .userStatus(UserStatus.CREATED)
+            .userStatus(validateEmail == VALIDATE_EMAIL ? UserStatus.CREATED : UserStatus.ACTIVATED)
             .emailNotification(EmailNotification.DISABLED)
             .rating(AppConstant.DEFAULT_RATING)
             .language(Language.builder()
@@ -173,7 +177,7 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
         String password = generatePassword();
         employeeSignUpDto.setPassword(password);
         OwnSignUpDto dto = modelMapper.map(employeeSignUpDto, OwnSignUpDto.class);
-        User employee = createNewRegisteredUser(dto, jwtTool.generateTokenKey(), language);
+        User employee = createNewRegisteredUser(dto, jwtTool.generateTokenKey(), VALIDATE_EMAIL, language);
         setUsersFields(dto, employee);
         employee.setRole(Role.ROLE_UBS_EMPLOYEE);
         employee.setRestorePasswordEmail(createRestorePasswordEmail(employee, jwtTool.generateTokenKeyWithCodedDate()));
@@ -203,12 +207,12 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
      * {@inheritDoc}
      */
     @Override
-    public SuccessSignInDto signIn(final OwnSignInDto dto) {
+    public SuccessSignInDto signIn(final OwnSignInDto dto, IgnorePassword ignorePassword) {
         UserVO user = userService.findByEmail(dto.getEmail());
         if (user == null) {
             throw new WrongEmailException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + dto.getEmail());
         }
-        if (!isPasswordCorrect(dto, user)) {
+        if (ignorePassword == DO_NOT_IGNORE_PASSWORD && !isPasswordCorrect(dto, user)) {
             throw new WrongPasswordException(ErrorMessage.BAD_PASSWORD);
         }
         if (user.getVerifyEmail() != null) {

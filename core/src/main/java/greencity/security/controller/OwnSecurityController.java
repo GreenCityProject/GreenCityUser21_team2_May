@@ -5,6 +5,8 @@ import greencity.annotations.ValidLanguage;
 import greencity.constant.HttpStatuses;
 import greencity.dto.user.UserAdminRegistrationDto;
 import greencity.dto.user.UserManagementDto;
+import static greencity.enums.IgnorePassword.DO_NOT_IGNORE_PASSWORD;
+import static greencity.enums.ValidateEmail.VALIDATE_EMAIL;
 import greencity.security.dto.SuccessSignInDto;
 import greencity.security.dto.SuccessSignUpDto;
 import greencity.security.dto.ownsecurity.*;
@@ -81,7 +83,7 @@ public class OwnSecurityController {
     @ApiLocale
     public ResponseEntity<SuccessSignUpDto> signUp(@Valid @RequestBody OwnSignUpDto dto,
         @Parameter(hidden = true) @ValidLanguage Locale locale) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(service.signUp(dto, locale.getLanguage()));
+        return ResponseEntity.status(HttpStatus.CREATED).body(service.signUp(dto, VALIDATE_EMAIL, locale.getLanguage()));
     }
 
     /**
@@ -118,7 +120,7 @@ public class OwnSecurityController {
     })
     @PostMapping("/signIn")
     public SuccessSignInDto singIn(@Valid @RequestBody OwnSignInDto dto) {
-        return service.signIn(dto);
+        return service.signIn(dto, DO_NOT_IGNORE_PASSWORD);
     }
 
     /**

@@ -1,6 +1,8 @@
 package greencity.security.service;
 
 import greencity.TestConst;
+import static greencity.enums.IgnorePassword.DO_NOT_IGNORE_PASSWORD;
+import greencity.enums.ValidateEmail;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -38,7 +40,6 @@ import greencity.exception.exceptions.UserDeactivatedException;
 import greencity.exception.exceptions.WrongEmailException;
 import greencity.exception.exceptions.WrongPasswordException;
 import greencity.repository.UserRepo;
-import greencity.security.dto.ownsecurity.EmployeeSignUpDto;
 import greencity.security.dto.ownsecurity.OwnSignInDto;
 import greencity.security.dto.ownsecurity.OwnSignUpDto;
 import greencity.security.dto.ownsecurity.SetPasswordDto;
@@ -145,7 +146,7 @@ class OwnSecurityServiceImplTest {
         when(modelMapper.map(any(User.class), eq(UserVO.class))).thenReturn(userVO);
         when(userRepo.save(any(User.class))).thenReturn(user);
         when(jwtTool.generateTokenKey()).thenReturn("New-token-key");
-        ownSecurityService.signUp(new OwnSignUpDto(), "en");
+        ownSecurityService.signUp(new OwnSignUpDto(), ValidateEmail.VALIDATE_EMAIL, "en");
         verify(emailService, times(1)).sendVerificationEmail(
             refEq(user.getId()),
             refEq(user.getName()),
@@ -164,7 +165,7 @@ class OwnSecurityServiceImplTest {
         when(jwtTool.generateTokenKey()).thenReturn("New-token-key");
         when(userRepo.save(any(User.class))).thenThrow(DataIntegrityViolationException.class);
         assertThrows(UserAlreadyRegisteredException.class,
-            () -> ownSecurityService.signUp(ownSignUpDto, "en"));
+            () -> ownSecurityService.signUp(ownSignUpDto, ValidateEmail.VALIDATE_EMAIL, "en"));
     }
 
     @Test
@@ -174,7 +175,7 @@ class OwnSecurityServiceImplTest {
         when(jwtTool.createAccessToken(anyString(), any(Role.class))).thenReturn("new-access-token");
         when(jwtTool.createRefreshToken(any(UserVO.class))).thenReturn("new-refresh-token");
 
-        ownSecurityService.signIn(ownSignInDto);
+        ownSecurityService.signIn(ownSignInDto, DO_NOT_IGNORE_PASSWORD);
 
         verify(userService, times(1)).findByEmail(anyString());
         verify(passwordEncoder, times(1)).matches(anyString(), anyString());
@@ -189,13 +190,13 @@ class OwnSecurityServiceImplTest {
         when(jwtTool.createAccessToken(anyString(), any(Role.class))).thenReturn("new-access-token");
         when(jwtTool.createRefreshToken(any(UserVO.class))).thenReturn("new-refresh-token");
         assertThrows(EmailNotVerified.class,
-            () -> ownSecurityService.signIn(ownSignInDto));
+            () -> ownSecurityService.signIn(ownSignInDto, DO_NOT_IGNORE_PASSWORD));
     }
 
     @Test
     void signInNullUserTest() {
         when(userService.findByEmail("test@gmail.com")).thenReturn(null);
-        assertThrows(WrongEmailException.class, () -> ownSecurityService.signIn(ownSignInDto));
+        assertThrows(WrongEmailException.class, () -> ownSecurityService.signIn(ownSignInDto, DO_NOT_IGNORE_PASSWORD));
     }
 
     @Test
@@ -208,7 +209,7 @@ class OwnSecurityServiceImplTest {
             .role(Role.ROLE_USER)
             .build();
         when(userService.findByEmail("test@gmail.com")).thenReturn(user);
-        assertThrows(WrongPasswordException.class, () -> ownSecurityService.signIn(ownSignInDto));
+        assertThrows(WrongPasswordException.class, () -> ownSecurityService.signIn(ownSignInDto, DO_NOT_IGNORE_PASSWORD));
     }
 
     @Test
@@ -222,7 +223,7 @@ class OwnSecurityServiceImplTest {
             .build();
         when(userService.findByEmail("test@gmail.com")).thenReturn(user);
         when(passwordEncoder.matches("password", "password")).thenReturn(true);
-        assertThrows(BadUserStatusException.class, () -> ownSecurityService.signIn(ownSignInDto));
+        assertThrows(BadUserStatusException.class, () -> ownSecurityService.signIn(ownSignInDto, DO_NOT_IGNORE_PASSWORD));
     }
 
     @Test
@@ -236,7 +237,7 @@ class OwnSecurityServiceImplTest {
             .build();
         when(userService.findByEmail("test@gmail.com")).thenReturn(user);
         when(passwordEncoder.matches("password", "password")).thenReturn(true);
-        assertThrows(BadUserStatusException.class, () -> ownSecurityService.signIn(ownSignInDto));
+        assertThrows(BadUserStatusException.class, () -> ownSecurityService.signIn(ownSignInDto, DO_NOT_IGNORE_PASSWORD));
     }
 
     @Test
@@ -250,7 +251,7 @@ class OwnSecurityServiceImplTest {
             .build();
         when(userService.findByEmail("test@gmail.com")).thenReturn(user);
         when(passwordEncoder.matches("password", "password")).thenReturn(true);
-        assertThrows(BadUserStatusException.class, () -> ownSecurityService.signIn(ownSignInDto));
+        assertThrows(BadUserStatusException.class, () -> ownSecurityService.signIn(ownSignInDto, DO_NOT_IGNORE_PASSWORD));
     }
 
     @Test

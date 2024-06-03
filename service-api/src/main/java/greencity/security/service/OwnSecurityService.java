@@ -2,6 +2,8 @@ package greencity.security.service;
 
 import greencity.dto.user.UserAdminRegistrationDto;
 import greencity.dto.user.UserManagementDto;
+import greencity.enums.IgnorePassword;
+import greencity.enums.ValidateEmail;
 import greencity.security.dto.AccessRefreshTokensDto;
 import greencity.security.dto.SuccessSignInDto;
 import greencity.security.dto.SuccessSignUpDto;
@@ -21,7 +23,7 @@ public interface OwnSecurityService {
      * @return {@link SuccessSignUpDto}
      * @author Yurii Koval
      */
-    SuccessSignUpDto signUp(OwnSignUpDto dto, String language);
+    SuccessSignUpDto signUp(OwnSignUpDto dto, ValidateEmail validateEmail, String language);
 
     /**
      * Method that allows you sign-up employee.
@@ -38,7 +40,7 @@ public interface OwnSecurityService {
      * @param dto a value of {@link OwnSignInDto}
      * @return {@link SuccessSignInDto}
      */
-    SuccessSignInDto signIn(OwnSignInDto dto);
+    SuccessSignInDto signIn(OwnSignInDto dto, IgnorePassword ignorePassword);
 
     /**
      * Method that update your access token by refresh token.

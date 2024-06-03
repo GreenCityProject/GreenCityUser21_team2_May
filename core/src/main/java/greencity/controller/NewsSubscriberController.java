@@ -71,7 +71,7 @@ public class NewsSubscriberController {
      * @param unsubscribeToken token of subscriber.\
      * @author Dmytro Fedotov
      */
-    @Operation(summary = "Deleting an email form subscribe table")
+    @Operation(summary = "Deleting an email from subscribers table")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
             @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST),

@@ -77,7 +77,7 @@ class NewsSubscriberControllerTest {
 
     @Test
     void unsubscribeTest() throws Exception {
-        mockMvc.perform(delete(LINK + "/unsubscribe")
+        mockMvc.perform(get(LINK + "/unsubscribe")
                         .param("email", EMAIL)
                         .param("unsubscribeToken", TOKEN))
                         .andExpect(status().isOk());

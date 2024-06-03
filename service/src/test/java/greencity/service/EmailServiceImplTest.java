@@ -29,6 +29,7 @@ import jakarta.mail.internet.MimeMessage;
 import java.util.*;
 import java.util.concurrent.Executors;
 
+import static greencity.ModelUtils.getUser;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;

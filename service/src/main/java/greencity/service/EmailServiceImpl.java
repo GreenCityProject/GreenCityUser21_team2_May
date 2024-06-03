@@ -113,7 +113,7 @@ public class EmailServiceImpl implements EmailService {
         model.put(EmailConstants.NEWS_RESULT, newsDto);
         for (NewsSubscriberResponseDto dto : subscribers) {
             try {
-                // change serverLink to serverLink8060 to serverLink
+                // change serverLink from serverLink8060 to serverLink
                 model.put(EmailConstants.UNSUBSCRIBE_LINK, serverLink8060 + "/subscriber/unsubscribe?email="
                     + URLEncoder.encode(dto.getEmail(), StandardCharsets.UTF_8.toString())
                     + "&unsubscribeToken=" + dto.getUnsubscribeToken());

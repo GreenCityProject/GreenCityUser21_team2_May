@@ -1,6 +1,7 @@
 package greencity.service;
 
 import greencity.ModelUtils;
+import static greencity.ModelUtils.getUser;
 import greencity.TestConst;
 import greencity.dto.category.CategoryDto;
 import greencity.dto.econews.AddEcoNewsDtoResponse;

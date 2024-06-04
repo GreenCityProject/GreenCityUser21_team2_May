@@ -84,7 +84,11 @@ public class EmailServiceImpl implements EmailService {
         model.put(EmailConstants.STATUS, placeStatus);
 
         String template = createEmailTemplate(model, EmailConstants.CHANGE_PLACE_STATUS_EMAIL_PAGE);
-        sendEmail(authorEmail, EmailConstants.GC_CONTRIBUTORS, template);
+        if (userRepo.existsUserByEmail(authorEmail)) {
+            sendEmail(authorEmail, EmailConstants.GC_CONTRIBUTORS, template);
+        } else {
+            throw new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + authorEmail);
+        }
     }
 
     @Override
@@ -125,18 +129,20 @@ public class EmailServiceImpl implements EmailService {
 
     @Override
     public void sendCreatedNewsForAuthor(EcoNewsForSendEmailDto newDto) {
-        Map<String, Object> model = new HashMap<>();
-        model.put(EmailConstants.ECO_NEWS_LINK, ecoNewsLink);
-        model.put(EmailConstants.NEWS_RESULT, newDto);
-        try {
-            model.put(EmailConstants.UNSUBSCRIBE_LINK, serverLink + "/newSubscriber/unsubscribe?email="
-                + URLEncoder.encode(newDto.getAuthor().getEmail(), StandardCharsets.UTF_8.toString())
-                + "&unsubscribeToken=" + newDto.getUnsubscribeToken());
-        } catch (UnsupportedEncodingException e) {
-            log.error(e.getMessage());
+        if (userRepo.findByEmail(newDto.getAuthor().getEmail()).isPresent()) {
+            Map<String, Object> model = new HashMap<>();
+            model.put(EmailConstants.ECO_NEWS_LINK, ecoNewsLink);
+            model.put(EmailConstants.NEWS_RESULT, newDto);
+            model.put(EmailConstants.UNSUBSCRIBE_LINK,
+                    serverLink
+                    + "/newSubscriber/unsubscribe?email="
+                    + URLEncoder.encode(newDto.getAuthor().getEmail(), StandardCharsets.UTF_8)
+                    + "&unsubscribeToken=" + newDto.getUnsubscribeToken());
+            String template = createEmailTemplate(model, EmailConstants.NEWS_RECEIVE_EMAIL_PAGE);
+            sendEmail(newDto.getAuthor().getEmail(), EmailConstants.CREATED_NEWS, template);
+        } else {
+            throw new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + newDto.getAuthor().getEmail());
         }
-        String template = createEmailTemplate(model, EmailConstants.NEWS_RECEIVE_EMAIL_PAGE);
-        sendEmail(newDto.getAuthor().getEmail(), EmailConstants.CREATED_NEWS, template);
     }
 
     /**
@@ -206,17 +212,10 @@ public class EmailServiceImpl implements EmailService {
         Locale rus = new Locale("ru", "RU");
         Locale ua = new Locale("uk", "UA");
         switch (language) {
-            case "ua":
-                Locale.setDefault(ua);
-                break;
-            case "ru":
-                Locale.setDefault(rus);
-                break;
-            case "en":
-                Locale.setDefault(Locale.ENGLISH);
-                break;
-            default:
-                throw new IllegalStateException("Unexpected value: " + language);
+            case "ua" -> Locale.setDefault(ua);
+            case "ru" -> Locale.setDefault(rus);
+            case "en" -> Locale.setDefault(Locale.ENGLISH);
+            default -> throw new IllegalStateException("Unexpected value: " + language);
         }
     }
 

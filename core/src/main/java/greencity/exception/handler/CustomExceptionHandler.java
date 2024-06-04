@@ -120,6 +120,7 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
     public final ResponseEntity<Object> handleNotFoundException(NotFoundException ex,
         WebRequest request) {
         ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
+        exceptionResponse.setMessage(ex.getMessage());
         log.trace(ex.getMessage(), ex);
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(exceptionResponse);
     }
@@ -137,6 +138,7 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
     public final ResponseEntity<Object> handleWrongIdException(WrongIdException ex,
         WebRequest request) {
         ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
+        exceptionResponse.setMessage(ex.getMessage());
         log.trace(ex.getMessage(), ex);
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(exceptionResponse);
     }
@@ -269,7 +271,7 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
     public final ResponseEntity<Object> handleWrongEmailException(WrongEmailException ex) {
         ValidationExceptionDto validationExceptionDto =
             new ValidationExceptionDto(AppConstant.REGISTRATION_EMAIL_FIELD_NAME, ex.getMessage());
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(validationExceptionDto);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(validationExceptionDto);
     }
 
     /*

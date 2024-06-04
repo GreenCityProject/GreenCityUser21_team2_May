@@ -82,7 +82,7 @@ class CustomExceptionHandlerTest {
     void handleWrongEmailException() {
         WrongEmailException actual = new WrongEmailException("email");
         ValidationExceptionDto validationDto = new ValidationExceptionDto(actual.getMessage(), "email");
-        ResponseEntity.BodyBuilder status = ResponseEntity.status(HttpStatus.BAD_REQUEST);
+        ResponseEntity.BodyBuilder status = ResponseEntity.status(HttpStatus.NOT_FOUND);
         ResponseEntity<Object> body = status.body(validationDto);
         assertEquals(customExceptionHandler.handleWrongEmailException(actual), body);
     }

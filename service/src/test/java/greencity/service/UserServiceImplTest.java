@@ -291,10 +291,14 @@ class UserServiceImplTest {
 
     @Test
     void findAllTest() {
-        List<UserVO> userVO = List.of(getUserVO(), getUserVO(), getUserVO());
-        when(modelMapper.map(userRepo.findAll(), new TypeToken<List<UserVO>>() {
-        }.getType())).thenReturn(userVO);
-        assertEquals(userVO, userService.findAll());
+        User user = getUser();
+        List<User> userList = List.of(user, user, user);
+        UserVO userVO = getUserVO();
+        List<UserVO> userVOList = List.of(userVO, userVO, userVO);
+
+        when(userRepo.findAll()).thenReturn(userList);
+        when(modelMapper.map(user, UserVO.class)).thenReturn(userVO);
+        assertEquals(userVOList, userService.findAll());
 
     }
 

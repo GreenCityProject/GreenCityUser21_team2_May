@@ -755,103 +755,12 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserVO findAdminById(Long id) {
         User user = userRepo.findById(id)
-            .orElseThrow(() -> new WrongIdException(ErrorMessage.USER_NOT_FOUND_BY_ID));
+                .orElseThrow(() -> new WrongIdException(ErrorMessage.USER_NOT_FOUND_BY_ID));
 
         if (user.getRole().equals(Role.ROLE_ADMIN)) {
             return modelMapper.map(user, UserVO.class);
         }
 
         throw new LowRoleLevelException("You do not have authorities");
-    }
-
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public PageableDto<FriendDto> getAllFriendsByUserId(Pageable pageable, Long userId) {
-        userRepo.findById(userId)
-                .orElseThrow(() -> new WrongIdException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId));
-
-        Page<User> usersFriendsList;
-        String pageableWithSort = pageable.getSort().toString();
-
-        usersFriendsList = switch (pageableWithSort) {
-            case "city" -> userRepo.findAllFriendsByUserIdAndCity(userId, pageable);
-            case "habit" -> userRepo.findAllFriendsByUserIdAndHabitsAssigned(userId, pageable);
-            case "rating" -> userRepo.findAllFriendsByUserIdAndRating(userId, pageable);
-            default -> userRepo.findAllFriendsByUserId(userId, pageable);
-        };
-
-        return getFriendDtoPageableDto(userId, usersFriendsList);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public PageableDto<FriendDto> getAllFriendsByUserIdAndCity(Pageable pageable, Long userId) {
-        userRepo.findById(userId)
-                .orElseThrow(() -> new WrongIdException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId));
-
-        Page<User> usersFriendsList = userRepo.findAllFriendsByUserIdAndCity(userId, pageable);
-
-        return getFriendDtoPageableDto(userId, usersFriendsList);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public PageableDto<FriendDto> getAllFriendsByUserIdAndRating(Pageable pageable, Long userId) {
-        userRepo.findById(userId)
-                .orElseThrow(() -> new WrongIdException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId));
-
-        Page<User> usersFriendsList = userRepo.findAllFriendsByUserIdAndRating(userId, pageable);
-
-        return getFriendDtoPageableDto(userId, usersFriendsList);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public PageableDto<FriendDto> getAllFriendsByUserIdAndHabitsAssigned(Pageable pageable, Long userId) {
-        userRepo.findById(userId)
-                .orElseThrow(() -> new WrongIdException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId));
-
-        Page<User> usersFriendsList = userRepo.findAllFriendsByUserIdAndHabitsAssigned(userId, pageable);
-
-        return getFriendDtoPageableDto(userId, usersFriendsList);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public Integer getTotalAmountOfFriendsByUserId(Long userId) {
-        userRepo.findById(userId)
-            .orElseThrow(() -> new WrongIdException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId));
-
-        return userRepo.totalAmountOfFriendsByUserId(userId);
-    }
-
-    private PageableDto<FriendDto> getFriendDtoPageableDto(Long userId, Page<User> usersFriendsList) {
-        List<FriendDto> userForListDtos = usersFriendsList.stream()
-                .map(user -> {
-                    FriendDto friendDto = modelMapper.map(user, FriendDto.class);
-                    Integer mutualFriendsCount = userRepo.countOfMutualFriends(userId, friendDto.getId());
-                    friendDto.setMutualFriends(mutualFriendsCount);
-                    friendDto.setOnline(this.checkIfTheUserIsOnline(friendDto.getId()));
-                    return friendDto;
-                })
-                .toList();
-
-        return new PageableDto<>(
-                userForListDtos,
-                usersFriendsList.getTotalElements(),
-                usersFriendsList.getPageable().getPageNumber(),
-                usersFriendsList.getTotalPages()
-        );
     }
 }

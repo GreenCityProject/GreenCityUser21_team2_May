@@ -152,11 +152,11 @@ public class SecurityConfig {
                                 "/user/lang",
                                 "/user/createUbsRecord",
                                 "/user/{userId}/sixUserFriends/",
-                                "/user/{userId}/findAllFriends",
-                                "/user/{userId}/totalAmountOfFriends",
-                                "/user/{userId}/findAllFriendsByCity",
-                                "/user/{userId}/findAllFriendsByRating",
-                                "/user/{userId}/findAllFriendsByHabit",
+                                "/friends/{userId}/findAllFriends",
+                                "/friends/{userId}/totalAmountOfFriends",
+                                "/friends/{userId}/findAllFriendsByCity",
+                                "/friends/{userId}/findAllFriendsByRating",
+                                "/friends/{userId}/findAllFriendsByHabit",
                                 "/ownSecurity/password-status",
                                 "/user/emailNotifications")
                         .hasAnyRole(USER, ADMIN, UBS_EMPLOYEE, MODERATOR, EMPLOYEE)

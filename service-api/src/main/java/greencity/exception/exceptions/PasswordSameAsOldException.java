@@ -2,7 +2,7 @@ package greencity.exception.exceptions;
 
 
 /**
- * Exception that we get when user whan passwords same as old Exception.
+ * Exception that we get when user when passwords same as old Exception.
  *
  * @author Dmytro Dovhal
  * @version 1.0

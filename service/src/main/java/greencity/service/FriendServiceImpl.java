@@ -40,7 +40,7 @@ public class FriendServiceImpl implements FriendService{
         Page<User> friends =userRepo.getAllFriendsOfUserIdPage(userId, pageable);
 
         List<FriendDto> friendList =
-                friends.stream().map(friend -> modelMapper.map(friend, FriendDto.class))
+                friends.stream().map(friend -> mapFriendDto(userId, friend))
                         .toList();
 
         return new PageableDto<>(
@@ -64,7 +64,7 @@ public class FriendServiceImpl implements FriendService{
         Page<User> users = userRepo.getUsersNameExceptMainUserAndFriends( userId,  filteringName, city,  pageable);
 
         List<FriendDto> friendList =
-                users.stream().map(user -> modelMapper.map(user, FriendDto.class))
+                users.stream().map(user -> mapFriendDto(userId, user))
                         .toList();
 
         return new PageableDto<>(
@@ -74,14 +74,27 @@ public class FriendServiceImpl implements FriendService{
                 users.getTotalPages());
     }
 
+    private FriendDto mapFriendDto(Long userId, User user) {
+        FriendDto friendDto = modelMapper.map(user, FriendDto.class);
+        Integer mutualFriendsCount = userRepo.countOfMutualFriends(userId, friendDto.getId());
+        friendDto.setMutualFriends(mutualFriendsCount);
+        return friendDto;
+    }
+
     @Override
-    public void addNewFriend(Long userId, long friendId) {
+    public FriendDto addNewFriend(Long userId, long friendId) {
         validateUserExistence(userId);
         validateUserExistence(friendId);
         validateUserAndFriendNotSamePerson(userId, friendId);
+        validateNotYetFriends(userId,friendId);
         userRepo.addNewFriend(userId,friendId);
+        User friend = userRepo.findById(friendId)
+                .orElseThrow(() -> new WrongIdException(ErrorMessage.USER_NOT_FOUND_BY_ID + friendId));
+       return mapFriendDto(userId, friend);
 
     }
+
+
 
     private void validateUserAndFriendNotSamePerson(Long userId, long friendId) {
     if (userId == friendId) {
@@ -92,6 +105,12 @@ public class FriendServiceImpl implements FriendService{
     private void validateFriendsExistence(Long userId, Long friendId) {
         if(!userRepo.isFriend(userId,friendId)){
             throw new NotFoundException(ErrorMessage.USER_FRIEND_NOT_FOUND +  ": " + userId + " and " + friendId);
+        }
+    }
+
+    private void validateNotYetFriends(Long userId, Long friendId) {
+        if(userRepo.isFriend(userId,friendId)){
+            throw new BadRequestException(ErrorMessage.USERS_ARE_FRIENDS_ALREADY +  ": " + userId + " and " + friendId);
         }
     }
 
@@ -176,9 +195,7 @@ public class FriendServiceImpl implements FriendService{
     private PageableDto<FriendDto> getFriendDtoPageableDto(Long userId, Page<User> usersFriendsList) {
         List<FriendDto> userForListDtos = usersFriendsList.stream()
                 .map(user -> {
-                    FriendDto friendDto = modelMapper.map(user, FriendDto.class);
-                    Integer mutualFriendsCount = userRepo.countOfMutualFriends(userId, friendDto.getId());
-                    friendDto.setMutualFriends(mutualFriendsCount);
+                    FriendDto friendDto = mapFriendDto(userId, user);
                     friendDto.setOnline(this.checkIfTheUserIsOnline(friendDto.getId()));
                     return friendDto;
                 })

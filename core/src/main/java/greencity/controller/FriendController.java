@@ -49,22 +49,22 @@ public class FriendController {
 
     @Operation(summary = "Add new Friend for Current logged in user")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+            @ApiResponse(responseCode = "201", description = HttpStatuses.CREATED),
             @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED),
             @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN),
-            @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND)
+            @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND),
+            @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST)
     })
 
     @PostMapping("/addFriend/{friendId}")
-    public ResponseEntity<UserVO> addFriendForCurrentUser(
+    public ResponseEntity<FriendDto> addFriendForCurrentUser(
             @Parameter(hidden = true) @CurrentUser UserVO userVO,
             @Parameter @PathVariable long friendId){
 
-        friendService.addNewFriend(userVO.getId(), friendId);
 
         return ResponseEntity
-                .status(HttpStatus.OK)
-                .build();
+                .status(HttpStatus.CREATED)
+                .body(friendService.addNewFriend(userVO.getId(), friendId));
     }
 
 
@@ -88,7 +88,7 @@ public class FriendController {
                 .build();
     }
 
-    @GetMapping("/searchNewFriend/{searchName}/city={cityFilter}/mutualFriend={mutualFriend}")
+    @GetMapping("/searchNewFriend/{searchName}/{cityFilter}/{mutualFriend}")
     public ResponseEntity<PageableDto<FriendDto>> searchNewFriend(
             @Parameter(hidden = true) Pageable page,
             @Parameter(hidden = true) @CurrentUser UserVO userVO,

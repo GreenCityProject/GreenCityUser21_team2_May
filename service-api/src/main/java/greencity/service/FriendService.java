@@ -15,7 +15,7 @@ public interface FriendService {
     PageableDto<FriendDto> searchNewFriend(Long userId, String filteringName, String city, Boolean mutualFriends, Pageable pageable);
 
 
-    void addNewFriend(Long id, long friendId);
+    FriendDto addNewFriend(Long id, long friendId);
 
     /**
      * Method that allow you to find {@link List} of {@link FriendDto} by user's ID.
@@ -57,5 +57,6 @@ public interface FriendService {
      * @author Maksym Petukhov
      */
     Integer getTotalAmountOfFriendsByUserId(Long userId);
+
 
 }

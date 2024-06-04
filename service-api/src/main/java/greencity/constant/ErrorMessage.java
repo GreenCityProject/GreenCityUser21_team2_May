@@ -35,6 +35,7 @@ public final class ErrorMessage {
     public static final String USER_FRIEND_NOT_FOUND = "These two users are not friends";
     public static final String OWN_USER_ID = "User cannot add himself as a friend: ";
     public static final String INCORRECT_PASSWORD = "Incorrect password";
+    public static final String USERS_ARE_FRIENDS_ALREADY = "These two users are friends already";
 
     private ErrorMessage() {
     }

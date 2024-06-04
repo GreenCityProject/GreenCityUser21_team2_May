@@ -1,8 +1,6 @@
 package greencity.service;
 
 import greencity.ModelUtils;
-import static greencity.ModelUtils.getUser;
-
 import greencity.TestConst;
 import greencity.dto.category.CategoryDto;
 import greencity.dto.econews.AddEcoNewsDtoResponse;
@@ -35,6 +33,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
+import static greencity.ModelUtils.getUser;
 
 class EmailServiceImplTest {
     private EmailService service;
@@ -62,12 +61,27 @@ class EmailServiceImplTest {
 
     @Test
     void sendChangePlaceStatusEmailTest() {
+        when(userRepo.existsUserByEmail(TestConst.EMAIL)).thenReturn(true);
+
         String authorFirstName = "test author first name";
         String placeName = "test place name";
         String placeStatus = "test place status";
-        String authorEmail = "test author email";
+        String authorEmail = TestConst.EMAIL;
         service.sendChangePlaceStatusEmail(authorFirstName, placeName, placeStatus, authorEmail);
         verify(javaMailSender).createMimeMessage();
+    }
+
+    @Test
+    @DisplayName("Test for checking the response status of the endpoint /email/changePlaceStatus with invalid data")
+    void emailChangePlaceStatusEmail_EndpointResponse_StatusIsNotFound() throws Exception {
+        when(userRepo.existsUserByEmail(TestConst.EMAIL)).thenReturn(false);
+
+        String authorFirstName = "test author first name";
+        String placeName = "test place name";
+        String placeStatus = "test place status";
+        String authorEmail = TestConst.EMAIL;
+
+        assertThrows(NotFoundException.class, () -> service.sendChangePlaceStatusEmail(authorFirstName, placeName, placeStatus, authorEmail));
     }
 
     @Test
@@ -142,6 +156,7 @@ class EmailServiceImplTest {
     }
 
     @Test
+
     @DisplayName("Test sendHabitNotification method when user exists")
     void sendHabitNotification_userExists_sendsEmail(){
         when(userRepo.existsUserByEmail("taras@gmail.com")).thenReturn(true);
@@ -150,7 +165,7 @@ class EmailServiceImplTest {
         when(javaMailSender.createMimeMessage()).thenReturn(mimeMessage);
 
         service.sendHabitNotification(TestConst.NAME, TestConst.EMAIL);
-
+      
         verify(javaMailSender).createMimeMessage();
         verify(javaMailSender).send(mimeMessage);
     }

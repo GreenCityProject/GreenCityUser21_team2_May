@@ -1,5 +1,12 @@
 package greencity.service;
 
+import greencity.constant.AppConstant;
+import greencity.constant.UpdateConstants;
+import greencity.dto.ubs.UbsTableCreationDto;
+import greencity.dto.user.*;
+import greencity.entity.Language;
+import greencity.entity.UserDeactivationReason;
+import greencity.filters.SearchCriteria;
 import greencity.client.RestClient;
 import greencity.constant.ErrorMessage;
 import greencity.constant.LogMessage;
@@ -42,6 +49,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
+import static org.springframework.util.StringUtils.hasText;
+import static org.springframework.util.StringUtils.isEmpty;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.multipart.MultipartFile;
 
 /**
@@ -71,6 +81,9 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public UserVO save(UserVO userVO) {
+        if (userRepo.findById(userVO.getId()).isPresent() || userRepo.findByEmail(userVO.getEmail()).isPresent()) {
+            throw new UserAlreadyRegisteredException(ErrorMessage.USER_ALREADY_REGISTERED_WITH_THIS_EMAIL_OR_ID);
+        }
         User user = modelMapper.map(userVO, User.class);
         return modelMapper.map(userRepo.save(user), UserVO.class);
     }
@@ -161,9 +174,12 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public UserVO findByEmail(String email) {
-        return userRepo.findByEmail(email)
-            .map(user -> modelMapper.map(user, UserVO.class))
-            .orElse(null);
+        return Optional.of(email)
+                .filter(e -> e.matches(AppConstant.VALIDATION_EMAIL))
+                .map(e -> userRepo.findByEmail(e)
+                        .map(user -> modelMapper.map(user, UserVO.class))
+                        .orElseThrow(() -> new WrongEmailException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + e)))
+                .orElseThrow(() -> new BadRequestException("Invalid email format: " + email));
     }
 
     /**
@@ -241,7 +257,7 @@ public class UserServiceImpl implements UserService {
      * {@inheritDoc}
      */
     private void setValueIfNotEmpty(List<SearchCriteria> searchCriteria, String key, String value) {
-        if (StringUtils.hasText(value)) {
+        if (hasText(value)) {
             searchCriteria.add(SearchCriteria.builder()
                 .key(key)
                 .type(key)

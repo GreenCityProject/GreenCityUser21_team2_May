@@ -1,6 +1,7 @@
 package greencity.service;
 
 import greencity.ModelUtils;
+import greencity.TestConst;
 import greencity.dto.category.CategoryDto;
 import greencity.dto.econews.AddEcoNewsDtoResponse;
 import greencity.dto.econews.EcoNewsForSendEmailDto;
@@ -15,6 +16,7 @@ import greencity.entity.User;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.repository.UserRepo;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -59,12 +61,27 @@ class EmailServiceImplTest {
 
     @Test
     void sendChangePlaceStatusEmailTest() {
+        when(userRepo.existsUserByEmail(TestConst.EMAIL)).thenReturn(true);
+
         String authorFirstName = "test author first name";
         String placeName = "test place name";
         String placeStatus = "test place status";
-        String authorEmail = "test author email";
+        String authorEmail = TestConst.EMAIL;
         service.sendChangePlaceStatusEmail(authorFirstName, placeName, placeStatus, authorEmail);
         verify(javaMailSender).createMimeMessage();
+    }
+
+    @Test
+    @DisplayName("Test for checking the response status of the endpoint /email/changePlaceStatus with invalid data")
+    void emailChangePlaceStatusEmail_EndpointResponse_StatusIsNotFound() throws Exception {
+        when(userRepo.existsUserByEmail(TestConst.EMAIL)).thenReturn(false);
+
+        String authorFirstName = "test author first name";
+        String placeName = "test place name";
+        String placeStatus = "test place status";
+        String authorEmail = TestConst.EMAIL;
+
+        assertThrows(NotFoundException.class, () -> service.sendChangePlaceStatusEmail(authorFirstName, placeName, placeStatus, authorEmail));
     }
 
     @Test
@@ -83,6 +100,8 @@ class EmailServiceImplTest {
 
     @Test
     void sendCreatedNewsForAuthorTest() {
+        when(userRepo.findByEmail("test@gmail.com")).thenReturn(Optional.of(getUser()));
+
         EcoNewsForSendEmailDto dto = new EcoNewsForSendEmailDto();
         PlaceAuthorDto placeAuthorDto = new PlaceAuthorDto();
         placeAuthorDto.setEmail("test@gmail.com");

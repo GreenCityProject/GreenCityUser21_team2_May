@@ -22,6 +22,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -54,6 +55,13 @@ class UserSecuredControllerTest {
     }
 
     @Test
+    @DisplayName("Test response status for user is online endpoint as unauthenticated user")
+    void userIsOnline_EndpointResponse_StatusIsUnauthorized() throws Exception {
+        mockMvc.perform(patch(USER_LINK + "/deleteProfilePicture"))
+                .andExpect(status().isUnauthorized());
+    }
+    
+  @Test
     @DisplayName("Test response status for user patch profilePicture as unauthenticated user")
     void userProfilePicture_EndpointResponse_StatusIsUnauthorized() throws Exception {
         mockMvc.perform(get(USER_LINK))
@@ -65,6 +73,14 @@ class UserSecuredControllerTest {
     void userIsOnline_EndpointResponse_StatusIsUnauthorized() throws Exception {
         mockMvc.perform(get(USER_LINK + "/isOnline/{userId}/", 1L))
                 .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @DisplayName("Test response status for user deleteProfilePicture endpoint as authenticated USER")
+    @WithMockUser(roles = ROLE_USER)
+    void userIsOnline_EndpointResponse_StatusIsOk() throws Exception {
+        mockMvc.perform(patch(USER_LINK + "/deleteProfilePicture"))
+                .andExpect(status().isNotFound());
     }
 
     @Test
@@ -84,6 +100,14 @@ class UserSecuredControllerTest {
                 .andExpect(status().isNotFound());
     }
 
+    @Test
+    @DisplayName("Test response status for user deleteProfilePicture endpoint as authenticated ADMIN")
+    @WithMockUser(roles = ROLE_ADMIN)
+    void userIsOnline_EndpointResponse_StatusIsNotFound() throws Exception {
+        mockMvc.perform(patch(USER_LINK + "/deleteProfilePicture"))
+          .andExpect(status().isNotFound());
+    }
+  
     @Test
     @DisplayName("Test response status for user is online endpoint as authenticated USER")
     @WithMockUser(roles = ROLE_USER)

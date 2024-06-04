@@ -311,9 +311,8 @@ public class UserController {
     })
     @PatchMapping(path = "/deleteProfilePicture")
     public ResponseEntity<HttpStatus> deleteUserProfilePicture(
-        @Parameter(hidden = true) @AuthenticationPrincipal Principal principal) {
-        String email = principal.getName();
-        userService.deleteUserProfilePicture(email);
+        @ApiIgnore @AuthenticationPrincipal String principal) {
+        userService.deleteUserProfilePicture(principal);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 

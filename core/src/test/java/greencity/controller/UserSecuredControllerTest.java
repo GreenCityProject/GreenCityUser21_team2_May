@@ -31,6 +31,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class UserSecuredControllerTest {
 
     static final String USER_LINK = "/user";
+    static final String ROLE_USER = "USER";
     static final String ROLE_ADMIN = "ADMIN";
 
     @MockBean
@@ -58,6 +59,13 @@ class UserSecuredControllerTest {
         mockMvc.perform(get(USER_LINK))
                 .andExpect(status().isUnauthorized());
     }
+    
+    @Test
+    @DisplayName("Test response status for user is online endpoint as unauthenticated user")
+    void userIsOnline_EndpointResponse_StatusIsUnauthorized() throws Exception {
+        mockMvc.perform(get(USER_LINK + "/isOnline/{userId}/", 1L))
+                .andExpect(status().isUnauthorized());
+    }
 
     @Test
     @DisplayName("Test response status for user patch profilePicture as authenticated ADMIN with valid data")
@@ -73,6 +81,22 @@ class UserSecuredControllerTest {
                             request.setMethod("PATCH");
                             return request;
                         }))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @DisplayName("Test response status for user is online endpoint as authenticated USER")
+    @WithMockUser(roles = ROLE_USER)
+    void userIsOnline_EndpointResponse_StatusIsForbidden() throws Exception {
+        mockMvc.perform(get(USER_LINK + "/isOnline/{userId}/", 1L))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @DisplayName("Test response status for user is online endpoint as authenticated ADMIN")
+    @WithMockUser(roles = ROLE_ADMIN)
+    void userIsOnline_EndpointResponse_StatusIsNotFound() throws Exception {
+        mockMvc.perform(get(USER_LINK + "/isOnline/{userId}/", 1L))
                 .andExpect(status().isNotFound());
     }
 }

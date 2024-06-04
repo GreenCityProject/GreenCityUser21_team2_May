@@ -79,9 +79,9 @@ public class NewsSubscriberController {
                     content = @Content(schema = @Schema(implementation = NotFoundException.class)))
     })
     @GetMapping("/unsubscribe")
-    public ResponseEntity<Long> unsubscribe(@RequestParam @Email String email, @RequestParam String unsubscribeToken){
+    public ResponseEntity<String> unsubscribe(@RequestParam @Email String email, @RequestParam String unsubscribeToken){
         subscriberService.unsubscribe(email, unsubscribeToken);
-        return ResponseEntity.status(HttpStatus.OK).build();
+        return ResponseEntity.status(HttpStatus.OK).body("Unsubscribed");
     }
 
 

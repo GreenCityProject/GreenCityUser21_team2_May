@@ -59,6 +59,21 @@ public class FriendServiceImpl implements FriendService{
     }
 
     @Override
+    public PageableDto<FriendDto> searchNewFriend(Long userId, String filteringName, Pageable pageable) {
+        validateUserExistence(userId);
+        Page<User> users = userRepo.getAllUsersExceptMainUserAndFriends( userId,  filteringName,  pageable);
+        List<FriendDto> friendList =
+                users.stream().map(user -> modelMapper.map(user, FriendDto.class))
+                        .toList();
+
+        return new PageableDto<>(
+                friendList,
+                users.getTotalElements(),
+                users.getPageable().getPageNumber(),
+                users.getTotalPages());
+    }
+
+    @Override
     public void addNewFriend(Long userId, long friendId) {
         validateUserExistence(userId);
         validateUserExistence(friendId);

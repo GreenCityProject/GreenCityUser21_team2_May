@@ -86,6 +86,18 @@ public class FriendController {
                 .build();
     }
 
+    @GetMapping("/searchNewFriend/{searchName}")
+    public ResponseEntity<PageableDto<FriendDto>> searchNewFriend(
+            @Parameter(hidden = true) Pageable page,
+            @Parameter(hidden = true) @CurrentUser UserVO userVO,
+            @Parameter @PathVariable String searchName
+    ){
+        friendService.searchNewFriend(userVO.getId(), searchName, page);
+        return ResponseEntity.status(HttpStatus.OK).body(friendService.searchNewFriend(userVO.getId(), searchName, page));
+    }
+
+
+
     /**
      * Method that find all user's friends.
      *

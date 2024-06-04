@@ -217,6 +217,19 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
     int countOfMutualFriends(Long userId, Long friendId);
 
     /**
+     * Method that returns list of all users that are not in friend list
+     */
+    @Query(nativeQuery = true, value = "SELECT * FROM users u "
+            + "WHERE u.id != :userId "
+            + "AND u.id NOT IN ("
+            + "      SELECT friend_id AS id FROM user_friends WHERE user_id = :userId ) "
+            + "AND LOWER(u.name) LIKE LOWER(CONCAT('%', :filteringName, '%')) " )
+
+    Page<User> getAllUsersExceptMainUserAndFriends(Long userId, String filteringName, Pageable pageable);
+
+
+
+    /**
      * Method, that return status from table user_friends.
      *
      * @param userId   - Id of current user

@@ -195,7 +195,7 @@ class OwnSecurityControllerTest {
         setupMockSecurityContext();
         doNothing().when(ownSecurityService).resetPassword(dto, "test@mail.com");
 
-        mockMvc.perform(post(LINK+ "/reset-password")
+        mockMvc.perform(post(LINK+ "/changePassword")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(content))
                 .andExpect(status().isCreated());

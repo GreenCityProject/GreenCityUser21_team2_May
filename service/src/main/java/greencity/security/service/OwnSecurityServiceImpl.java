@@ -258,35 +258,6 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
 
     /**
      * {@inheritDoc}
-     *
-     * @author Dmytro Dovhal
-     */
-    @Override
-    public void updatePassword(String pass, Long id) {
-        String password = passwordEncoder.encode(pass);
-        ownSecurityRepo.updatePassword(password, id);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    @Transactional
-    public void updateCurrentPassword(UpdatePasswordDto updatePasswordDto, String email) {
-        UserVO user = userService.findByEmail(email);
-
-        if (user.getUserStatus() != UserStatus.ACTIVATED) {
-            throw new EmailNotVerified(ErrorMessage.USER_EMAIL_IS_NOT_VERIFIED);
-        }
-
-        if (!updatePasswordDto.getPassword().equals(updatePasswordDto.getConfirmPassword())) {
-            throw new PasswordsDoNotMatchesException(ErrorMessage.PASSWORDS_DO_NOT_MATCH);
-        }
-        updatePassword(updatePasswordDto.getPassword(), user.getId());
-    }
-
-    /**
-     * {@inheritDoc}
      */
     @Transactional
     @Override
@@ -417,6 +388,7 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
     }
 
     @Override
+    @Transactional
     public void resetPassword(ResetPasswordDto dto, String email) {
         User user = userRepo.findByEmail(email)
                 .orElseThrow(() -> new WrongEmailException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL));
@@ -424,10 +396,13 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
         validateCurrentPassword(dto.getCurrentPassword(), user);
         ensureNewPasswordIsValid(dto.getNewPassword(), dto.getConfirmPassword(), user.getOwnSecurity().getPassword());
 
-        updatePassword(user, dto.getNewPassword());
+        updatePassword(dto.getConfirmPassword(), user.getId());
     }
 
     private void validateCurrentPassword(String currentPassword, User user) {
+        if (user.getUserStatus() != UserStatus.ACTIVATED) {
+            throw new EmailNotVerified(ErrorMessage.USER_EMAIL_IS_NOT_VERIFIED);
+        }
         if (!passwordEncoder.matches(currentPassword, user.getOwnSecurity().getPassword())) {
             throw new WrongPasswordException(ErrorMessage.BAD_PASSWORD);
         }
@@ -442,8 +417,8 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
         }
     }
 
-    private void updatePassword(User user, String newPassword) {
-        user.getOwnSecurity().setPassword(passwordEncoder.encode(newPassword));
-        userRepo.save(user);
+    private void updatePassword(String pass, Long id) {
+        String password = passwordEncoder.encode(pass);
+        ownSecurityRepo.updatePassword(password, id);
     }
 }

@@ -54,6 +54,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
@@ -94,7 +95,6 @@ class OwnSecurityServiceImplTest {
     private UserVO verifiedUser;
     private OwnSignInDto ownSignInDto;
     private UserVO notVerifiedUser;
-    private UpdatePasswordDto updatePasswordDto;
     private UserManagementDto userManagementDto;
 
     @BeforeEach
@@ -122,10 +122,6 @@ class OwnSecurityServiceImplTest {
             .verifyEmail(new VerifyEmailVO())
             .ownSecurity(OwnSecurityVO.builder().password("password").build())
             .role(Role.ROLE_USER)
-            .build();
-        updatePasswordDto = UpdatePasswordDto.builder()
-            .password("newPassword")
-            .confirmPassword("newPassword")
             .build();
         userManagementDto = UserManagementDto.builder()
             .name(TestConst.NAME)
@@ -296,42 +292,6 @@ class OwnSecurityServiceImplTest {
     }
 
     @Test
-    void updatePasswordTest() {
-        when(passwordEncoder.encode("password")).thenReturn("encodedPassword");
-        ownSecurityService.updatePassword("password", 1L);
-        verify(ownSecurityRepo).updatePassword("encodedPassword", 1L);
-    }
-
-    @Test
-    void updateCurrentPasswordTest() {
-        when(userService.findByEmail("test@gmail.com")).thenReturn(verifiedUser);
-        when(passwordEncoder.encode(updatePasswordDto.getPassword())).thenReturn(updatePasswordDto.getPassword());
-        ownSecurityService.updateCurrentPassword(updatePasswordDto, "test@gmail.com");
-        verify(ownSecurityRepo).updatePassword(updatePasswordDto.getPassword(), 1L);
-    }
-
-    @Test
-    void updateCurrentPasswordDifferentPasswordsTest() {
-        updatePasswordDto.setPassword("123");
-        when(userService.findByEmail("test@gmail.com")).thenReturn(verifiedUser);
-        assertThrows(PasswordsDoNotMatchesException.class,
-            () -> ownSecurityService.updateCurrentPassword(updatePasswordDto, "test@gmail.com"));
-    }
-
-    @Test
-    void updateCurrentPasswordEmailNotVerifiedTest() {
-        updatePasswordDto.setPassword("123");
-
-        UserVO user = ModelUtils.getUserVO();
-        user.setUserStatus(UserStatus.CREATED);
-
-        when(userService.findByEmail("test@gmail.com")).thenReturn(user);
-
-        assertThrows(EmailNotVerified.class,
-            () -> ownSecurityService.updateCurrentPassword(updatePasswordDto, "test@gmail.com"));
-    }
-
-    @Test
     void managementRegisterUserTest() {
         User user = ModelUtils.getUser();
         user.setUserStatus(UserStatus.BLOCKED);
@@ -439,37 +399,21 @@ class OwnSecurityServiceImplTest {
                 .newPassword("NewPassword")
                 .confirmPassword("NewPassword")
                 .build();
-        User user = ModelUtils.getUser();
-        OwnSecurity ownSecurity = OwnSecurity.builder().password("encodedOldPassword").build();
+        User user = new User();
+        user.setUserStatus(UserStatus.ACTIVATED);
+        OwnSecurity ownSecurity = new OwnSecurity();
+        ownSecurity.setPassword("encodedOldPassword");
         user.setOwnSecurity(ownSecurity);
 
-        when(userRepo.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
+        when(userRepo.findByEmail("test@gmail.com")).thenReturn(Optional.of(user));
+        when(passwordEncoder.matches(dto.getCurrentPassword(), user.getOwnSecurity().getPassword())).thenReturn(true);
+        when(passwordEncoder.encode(dto.getNewPassword())).thenReturn("encodedNewPassword");
 
-        ownSecurityService.resetPassword(dto, user.getEmail());
+        ownSecurityService.resetPassword(dto, "test@gmail.com");
 
+        verify(passwordEncoder).matches(dto.getCurrentPassword(), user.getOwnSecurity().getPassword());
+        verify(passwordEncoder).encode(dto.getNewPassword());
         verify(ownSecurityRepo).updatePassword("encodedNewPassword", user.getId());
-    }
-
-    @Test
-    void resetPasswordWrongEmailException() {
-        ResetPasswordDto dto = ResetPasswordDto.builder().build();
-        when(userRepo.findByEmail(anyString())).thenReturn(Optional.empty());
-
-        assertThrows(WrongEmailException.class, () -> ownSecurityService.resetPassword(dto, ""));
-    }
-
-    @Test
-    void resetPasswordWrongCurrentPasswordException() {
-        ResetPasswordDto dto = ResetPasswordDto.builder().build();
-        User user = ModelUtils.getUser();
-        OwnSecurity ownSecurity = OwnSecurity.builder().password("encodedOldPassword").build();
-        user.setOwnSecurity(ownSecurity);
-        String email = user.getEmail();
-
-        when(userRepo.findByEmail(email)).thenReturn(Optional.of(user));
-        when(passwordEncoder.matches(dto.getCurrentPassword(), user.getOwnSecurity().getPassword())).thenReturn(false);
-
-        assertThrows(WrongPasswordException.class, () -> ownSecurityService.resetPassword(dto, email));
     }
 
     @Test
@@ -479,14 +423,50 @@ class OwnSecurityServiceImplTest {
                 .newPassword("NewPassword")
                 .confirmPassword("WrongNewPassword")
                 .build();
-        User user = ModelUtils.getUser();
-        String email = user.getEmail();
-        OwnSecurity ownSecurity = OwnSecurity.builder().password("encodedOldPassword").build();
+        User user = new User();
+        user.setUserStatus(UserStatus.ACTIVATED);
+        OwnSecurity ownSecurity = new OwnSecurity();
+        ownSecurity.setPassword("encodedOldPassword");
         user.setOwnSecurity(ownSecurity);
 
-        when(userRepo.findByEmail(email)).thenReturn(Optional.of(user));
+        when(userRepo.findByEmail("test@gmail.com")).thenReturn(Optional.of(user));
         when(passwordEncoder.matches(dto.getCurrentPassword(), user.getOwnSecurity().getPassword())).thenReturn(true);
+        when(passwordEncoder.encode(dto.getNewPassword())).thenReturn("encodedNewPassword");
 
-        assertThrows(PasswordsDoNotMatchesException.class, () -> ownSecurityService.resetPassword(dto, email));
+        assertThrows(PasswordsDoNotMatchesException.class, () -> ownSecurityService.resetPassword(dto, "test@gmail.com"));
+    }
+
+    @Test
+    void resetPasswordWrongCurrentPasswordException() {
+        ResetPasswordDto dto = ResetPasswordDto.builder()
+                .currentPassword("WrongOldPassword")
+                .newPassword("NewPassword")
+                .confirmPassword("NewPassword")
+                .build();
+        User user = new User();
+        OwnSecurity ownSecurity = new OwnSecurity();
+        user.setUserStatus(UserStatus.ACTIVATED);
+        ownSecurity.setPassword("encodedOldPassword");
+        user.setOwnSecurity(ownSecurity);
+
+        when(userRepo.findByEmail("test@gmail.com")).thenReturn(Optional.of(user));
+        when(passwordEncoder.matches(dto.getCurrentPassword(), user.getOwnSecurity().getPassword())).thenReturn(false);
+
+        assertThrows(WrongPasswordException.class, () -> ownSecurityService.resetPassword(dto, "test@gmail.com"));
+    }
+
+    @Test
+    void resetPasswordWrongEmailException() {
+        ResetPasswordDto dto = ResetPasswordDto.builder()
+                .currentPassword("OldPassword")
+                .newPassword("NewPassword")
+                .confirmPassword("NewPassword")
+                .build();
+
+        when(userRepo.findByEmail("wrongEmail@gmail.com")).thenReturn(Optional.empty());
+
+        assertThrows(WrongEmailException.class, () -> ownSecurityService.resetPassword(dto, "wrongEmail@gmail.com"));
+
+        verify(ownSecurityRepo, Mockito.never()).updatePassword("encodedNewPassword", 1L);
     }
 }

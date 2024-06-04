@@ -209,9 +209,8 @@ public class UserController {
         @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN)
     })
     @GetMapping
-    public ResponseEntity<UserUpdateDto> getUserByPrincipal(@Parameter(hidden = true) @AuthenticationPrincipal Principal principal) {
-        String email = principal.getName();
-        return ResponseEntity.status(HttpStatus.OK).body(userService.getUserUpdateDtoByEmail(email));
+    public ResponseEntity<UserUpdateDto> getUserByPrincipal(@ApiIgnore @AuthenticationPrincipal String principal) {
+        return ResponseEntity.status(HttpStatus.OK).body(userService.getUserUpdateDtoByEmail(principal));
     }
 
     /**

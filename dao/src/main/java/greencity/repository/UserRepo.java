@@ -333,4 +333,10 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
         value = "SELECT * FROM users WHERE id IN (SELECT friend_id FROM user_friends WHERE user_id = :userId) LIMIT 6")
     Optional<List<User>> findTop6FriendsByUserId(Long userId);
 
+    @Modifying
+    @Transactional
+    @Query(nativeQuery = true,
+            value = "INSERT INTO user_friends(user_id, friend_id, created_at) "
+                    + "VALUES (:userId, :friendId, CURRENT_TIMESTAMP) ")
+    void addNewFriend(Long userId, long friendId);
 }

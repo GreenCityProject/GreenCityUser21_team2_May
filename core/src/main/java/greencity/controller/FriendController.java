@@ -44,6 +44,26 @@ public class FriendController {
     }
 
 
+    @Operation(summary = "Add new Friend for Current logged in user")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+            @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED),
+            @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN),
+            @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND)
+    })
+
+    @PostMapping("/addFriend/{friendId}")
+    public ResponseEntity<UserVO> addFriendForCurrentUser(
+            @Parameter(hidden = true) @CurrentUser UserVO userVO,
+            @Parameter @PathVariable long friendId){
+
+        friendService.addNewFriend(userVO.getId(), friendId);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .build();
+    }
+
 
     @Operation(summary = "Delete friend for Current User")
     @ApiResponses(value = {

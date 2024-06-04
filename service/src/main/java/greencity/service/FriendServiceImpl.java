@@ -3,8 +3,11 @@ package greencity.service;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
 import greencity.dto.user.FriendDto;
+import greencity.dto.user.UserVO;
 import greencity.entity.User;
+import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
+import greencity.exception.exceptions.WrongEmailException;
 import greencity.repository.UserRepo;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -43,6 +46,21 @@ public class FriendServiceImpl implements FriendService{
         validateUserExistence(friendId);
         validateFriendsExistence(userId,friendId);
         userRepo.deleteUserFriendById(userId, friendId);
+    }
+
+    @Override
+    public void addNewFriend(Long userId, long friendId) {
+        validateUserExistence(userId);
+        validateUserExistence(friendId);
+        validateUserAndFriendNotSamePerson(userId, friendId);
+        userRepo.addNewFriend(userId,friendId);
+
+    }
+
+    private void validateUserAndFriendNotSamePerson(Long userId, long friendId) {
+    if (userId == friendId) {
+        throw new BadRequestException(ErrorMessage.OWN_USER_ID + friendId);
+    }
     }
 
     private void validateFriendsExistence(Long userId, Long friendId) {

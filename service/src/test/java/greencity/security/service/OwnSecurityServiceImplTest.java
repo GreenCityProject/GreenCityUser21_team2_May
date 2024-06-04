@@ -23,6 +23,7 @@ import greencity.dto.user.UserManagementDto;
 import greencity.dto.user.UserVO;
 import greencity.dto.verifyemail.VerifyEmailVO;
 import greencity.entity.Language;
+import greencity.entity.OwnSecurity;
 import greencity.entity.User;
 import greencity.entity.VerifyEmail;
 import greencity.enums.Role;
@@ -38,11 +39,7 @@ import greencity.exception.exceptions.UserDeactivatedException;
 import greencity.exception.exceptions.WrongEmailException;
 import greencity.exception.exceptions.WrongPasswordException;
 import greencity.repository.UserRepo;
-import greencity.security.dto.ownsecurity.EmployeeSignUpDto;
-import greencity.security.dto.ownsecurity.OwnSignInDto;
-import greencity.security.dto.ownsecurity.OwnSignUpDto;
-import greencity.security.dto.ownsecurity.SetPasswordDto;
-import greencity.security.dto.ownsecurity.UpdatePasswordDto;
+import greencity.security.dto.ownsecurity.*;
 import greencity.security.jwt.JwtTool;
 import greencity.security.repository.OwnSecurityRepo;
 import greencity.security.repository.RestorePasswordEmailRepo;
@@ -433,5 +430,63 @@ class OwnSecurityServiceImplTest {
         when(userRepo.findByEmail(email)).thenReturn(Optional.of(user));
 
         assertThrows(PasswordsDoNotMatchesException.class, () -> ownSecurityService.setPassword(dto, email));
+    }
+
+    @Test
+    void resetPassword() {
+        ResetPasswordDto dto = ResetPasswordDto.builder()
+                .currentPassword("OldPassword")
+                .newPassword("NewPassword")
+                .confirmPassword("NewPassword")
+                .build();
+        User user = ModelUtils.getUser();
+        OwnSecurity ownSecurity = OwnSecurity.builder().password("encodedOldPassword").build();
+        user.setOwnSecurity(ownSecurity);
+
+        when(userRepo.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
+
+        ownSecurityService.resetPassword(dto, user.getEmail());
+
+        verify(ownSecurityRepo).updatePassword("encodedNewPassword", user.getId());
+    }
+
+    @Test
+    void resetPasswordWrongEmailException() {
+        ResetPasswordDto dto = ResetPasswordDto.builder().build();
+        when(userRepo.findByEmail(anyString())).thenReturn(Optional.empty());
+
+        assertThrows(WrongEmailException.class, () -> ownSecurityService.resetPassword(dto, ""));
+    }
+
+    @Test
+    void resetPasswordWrongCurrentPasswordException() {
+        ResetPasswordDto dto = ResetPasswordDto.builder().build();
+        User user = ModelUtils.getUser();
+        OwnSecurity ownSecurity = OwnSecurity.builder().password("encodedOldPassword").build();
+        user.setOwnSecurity(ownSecurity);
+        String email = user.getEmail();
+
+        when(userRepo.findByEmail(email)).thenReturn(Optional.of(user));
+        when(passwordEncoder.matches(dto.getCurrentPassword(), user.getOwnSecurity().getPassword())).thenReturn(false);
+
+        assertThrows(WrongPasswordException.class, () -> ownSecurityService.resetPassword(dto, email));
+    }
+
+    @Test
+    void resetPasswordPasswordsDoNotMatchesException() {
+        ResetPasswordDto dto = ResetPasswordDto.builder()
+                .currentPassword("OldPassword")
+                .newPassword("NewPassword")
+                .confirmPassword("WrongNewPassword")
+                .build();
+        User user = ModelUtils.getUser();
+        String email = user.getEmail();
+        OwnSecurity ownSecurity = OwnSecurity.builder().password("encodedOldPassword").build();
+        user.setOwnSecurity(ownSecurity);
+
+        when(userRepo.findByEmail(email)).thenReturn(Optional.of(user));
+        when(passwordEncoder.matches(dto.getCurrentPassword(), user.getOwnSecurity().getPassword())).thenReturn(true);
+
+        assertThrows(PasswordsDoNotMatchesException.class, () -> ownSecurityService.resetPassword(dto, email));
     }
 }

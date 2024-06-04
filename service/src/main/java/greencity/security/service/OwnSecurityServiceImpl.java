@@ -13,25 +13,12 @@ import greencity.entity.VerifyEmail;
 import greencity.enums.EmailNotification;
 import greencity.enums.Role;
 import greencity.enums.UserStatus;
-import greencity.exception.exceptions.BadRefreshTokenException;
-import greencity.exception.exceptions.BadUserStatusException;
-import greencity.exception.exceptions.EmailNotVerified;
-import greencity.exception.exceptions.PasswordsDoNotMatchesException;
-import greencity.exception.exceptions.UserAlreadyHasPasswordException;
-import greencity.exception.exceptions.UserAlreadyRegisteredException;
-import greencity.exception.exceptions.UserBlockedException;
-import greencity.exception.exceptions.UserDeactivatedException;
-import greencity.exception.exceptions.WrongEmailException;
-import greencity.exception.exceptions.WrongPasswordException;
+import greencity.exception.exceptions.*;
 import greencity.repository.UserRepo;
 import greencity.security.dto.AccessRefreshTokensDto;
 import greencity.security.dto.SuccessSignInDto;
 import greencity.security.dto.SuccessSignUpDto;
-import greencity.security.dto.ownsecurity.EmployeeSignUpDto;
-import greencity.security.dto.ownsecurity.OwnSignInDto;
-import greencity.security.dto.ownsecurity.OwnSignUpDto;
-import greencity.security.dto.ownsecurity.SetPasswordDto;
-import greencity.security.dto.ownsecurity.UpdatePasswordDto;
+import greencity.security.dto.ownsecurity.*;
 import greencity.security.jwt.JwtTool;
 import greencity.security.repository.OwnSecurityRepo;
 import greencity.security.repository.RestorePasswordEmailRepo;
@@ -426,6 +413,37 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
             .password(passwordEncoder.encode(dto.getPassword()))
             .user(user)
             .build());
+        userRepo.save(user);
+    }
+
+    @Override
+    public void resetPassword(ResetPasswordDto dto, String email) {
+        User user = userRepo.findByEmail(email)
+                .orElseThrow(() -> new WrongEmailException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL));
+
+        validateCurrentPassword(dto.getCurrentPassword(), user);
+        ensureNewPasswordIsValid(dto.getNewPassword(), dto.getConfirmPassword(), user.getOwnSecurity().getPassword());
+
+        updatePassword(user, dto.getNewPassword());
+    }
+
+    private void validateCurrentPassword(String currentPassword, User user) {
+        if (!passwordEncoder.matches(currentPassword, user.getOwnSecurity().getPassword())) {
+            throw new WrongPasswordException(ErrorMessage.BAD_PASSWORD);
+        }
+    }
+
+    private void ensureNewPasswordIsValid(String newPassword, String confirmPassword, String oldPasswordHashed) {
+        if (passwordEncoder.matches(newPassword, oldPasswordHashed)) {
+            throw new PasswordSameAsOldException(ErrorMessage.NEW_PASSWORD_SAME_AS_OLD);
+        }
+        if (!newPassword.equals(confirmPassword)) {
+            throw new PasswordsDoNotMatchesException(ErrorMessage.PASSWORDS_DO_NOT_MATCH);
+        }
+    }
+
+    private void updatePassword(User user, String newPassword) {
+        user.getOwnSecurity().setPassword(passwordEncoder.encode(newPassword));
         userRepo.save(user);
     }
 }

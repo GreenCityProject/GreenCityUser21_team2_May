@@ -274,4 +274,20 @@ public class OwnSecurityController {
         service.setPassword(dto, email);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
+
+    @Operation(summary = "Reset password for user.")
+    @ResponseStatus(value = HttpStatus.CREATED)
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = HttpStatuses.CREATED),
+            @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST),
+            @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED)
+    })
+    @PostMapping("/reset-password")
+    public ResponseEntity<Object> resetPassword(@Valid @RequestBody ResetPasswordDto dto) {
+        var authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+
+        service.resetPassword(dto, email);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
 }

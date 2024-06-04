@@ -292,9 +292,8 @@ public class UserController {
     public ResponseEntity<HttpStatus> updateUserProfilePicture(
         @Parameter(description = "pass image as base64") @RequestPart(required = false) String base64,
         @Parameter(description = "Profile picture") @ImageValidation @RequestPart(required = false) MultipartFile image,
-        @Parameter(hidden = true) @AuthenticationPrincipal Principal principal) {
-        String email = principal.getName();
-        userService.updateUserProfilePicture(image, email, base64);
+        @ApiIgnore @AuthenticationPrincipal String principal) {
+        userService.updateUserProfilePicture(image, principal, base64);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 

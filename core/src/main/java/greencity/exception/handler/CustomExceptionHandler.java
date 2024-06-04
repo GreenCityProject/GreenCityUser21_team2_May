@@ -1,21 +1,7 @@
 package greencity.exception.handler;
 
 import greencity.constant.AppConstant;
-import greencity.exception.exceptions.BadRefreshTokenException;
-import greencity.exception.exceptions.BadRequestException;
-import greencity.exception.exceptions.BadSocialNetworkLinksException;
-import greencity.exception.exceptions.BadUpdateRequestException;
-import greencity.exception.exceptions.BadUserStatusException;
-import greencity.exception.exceptions.BadVerifyEmailTokenException;
-import greencity.exception.exceptions.EmailNotVerified;
-import greencity.exception.exceptions.InvalidURLException;
-import greencity.exception.exceptions.NotFoundException;
-import greencity.exception.exceptions.PasswordsDoNotMatchesException;
-import greencity.exception.exceptions.UserAlreadyHasPasswordException;
-import greencity.exception.exceptions.UserAlreadyRegisteredException;
-import greencity.exception.exceptions.WrongEmailException;
-import greencity.exception.exceptions.WrongIdException;
-import greencity.exception.exceptions.WrongPasswordException;
+import greencity.exception.exceptions.*;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import java.util.Collections;
@@ -385,5 +371,16 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
         ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
 
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(exceptionResponse);
+    }
+
+    @ExceptionHandler(PasswordSameAsOldException.class)
+    public final ResponseEntity<Object> handlePasswordSameAsOldException(
+            PasswordSameAsOldException exception,
+            WebRequest request) {
+
+        log.info(exception.getMessage());
+        ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
+        exceptionResponse.setMessage(exception.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
     }
 }

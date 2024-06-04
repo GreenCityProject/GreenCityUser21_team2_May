@@ -4,13 +4,12 @@ import greencity.annotations.PasswordValidation;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
-@Getter
-@Setter
+@Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode
-public class ResetPasswordDto {
+public class UpdatePasswordDto {
 
     @NotBlank
     @PasswordValidation

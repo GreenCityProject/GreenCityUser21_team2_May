@@ -20,6 +20,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.data.domain.Pageable;
 
+import javax.annotation.Nullable;
+
 
 @AllArgsConstructor
 @RestController
@@ -86,14 +88,22 @@ public class FriendController {
                 .build();
     }
 
-    @GetMapping("/searchNewFriend/{searchName}")
+    @GetMapping("/searchNewFriend/{searchName}/city={cityFilter}/mutualFriend={mutualFriend}")
     public ResponseEntity<PageableDto<FriendDto>> searchNewFriend(
             @Parameter(hidden = true) Pageable page,
             @Parameter(hidden = true) @CurrentUser UserVO userVO,
-            @Parameter @PathVariable String searchName
+            @Parameter @PathVariable String searchName,
+            @Parameter @PathVariable @Nullable Boolean cityFilter,
+            @Parameter @PathVariable @Nullable Boolean mutualFriend
     ){
-        friendService.searchNewFriend(userVO.getId(), searchName, page);
-        return ResponseEntity.status(HttpStatus.OK).body(friendService.searchNewFriend(userVO.getId(), searchName, page));
+
+        String city = null;
+        if ( Boolean.TRUE.equals(cityFilter)) city = userVO.getCity();
+
+        PageableDto<FriendDto> friendsResult = friendService.searchNewFriend(userVO.getId(), searchName, city, mutualFriend, page);
+
+
+        return ResponseEntity.status(HttpStatus.OK).body(friendsResult);
     }
 
 

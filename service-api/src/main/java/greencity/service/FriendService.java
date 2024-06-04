@@ -12,7 +12,7 @@ public interface FriendService {
 
     void deleteFriendOfUser(Long id, Long friendId);
 
-    PageableDto<FriendDto> searchNewFriend(Long userId, String filteringName, Pageable pageable);
+    PageableDto<FriendDto> searchNewFriend(Long userId, String filteringName, String city, Boolean mutualFriends, Pageable pageable);
 
 
     void addNewFriend(Long id, long friendId);

@@ -221,11 +221,14 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
      */
     @Query(nativeQuery = true, value = "SELECT * FROM users u "
             + "WHERE u.id != :userId "
+            + "AND (:city is null or u.city=:city)"
             + "AND u.id NOT IN ("
             + "      SELECT friend_id AS id FROM user_friends WHERE user_id = :userId ) "
             + "AND LOWER(u.name) LIKE LOWER(CONCAT('%', :filteringName, '%')) " )
 
-    Page<User> getAllUsersExceptMainUserAndFriends(Long userId, String filteringName, Pageable pageable);
+    Page<User> getUsersNameExceptMainUserAndFriends(Long userId, String filteringName, String city, Pageable pageable);
+
+
 
 
 

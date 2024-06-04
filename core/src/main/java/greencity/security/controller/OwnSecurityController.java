@@ -283,7 +283,7 @@ public class OwnSecurityController {
             @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED)
     })
     @PostMapping("/reset-password")
-    public ResponseEntity<Object> resetPassword(@Valid @RequestBody ResetPasswordDto dto) {
+    public ResponseEntity<Object> resetPxassword(@Valid @RequestBody ResetPasswordDto dto) {
         var authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = authentication.getName();
 

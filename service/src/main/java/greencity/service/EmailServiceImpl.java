@@ -1,6 +1,5 @@
 package greencity.service;
 
-import greencity.constant.AppConstant;
 import greencity.constant.EmailConstants;
 import greencity.constant.ErrorMessage;
 import greencity.constant.LogMessage;
@@ -14,7 +13,6 @@ import greencity.dto.user.PlaceAuthorDto;
 import greencity.dto.user.UserActivationDto;
 import greencity.dto.user.UserDeactivationReasonDto;
 import greencity.dto.violation.UserViolationMailDto;
-import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.repository.UserRepo;
 import jakarta.mail.MessagingException;
@@ -276,10 +274,10 @@ public class EmailServiceImpl implements EmailService {
         model.put(EmailConstants.LANGUAGE, dto.getLanguage());
         changeLocale(dto.getLanguage());
         String template = createEmailTemplate(model, EmailConstants.USER_VIOLATION_PAGE);
-        if (!userRepo.existsUserByEmail(dto.getEmail())) {
-            throw new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + dto.getEmail());
-        } else {
+        if (userRepo.existsUserByEmail(dto.getEmail())) {
             sendEmail(dto.getEmail(), EmailConstants.VIOLATION_EMAIL, template);
+        } else {
+            throw new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + dto.getEmail());
         }
     }
 

@@ -389,7 +389,7 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
 
     @Override
     @Transactional
-    public void resetPassword(ResetPasswordDto dto, String email) {
+    public void updateCurrentPassword(ResetPasswordDto dto, String email) {
         User user = userRepo.findByEmail(email)
                 .orElseThrow(() -> new WrongEmailException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL));
 

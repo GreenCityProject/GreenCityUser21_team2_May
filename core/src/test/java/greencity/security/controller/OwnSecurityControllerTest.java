@@ -193,14 +193,14 @@ class OwnSecurityControllerTest {
         ResetPasswordDto dto = ModelUtils.getObjectMapper().readValue(content, ResetPasswordDto.class);
 
         setupMockSecurityContext();
-        doNothing().when(ownSecurityService).resetPassword(dto, "test@mail.com");
+        doNothing().when(ownSecurityService).updateCurrentPassword(dto, "test@mail.com");
 
         mockMvc.perform(post(LINK+ "/changePassword")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(content))
                 .andExpect(status().isCreated());
 
-        verify(ownSecurityService).resetPassword(dto, "test@mail.com");
+        verify(ownSecurityService).updateCurrentPassword(dto, "test@mail.com");
     }
 
     private void setupMockSecurityContext() {

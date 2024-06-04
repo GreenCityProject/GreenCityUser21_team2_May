@@ -409,7 +409,7 @@ class OwnSecurityServiceImplTest {
         when(passwordEncoder.matches(dto.getCurrentPassword(), user.getOwnSecurity().getPassword())).thenReturn(true);
         when(passwordEncoder.encode(dto.getNewPassword())).thenReturn("encodedNewPassword");
 
-        ownSecurityService.resetPassword(dto, "test@gmail.com");
+        ownSecurityService.updateCurrentPassword(dto, "test@gmail.com");
 
         verify(passwordEncoder).matches(dto.getCurrentPassword(), user.getOwnSecurity().getPassword());
         verify(passwordEncoder).encode(dto.getNewPassword());
@@ -433,7 +433,7 @@ class OwnSecurityServiceImplTest {
         when(passwordEncoder.matches(dto.getCurrentPassword(), user.getOwnSecurity().getPassword())).thenReturn(true);
         when(passwordEncoder.encode(dto.getNewPassword())).thenReturn("encodedNewPassword");
 
-        assertThrows(PasswordsDoNotMatchesException.class, () -> ownSecurityService.resetPassword(dto, "test@gmail.com"));
+        assertThrows(PasswordsDoNotMatchesException.class, () -> ownSecurityService.updateCurrentPassword(dto, "test@gmail.com"));
     }
 
     @Test
@@ -452,7 +452,7 @@ class OwnSecurityServiceImplTest {
         when(userRepo.findByEmail("test@gmail.com")).thenReturn(Optional.of(user));
         when(passwordEncoder.matches(dto.getCurrentPassword(), user.getOwnSecurity().getPassword())).thenReturn(false);
 
-        assertThrows(WrongPasswordException.class, () -> ownSecurityService.resetPassword(dto, "test@gmail.com"));
+        assertThrows(WrongPasswordException.class, () -> ownSecurityService.updateCurrentPassword(dto, "test@gmail.com"));
     }
 
     @Test
@@ -465,7 +465,7 @@ class OwnSecurityServiceImplTest {
 
         when(userRepo.findByEmail("wrongEmail@gmail.com")).thenReturn(Optional.empty());
 
-        assertThrows(WrongEmailException.class, () -> ownSecurityService.resetPassword(dto, "wrongEmail@gmail.com"));
+        assertThrows(WrongEmailException.class, () -> ownSecurityService.updateCurrentPassword(dto, "wrongEmail@gmail.com"));
 
         verify(ownSecurityRepo, Mockito.never()).updatePassword("encodedNewPassword", 1L);
     }

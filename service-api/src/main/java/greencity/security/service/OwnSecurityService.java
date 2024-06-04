@@ -78,5 +78,5 @@ public interface OwnSecurityService {
      * @param dto   {@link ResetPasswordDto} password to be set.
      * @param email {@link String} email of user.
      */
-    void resetPassword(ResetPasswordDto dto, String email);
+    void updateCurrentPassword(ResetPasswordDto dto, String email);
 }

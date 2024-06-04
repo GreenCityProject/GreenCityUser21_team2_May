@@ -157,7 +157,7 @@ class EmailServiceImplTest {
 
     @Test
     void sendHabitNotification() {
-        service.sendHabitNotification("userName", "userEmail");
+        service.sendHabitNotification("userName", "userEmail@mail.com");
         verify(javaMailSender).createMimeMessage();
     }
 

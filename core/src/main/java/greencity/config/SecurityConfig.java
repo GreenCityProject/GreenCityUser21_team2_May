@@ -107,13 +107,11 @@ public class SecurityConfig {
                                 "/swagger-ui.html")
                         .permitAll()
                         .requestMatchers(
-                                "/error",
                                 "/swagger-resources/**",
                                 "/webjars/**",
                                 "/swagger-ui/**")
                         .permitAll()
                         .requestMatchers(HttpMethod.GET,
-                                "/error",
                                 "/ownSecurity/verifyEmail",
                                 "/ownSecurity/updateAccessToken",
                                 "/ownSecurity/restorePassword",
@@ -176,6 +174,7 @@ public class SecurityConfig {
                                 "/user/employee-email")
                         .hasAnyRole(USER, ADMIN, UBS_EMPLOYEE, MODERATOR, EMPLOYEE)
                         .requestMatchers(HttpMethod.PUT,
+                                "/user/updateUserLastActivityTime/{date}",
                                 "/user/{id}",
                                 "/user/edit-authorities",
                                 "/user/authorities",

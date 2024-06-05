@@ -16,7 +16,6 @@ import lombok.RequiredArgsConstructor;
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser;
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 

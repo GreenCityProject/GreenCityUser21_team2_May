@@ -109,4 +109,13 @@ public class User {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<UserDeactivationReason> userDeactivationReasons;
+
+
+    @OneToMany
+    @Builder.Default
+    @JoinTable(name = "user_friends",
+            joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "friend_id", referencedColumnName = "id"))
+    private List<User> userFriends = new ArrayList<>();
+
 }

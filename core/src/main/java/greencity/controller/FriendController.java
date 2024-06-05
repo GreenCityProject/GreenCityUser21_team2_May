@@ -98,7 +98,7 @@ public class FriendController {
     ){
 
         String city = null;
-        if ( Boolean.TRUE.equals(cityFilter)) city = userVO.getCity();
+        if (Boolean.TRUE.equals(cityFilter)) city = userVO.getCity();
 
         PageableDto<FriendDto> friendsResult = friendService.searchNewFriend(userVO.getId(), searchName, city, mutualFriend, page);
 

@@ -216,8 +216,9 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
                 "WHERE uf1.user_id = :userId AND uf2.user_id = :friendId")
     int countOfMutualFriends(Long userId, Long friendId);
 
+
     /**
-     * Method that returns list of all users that are not in friend list
+     * Method that returns list of all users that are not in friend list and filters matching city
      */
     @Query(nativeQuery = true, value = "SELECT * FROM users u "
             + "WHERE u.id != :userId "

@@ -184,7 +184,7 @@ public class SecurityConfig {
                                 "/user/markUserAsDeactivated",
                                 "/user/markUserAsActivated")
                         .hasAnyRole(ADMIN, UBS_EMPLOYEE, MODERATOR, EMPLOYEE)
-                        .requestMatchers(HttpMethod.PUT,
+                        .requestMatchers(HttpMethod.POST,
                         "subscriber/sendEcoNews")
                         .hasAnyRole(ADMIN, UBS_EMPLOYEE, MODERATOR, EMPLOYEE)
                         .requestMatchers(HttpMethod.GET,

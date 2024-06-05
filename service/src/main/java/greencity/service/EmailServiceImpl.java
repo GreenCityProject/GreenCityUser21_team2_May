@@ -289,7 +289,11 @@ public class EmailServiceImpl implements EmailService {
         model.put(EmailConstants.LANGUAGE, dto.getLanguage());
         changeLocale(dto.getLanguage());
         String template = createEmailTemplate(model, EmailConstants.USER_VIOLATION_PAGE);
-        sendEmail(dto.getEmail(), EmailConstants.VIOLATION_EMAIL, template);
+        if (userRepo.existsUserByEmail(dto.getEmail())) {
+            sendEmail(dto.getEmail(), EmailConstants.VIOLATION_EMAIL, template);
+        } else {
+            throw new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + dto.getEmail());
+        }
     }
 
     @Override

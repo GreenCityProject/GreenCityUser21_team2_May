@@ -153,8 +153,16 @@ public class SecurityConfig {
                                 "/user/lang",
                                 "/user/createUbsRecord",
                                 "/user/{userId}/sixUserFriends/",
+                                "/friends/{userId}/findAllFriends",
+                                "/friends/{userId}/totalAmountOfFriends",
+                                "/friends/{userId}/findAllFriendsByCity",
+                                "/friends/{userId}/findAllFriendsByRating",
+                                "/friends/{userId}/findAllFriendsByHabit",
                                 "/ownSecurity/password-status",
                                 "/user/emailNotifications")
+                        .hasAnyRole(USER, ADMIN, UBS_EMPLOYEE, MODERATOR, EMPLOYEE)
+                        .requestMatchers(HttpMethod.GET,
+                                "/friends")
                         .hasAnyRole(USER, ADMIN, UBS_EMPLOYEE, MODERATOR, EMPLOYEE)
                         .requestMatchers(HttpMethod.GET, "/user/isOnline/{userId}/")
                         .hasAnyRole(ADMIN, UBS_EMPLOYEE, MODERATOR, EMPLOYEE)
@@ -196,7 +204,8 @@ public class SecurityConfig {
                         .hasAnyRole(USER, ADMIN, UBS_EMPLOYEE, MODERATOR, EMPLOYEE)
                         .requestMatchers(HttpMethod.DELETE,
                                 "/user/shopping-list-items/user-shopping-list-items",
-                                "/user/shopping-list-items")
+                                "/user/shopping-list-items",
+                                "/friends/deleteFriend/{friendId}")
                         .hasAnyRole(USER, ADMIN, UBS_EMPLOYEE, MODERATOR, EMPLOYEE)
                         .requestMatchers(HttpMethod.GET,
                                 "/user/all",

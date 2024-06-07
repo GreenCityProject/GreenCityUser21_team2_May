@@ -98,6 +98,8 @@ public class SecurityConfig {
                                 SC_FORBIDDEN, "You don't have authorities.")))
                 .authorizeHttpRequests(req -> req
                         .requestMatchers("/error").permitAll()
+                        .requestMatchers(HttpMethod.GET, USER_LINK)
+                        .hasAnyRole(ADMIN, UBS_EMPLOYEE, MODERATOR, EMPLOYEE)
                         .requestMatchers("/static/css/**", "/static/img/**").permitAll()
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers(
@@ -112,7 +114,6 @@ public class SecurityConfig {
                                 "/swagger-ui/**")
                         .permitAll()
                         .requestMatchers(HttpMethod.GET,
-                                "/error",
                                 "/ownSecurity/verifyEmail",
                                 "/ownSecurity/updateAccessToken",
                                 "/ownSecurity/restorePassword",
@@ -183,6 +184,8 @@ public class SecurityConfig {
                                 "/user/employee-email")
                         .hasAnyRole(USER, ADMIN, UBS_EMPLOYEE, MODERATOR, EMPLOYEE)
                         .requestMatchers(HttpMethod.PUT,
+                                "/user/updateUserLastActivityTime/{date}",
+                                "/user/{id}",
                                 "/user/edit-authorities",
                                 "/user/authorities",
                                 "/user/deactivate-employee",

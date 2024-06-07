@@ -1,6 +1,7 @@
 package greencity.service;
 
 import greencity.ModelUtils;
+import static greencity.ModelUtils.getUser;
 import greencity.TestConst;
 import greencity.dto.category.CategoryDto;
 import greencity.dto.econews.AddEcoNewsDtoResponse;
@@ -31,9 +32,9 @@ import java.util.concurrent.Executors;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
+import static greencity.ModelUtils.getUser;
 
 class EmailServiceImplTest {
     private EmailService service;
@@ -156,9 +157,31 @@ class EmailServiceImplTest {
     }
 
     @Test
-    void sendHabitNotification() {
-        service.sendHabitNotification("userName", "userEmail");
+
+    @DisplayName("Test sendHabitNotification method when user exists")
+    void sendHabitNotification_userExists_sendsEmail(){
+        when(userRepo.existsUserByEmail("taras@gmail.com")).thenReturn(true);
+
+        MimeMessage mimeMessage = mock(MimeMessage.class);
+        when(javaMailSender.createMimeMessage()).thenReturn(mimeMessage);
+
+        service.sendHabitNotification(TestConst.NAME, TestConst.EMAIL);
+      
         verify(javaMailSender).createMimeMessage();
+        verify(javaMailSender).send(mimeMessage);
+    }
+
+    @Test
+    @DisplayName("Test sendHabitNotification method when user not found")
+    void sendHabitNotification_userNotFound_throwsNotFoundException() {
+        when(userRepo.existsUserByEmail(TestConst.EMAIL)).thenReturn(false);
+
+        assertThrows(NotFoundException.class, () ->
+                service.sendHabitNotification(TestConst.NAME, TestConst.EMAIL)
+        );
+        verify(userRepo).existsUserByEmail(any());
+        verify(userRepo,never()).findByEmail(any());
+        verify(javaMailSender, never()).createMimeMessage();
     }
 
     @Test
@@ -187,9 +210,25 @@ class EmailServiceImplTest {
     }
 
     @Test
-    void sendUserViolationEmailTest() {
+    @DisplayName("Test for sending user violation email when user doesn't exist")
+    void sendUserViolationEmail_userNotFound_throwsNotFoundException() {
         UserViolationMailDto dto = ModelUtils.getUserViolationMailDto();
+        when(userRepo.existsUserByEmail(dto.getEmail())).thenReturn(false);
+
+        assertThrows(NotFoundException.class, () -> service.sendUserViolationEmail(dto));
+
+        verify(javaMailSender, never()).createMimeMessage();
+    }
+
+    @Test
+    @DisplayName("Test for sending user violation email when user exists")
+    void sendUserViolationEmail_userExists_sendsEmail() {
+        UserViolationMailDto dto = ModelUtils.getUserViolationMailDto();
+        when(userRepo.existsUserByEmail(dto.getEmail())).thenReturn(true);
+
         service.sendUserViolationEmail(dto);
+
+        verify(userRepo).existsUserByEmail(dto.getEmail());
         verify(javaMailSender).createMimeMessage();
     }
 

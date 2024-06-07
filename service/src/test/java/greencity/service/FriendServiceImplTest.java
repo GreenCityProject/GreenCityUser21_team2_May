@@ -3,10 +3,9 @@ package greencity.service;
 import greencity.ModelUtils;
 import greencity.TestConst;
 import greencity.dto.PageableDto;
-import greencity.dto.friends.UserFriendDto;
-import greencity.dto.user.UserVO;
+import greencity.dto.user.FriendDto;
 import greencity.entity.User;
-import greencity.enums.Role;
+
 import greencity.exception.exceptions.NotFoundException;
 import greencity.repository.UserRepo;
 import org.junit.jupiter.api.DisplayName;
@@ -48,7 +47,7 @@ class FriendServiceImplTest {
         int size = 1;
         long totalElements = 50;
         Pageable pageable = PageRequest.of(page, size);
-        UserFriendDto expectedResult = ModelUtils.getUserFrindDto();
+        FriendDto expectedResult = ModelUtils.getFrindDto();
 
         User user = User.builder()
                 .id(1L)
@@ -61,10 +60,10 @@ class FriendServiceImplTest {
 
         when(userRepo.existsById(userId)).thenReturn(true);
         when(userRepo.getAllFriendsOfUserIdPage(userId, pageable)).thenReturn(UserFriendsPage);
-        when(modelMapper.map(user, UserFriendDto.class)).thenReturn(expectedResult);
+        when(modelMapper.map(user, FriendDto.class)).thenReturn(expectedResult);
 
 
-        PageableDto<UserFriendDto> pageableDto =
+        PageableDto<FriendDto> pageableDto =
                 friendService.getAllFriendsOfUser(userId, pageable);
 
         assertNotNull(pageableDto);

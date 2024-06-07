@@ -209,14 +209,12 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
     /**
      * Method that returns count of mutual friends.
      */
-    @Query(nativeQuery = true, value = "SELECT count(*) "
-        + " FROM (SELECT U2.USER_ID, COUNT(*) AS MUTUAL_COUNT"
-        + " FROM users_friends U1\n"
-        + "LEFT JOIN users_friends U2 on U1.friend_id = U2.friend_id\n"
-        + "left join users on users.id = u2.user_id\n"
-        + "WHERE U1.user_id =:id GROUP BY U2.user_id Having u2.user_id not in (:id)\n"
-        + "ORDER BY MUTUAL_COUNT DESC) u2 JOIN users u1 on u2.user_id = u1.id\n")
-    int countOfMutualFriends(Long id);
+    @Query(nativeQuery = true,
+        value = "SELECT COUNT(*) AS mutual_friend_count\n" +
+                "FROM user_friends uf1\n" +
+                "         JOIN user_friends uf2 ON uf1.friend_id = uf2.friend_id\n" +
+                "WHERE uf1.user_id = :userId AND uf2.user_id = :friendId")
+    int countOfMutualFriends(Long userId, Long friendId);
 
     /**
      * Method, that return status from table user_friends.
@@ -259,4 +257,80 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
             value = "SELECT EXISTS(SELECT * FROM user_friends WHERE ("
                     + "user_id = :userId AND friend_id = :friendId))")
     boolean isFriend(Long userId, Long friendId);
+
+    /**
+     * Method that returns list of user's friends.
+     *
+     * @param userId - id of current user
+     * @return {@link List} of {@link User} friends
+     * @author Maksym Petukhov
+     */
+    @Query(nativeQuery = true,
+        value = "SELECT * FROM users WHERE id IN (SELECT friend_id FROM user_friends WHERE user_id = :userId)")
+    Page<User> findAllFriendsByUserId(Long userId, Pageable pageable);
+
+    /**
+     * Method that returns list of user's friends sorted by city.
+     *
+     * @param userId - id of current user
+     * @param pageable - pagination information
+     * @return {@link Page} of {@link User} friends sorted by city
+     */
+    @Query(nativeQuery = true,
+            value = "SELECT u.*\n" +
+                    "FROM users u\n" +
+                    "JOIN user_friends uf ON u.id = uf.friend_id\n" +
+                    "WHERE uf.user_id = :userId\n" +
+                    "AND u.city = (SELECT city FROM users WHERE id = :userId)\n")
+    Page<User> findAllFriendsByUserIdAndCity(Long userId, Pageable pageable);
+
+    /**
+     * Method that returns list of user's friends sorted by rating.
+     *
+     * @param userId - id of current user
+     * @param pageable - pagination information
+     * @return {@link Page} of {@link User} friends sorted by rating
+     */
+    @Query(nativeQuery = true,
+            value = "SELECT * FROM users WHERE id IN (SELECT friend_id FROM user_friends WHERE user_id = :userId) ORDER BY rating DESC")
+    Page<User> findAllFriendsByUserIdAndRating(Long userId, Pageable pageable);
+
+    /**
+     * Method that returns list of user's friends, sorted by whether they track the same habits as the user.
+     *
+     * @param userId - id of the current user
+     * @param pageable - pagination information
+     * @return {@link Page} of {@link User} friends sorted by tracking the same habits
+     */
+    @Query(nativeQuery = true,
+            value = "SELECT u.* FROM users u JOIN user_friends uf ON u.id = uf.friend_id JOIN habit_assign ha ON u.id = ha.user_id\n" +
+                    "WHERE uf.user_id = :userId\n" +
+                    "AND ha.habit_id IN (\n" +
+                    "    SELECT habit_id \n" +
+                    "    FROM habit_assign \n" +
+                    "    WHERE user_id = :userId)")
+    Page<User> findAllFriendsByUserIdAndHabitsAssigned(Long userId, Pageable pageable);
+
+    /**
+     * Method that returns user's friends total number by user id.
+     *
+     * @param userId - id of current user
+     * @return {int} - total number of user's friends
+     * @Author Maksym Petukhov
+     */
+    @Query(nativeQuery = true,
+        value = "SELECT COUNT(*) FROM users WHERE id IN (SELECT friend_id FROM user_friends WHERE user_id = :userId)")
+    int totalAmountOfFriendsByUserId(Long userId);
+
+    /**
+     * Method that returns list of top 6 relevant user's friends by user id.
+     *
+     * @param userId - id of current user
+     * @return {@link List} of {@link User} friends
+     * @author Maksym Petukhov
+     */
+    @Query(nativeQuery = true,
+        value = "SELECT * FROM users WHERE id IN (SELECT friend_id FROM user_friends WHERE user_id = :userId) LIMIT 6")
+    Optional<List<User>> findTop6FriendsByUserId(Long userId);
+
 }

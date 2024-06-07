@@ -101,7 +101,7 @@ class EmailServiceImplTest {
 
     @Test
     void sendCreatedNewsForAuthorTest() {
-        when(userRepo.findByEmail("test@gmail.com")).thenReturn(Optional.of(getUser()));
+        when(userRepo.findByEmail("test@gmail.com")).thenReturn(Optional.of(ModelUtils.getUser()));
 
         EcoNewsForSendEmailDto dto = new EcoNewsForSendEmailDto();
         PlaceAuthorDto placeAuthorDto = new PlaceAuthorDto();

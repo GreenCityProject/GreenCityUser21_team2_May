@@ -238,7 +238,6 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
      */
     boolean existsUserByEmail(String email);
 
-
     /**
      * Method that selects all friends of current user
      *
@@ -260,5 +259,4 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
             value = "SELECT EXISTS(SELECT * FROM user_friends WHERE ("
                     + "user_id = :userId AND friend_id = :friendId))")
     boolean isFriend(Long userId, Long friendId);
-
 }

@@ -3,6 +3,7 @@ package greencity;
 import greencity.constant.AppConstant;
 import greencity.dto.UbsCustomerDto;
 import greencity.dto.econews.AddEcoNewsDtoResponse;
+import greencity.dto.friends.UserFriendDto;
 import greencity.dto.language.LanguageVO;
 import greencity.dto.ownsecurity.OwnSecurityVO;
 import greencity.dto.ubs.UbsProfileCreationDto;
@@ -329,5 +330,13 @@ public class ModelUtils {
             .email("ubsuser@mail.com")
             .uuid("f81d4fae-7dec-11d0-a765-00a0c91e6bf6")
             .build();
+    }
+
+    public static UserFriendDto getUserFrindDto() {
+        return  UserFriendDto.builder()
+                .id(1L)
+                .name(TestConst.NAME)
+                .email(TestConst.EMAIL)
+                .build();
     }
 }

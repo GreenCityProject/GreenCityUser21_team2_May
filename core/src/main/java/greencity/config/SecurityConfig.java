@@ -156,6 +156,9 @@ public class SecurityConfig {
                                 "/ownSecurity/password-status",
                                 "/user/emailNotifications")
                         .hasAnyRole(USER, ADMIN, UBS_EMPLOYEE, MODERATOR, EMPLOYEE)
+                        .requestMatchers(HttpMethod.GET,
+                                "/friends")
+                        .hasAnyRole(USER, ADMIN, UBS_EMPLOYEE, MODERATOR, EMPLOYEE)
                         .requestMatchers(HttpMethod.GET, "/user/isOnline/{userId}/")
                         .hasAnyRole(ADMIN, UBS_EMPLOYEE, MODERATOR, EMPLOYEE)
                         .requestMatchers(HttpMethod.POST, USER_LINK,
@@ -196,7 +199,8 @@ public class SecurityConfig {
                         .hasAnyRole(USER, ADMIN, UBS_EMPLOYEE, MODERATOR, EMPLOYEE)
                         .requestMatchers(HttpMethod.DELETE,
                                 "/user/shopping-list-items/user-shopping-list-items",
-                                "/user/shopping-list-items")
+                                "/user/shopping-list-items",
+                                "/friends/deleteFriend/{friendId}")
                         .hasAnyRole(USER, ADMIN, UBS_EMPLOYEE, MODERATOR, EMPLOYEE)
                         .requestMatchers(HttpMethod.GET,
                                 "/user/all",

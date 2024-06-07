@@ -43,21 +43,18 @@ public class NewsSubscriberServiceImpl implements NewsSubscriberService {
 
     @Override
     @Transactional
-    public void unsubscribe(String email, String unsubscribeToken) {
-        if (checkToken(email, unsubscribeToken)) {
-            newsSubscriberRepo.deleteByEmail(email);
+    public void unsubscribe(String unsubscribeToken) {
+        if (checkToken(unsubscribeToken)) {
+            newsSubscriberRepo.deleteByUnsubscribeToken(unsubscribeToken);
         }
         else {
             throw new SubscribeException("Invalid token");
         }
     }
 
-    private boolean checkToken(String email, String unsubscribeToken) {
-        Optional<NewsSubscriber> newsSubscriberOptional = newsSubscriberRepo.findByEmail(email);
-        if (newsSubscriberOptional.isPresent()) {
-            NewsSubscriber newsSubscriber = newsSubscriberOptional.get();
-            return newsSubscriber.getUnsubscribeToken().equals(unsubscribeToken);
-        } else return false;
+    private boolean checkToken(String unsubscribeToken) {
+        Optional<NewsSubscriber> newsSubscriberOptional = newsSubscriberRepo.findByUnsubscribeToken(unsubscribeToken);
+        return newsSubscriberOptional.isPresent();
     }
 
     private NewsSubscriberResponseDto mapToDto(NewsSubscriber subscriber) {

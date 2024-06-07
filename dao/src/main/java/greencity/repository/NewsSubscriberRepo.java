@@ -11,5 +11,7 @@ public interface NewsSubscriberRepo extends JpaRepository<NewsSubscriber, Long> 
 
     Optional<NewsSubscriber> findByEmail(String email);
 
-    void deleteByEmail(String email);
+    void deleteByUnsubscribeToken(String unsubscribeToken);
+
+    Optional<NewsSubscriber> findByUnsubscribeToken(String unsubscribeToken);
 }

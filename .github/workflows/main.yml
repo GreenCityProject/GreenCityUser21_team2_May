@@ -1,6 +1,6 @@
 name: CI/CD Pipeline
 
-on: [push, pull_request, workflow_dispatch]
+on: [pull_request, workflow_dispatch]
 
 permissions:
   # allows SonarCloud to decorate PRs with analysis results
@@ -34,10 +34,6 @@ jobs:
       runs-on: ubuntu-latest
 
       steps:
-          - name: Debug SonarCloud Sources
-            run:
-              git fetch --unshallow
-
           - name: Analyze with SonarCloud
             if: github.ref != 'refs/heads/disable-sonar-scan'
 
@@ -49,7 +45,4 @@ jobs:
               args:
                 -Dsonar.projectKey=GreenCityProject_GreenCityUser21_team1
                 -Dsonar.organization=greencityproject
-                -Dsonar.binaries=target/classes
-                -Dsonar.sources=src/main
-                -Dsonar.tests=src/test
-                -Dsonar.java.binaries=target/classes
+                -Dsonar.sources=.

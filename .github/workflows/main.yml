@@ -46,4 +46,6 @@ jobs:
                 -Dsonar.projectKey=GreenCityProject_GreenCityUser21_team1
                 -Dsonar.organization=greencityproject
                 -Dsonar.binaries=target/classes
-                -Dsonar.sources=.
+                -Dsonar.sources=src/main
+                -Dsonar.tests=src/test
+                -Dsonar.java.binaries=target/classes

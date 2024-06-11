@@ -36,7 +36,7 @@ jobs:
       steps:
           - name: Debug SonarCloud Sources
             run:
-              ls -lR
+              ls -al
 
           - name: Analyze with SonarCloud
             if: github.ref != 'refs/heads/disable-sonar-scan'

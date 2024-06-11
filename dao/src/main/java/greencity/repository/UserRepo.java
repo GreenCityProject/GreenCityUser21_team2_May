@@ -210,10 +210,10 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
      * Method that returns count of mutual friends.
      */
     @Query(nativeQuery = true,
-        value = "SELECT COUNT(*) AS mutual_friend_count\n" +
-                "FROM user_friends uf1\n" +
-                "         JOIN user_friends uf2 ON uf1.friend_id = uf2.friend_id\n" +
-                "WHERE uf1.user_id = :userId AND uf2.user_id = :friendId")
+        value = "SELECT COUNT(*) AS mutual_friend_count\n"
+            + "FROM user_friends uf1\n"
+            + "         JOIN user_friends uf2 ON uf1.friend_id = uf2.friend_id\n"
+            + "WHERE uf1.user_id = :userId AND uf2.user_id = :friendId")
     int countOfMutualFriends(Long userId, Long friendId);
 
     /**
@@ -237,25 +237,25 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
     boolean existsUserByEmail(String email);
 
     /**
-     * Method that selects all friends of current user
+     * Method that selects all friends of current user.
      *
      * @param userId - current logged user
      * @return - return list of User friends
      */
     @Query(nativeQuery = true,
-    value = "SELECT * FROM users u WHERE u.id IN (SELECT friend_id AS id FROM user_friends WHERE user_id = :userId)")
+        value = "SELECT * FROM users u WHERE u.id IN "
+            + "(SELECT friend_id AS id FROM user_friends WHERE user_id = :userId)")
     Page<User> getAllFriendsOfUserIdPage(long userId, Pageable pageable);
-
 
     @Modifying
     @Transactional
     @Query(nativeQuery = true,
-            value = "DELETE FROM user_friends WHERE (user_id = :userId AND friend_id = :friendId)")
+        value = "DELETE FROM user_friends WHERE (user_id = :userId AND friend_id = :friendId)")
     void deleteUserFriendById(Long userId, Long friendId);
 
     @Query(nativeQuery = true,
-            value = "SELECT EXISTS(SELECT * FROM user_friends WHERE ("
-                    + "user_id = :userId AND friend_id = :friendId))")
+        value = "SELECT EXISTS(SELECT * FROM user_friends WHERE ("
+            + "user_id = :userId AND friend_id = :friendId))")
     boolean isFriend(Long userId, Long friendId);
 
     /**
@@ -272,43 +272,46 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
     /**
      * Method that returns list of user's friends sorted by city.
      *
-     * @param userId - id of current user
+     * @param userId   - id of current user
      * @param pageable - pagination information
      * @return {@link Page} of {@link User} friends sorted by city
      */
-    @Query(nativeQuery = true,
-            value = "SELECT u.*\n" +
-                    "FROM users u\n" +
-                    "JOIN user_friends uf ON u.id = uf.friend_id\n" +
-                    "WHERE uf.user_id = :userId\n" +
-                    "AND u.city = (SELECT city FROM users WHERE id = :userId)\n")
+    @Query(nativeQuery = true, value = "SELECT u.*\n"
+        + "FROM users u\n"
+        + "JOIN user_friends uf ON u.id = uf.friend_id\n"
+        + "WHERE uf.user_id = :userId\n"
+        + "AND u.city = (SELECT city FROM users WHERE id = :userId)\n")
     Page<User> findAllFriendsByUserIdAndCity(Long userId, Pageable pageable);
 
     /**
      * Method that returns list of user's friends sorted by rating.
      *
-     * @param userId - id of current user
+     * @param userId   - id of current user
      * @param pageable - pagination information
      * @return {@link Page} of {@link User} friends sorted by rating
      */
     @Query(nativeQuery = true,
-            value = "SELECT * FROM users WHERE id IN (SELECT friend_id FROM user_friends WHERE user_id = :userId) ORDER BY rating DESC")
+        value = "SELECT * FROM users WHERE id IN "
+            + "(SELECT friend_id FROM user_friends WHERE user_id = :userId) ORDER BY rating DESC")
     Page<User> findAllFriendsByUserIdAndRating(Long userId, Pageable pageable);
 
     /**
-     * Method that returns list of user's friends, sorted by whether they track the same habits as the user.
+     * Method that returns list of user's friends, sorted by whether they track the
+     * same habits as the user.
      *
-     * @param userId - id of the current user
+     * @param userId   - id of the current user
      * @param pageable - pagination information
-     * @return {@link Page} of {@link User} friends sorted by tracking the same habits
+     * @return {@link Page} of {@link User} friends sorted by tracking the same
+     *         habits
      */
     @Query(nativeQuery = true,
-            value = "SELECT u.* FROM users u JOIN user_friends uf ON u.id = uf.friend_id JOIN habit_assign ha ON u.id = ha.user_id\n" +
-                    "WHERE uf.user_id = :userId\n" +
-                    "AND ha.habit_id IN (\n" +
-                    "    SELECT habit_id \n" +
-                    "    FROM habit_assign \n" +
-                    "    WHERE user_id = :userId)")
+        value = "SELECT u.* FROM users u JOIN user_friends uf ON u.id = uf.friend_id JOIN"
+            + " habit_assign ha ON u.id = ha.user_id\n"
+            + "WHERE uf.user_id = :userId\n"
+            + "AND ha.habit_id IN (\n"
+            + "    SELECT habit_id \n"
+            + "    FROM habit_assign \n"
+            + "    WHERE user_id = :userId)")
     Page<User> findAllFriendsByUserIdAndHabitsAssigned(Long userId, Pageable pageable);
 
     /**
@@ -319,7 +322,8 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
      * @Author Maksym Petukhov
      */
     @Query(nativeQuery = true,
-        value = "SELECT COUNT(*) FROM users WHERE id IN (SELECT friend_id FROM user_friends WHERE user_id = :userId)")
+        value = "SELECT COUNT(*) FROM users WHERE id IN"
+            + " (SELECT friend_id FROM user_friends WHERE user_id = :userId)")
     int totalAmountOfFriendsByUserId(Long userId);
 
     /**
@@ -330,7 +334,7 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
      * @author Maksym Petukhov
      */
     @Query(nativeQuery = true,
-        value = "SELECT * FROM users WHERE id IN (SELECT friend_id FROM user_friends WHERE user_id = :userId) LIMIT 6")
+        value = "SELECT * FROM users WHERE id IN "
+            + "(SELECT friend_id FROM user_friends WHERE user_id = :userId) LIMIT 6")
     Optional<List<User>> findTop6FriendsByUserId(Long userId);
-
 }

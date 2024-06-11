@@ -10,7 +10,6 @@ import lombok.*;
 @Builder
 @EqualsAndHashCode
 public class FriendDto {
-
     private Long id;
     private String profilePicture;
     private String name;

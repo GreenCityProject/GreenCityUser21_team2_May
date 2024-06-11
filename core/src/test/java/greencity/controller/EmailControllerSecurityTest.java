@@ -41,15 +41,15 @@ class EmailControllerSecurityTest {
     @BeforeEach
     public void setup() {
         this.mockMvc = MockMvcBuilders
-                .webAppContextSetup(context)
-                .apply(SecurityMockMvcConfigurers.springSecurity())
-                .build();
+            .webAppContextSetup(context)
+            .apply(SecurityMockMvcConfigurers.springSecurity())
+            .build();
     }
 
     @Test
     @DisplayName("UNAUTHORIZED trying to get into POST email/addEcoNews (401 Unauthorized expected)")
     void addEcoNewsTestUnauthorized() throws Exception {
         mockMvc.perform(post("/email/addEcoNews"))
-                .andExpect(status().isUnauthorized());
+            .andExpect(status().isUnauthorized());
     }
 }

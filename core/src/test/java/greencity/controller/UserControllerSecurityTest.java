@@ -1,6 +1,5 @@
 package greencity.controller;
 
-
 import greencity.config.SecurityConfig;
 import greencity.security.jwt.JwtTool;
 import greencity.service.UserService;
@@ -38,9 +37,9 @@ class UserControllerSecurityTest {
     @BeforeEach
     public void setup() {
         this.mockMvc = MockMvcBuilders
-                .webAppContextSetup(context)
-                .apply(SecurityMockMvcConfigurers.springSecurity())
-                .build();
+            .webAppContextSetup(context)
+            .apply(SecurityMockMvcConfigurers.springSecurity())
+            .build();
     }
 
     @Test
@@ -48,7 +47,7 @@ class UserControllerSecurityTest {
     @WithMockUser(roles = "USER")
     void updateUserManagementTestUser() throws Exception {
         mockMvc.perform(put("/user/{id}", 1L))
-                .andExpect(status().isForbidden());
+            .andExpect(status().isForbidden());
     }
 
     @Test
@@ -56,13 +55,13 @@ class UserControllerSecurityTest {
     @WithMockUser(roles = "ADMIN")
     void updateUserManagementTestAdmin() throws Exception {
         mockMvc.perform(put("/user/{id}", 43L))
-                .andExpect(status().isNotFound());
+            .andExpect(status().isNotFound());
     }
 
     @Test
     @DisplayName("UNAUTHORIZED trying to get into PUT users/{id} (401 Unauthorized expected)")
     void updateUserManagementTestUnauthorized() throws Exception {
         mockMvc.perform(put("/user/{id}", 1L))
-                .andExpect(status().isUnauthorized());
+            .andExpect(status().isUnauthorized());
     }
 }

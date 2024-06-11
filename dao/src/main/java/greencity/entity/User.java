@@ -114,7 +114,7 @@ public class User {
     @OneToMany
     @Builder.Default
     @JoinTable(name = "user_friends",
-            joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
-            inverseJoinColumns = @JoinColumn(name = "friend_id", referencedColumnName = "id"))
+        joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
+        inverseJoinColumns = @JoinColumn(name = "friend_id", referencedColumnName = "id"))
     private List<User> userFriends = new ArrayList<>();
 }

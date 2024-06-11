@@ -166,11 +166,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserVO findByEmail(String email) {
         return Optional.of(email)
-                .filter(e -> e.matches(AppConstant.VALIDATION_EMAIL))
-                .map(e -> userRepo.findByEmail(e)
-                        .map(user -> modelMapper.map(user, UserVO.class))
-                        .orElseThrow(() -> new WrongEmailException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + e)))
-                .orElseThrow(() -> new BadRequestException("Invalid email format: " + email));
+            .filter(e -> e.matches(AppConstant.VALIDATION_EMAIL))
+            .map(e -> userRepo.findByEmail(e)
+                .map(user -> modelMapper.map(user, UserVO.class))
+                .orElseThrow(() -> new WrongEmailException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + e)))
+            .orElseThrow(() -> new BadRequestException("Invalid email format: " + email));
     }
 
     /**
@@ -755,7 +755,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserVO findAdminById(Long id) {
         User user = userRepo.findById(id)
-                .orElseThrow(() -> new WrongIdException(ErrorMessage.USER_NOT_FOUND_BY_ID));
+            .orElseThrow(() -> new WrongIdException(ErrorMessage.USER_NOT_FOUND_BY_ID));
 
         if (user.getRole().equals(Role.ROLE_ADMIN)) {
             return modelMapper.map(user, UserVO.class);

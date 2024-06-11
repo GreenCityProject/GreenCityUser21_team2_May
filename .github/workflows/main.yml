@@ -39,6 +39,9 @@ jobs:
 
             uses: SonarSource/sonarcloud-github-action@v2.2.0
 
+            run:
+              ls -al
+
             env:
               SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
             with:

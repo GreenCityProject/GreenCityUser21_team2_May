@@ -35,15 +35,14 @@ jobs:
 
       steps:
           - name: Analyze with SonarCloud
+            if: github.ref != 'refs/heads/disable-sonar-scan'
 
             uses: SonarSource/sonarcloud-github-action@v2.2.0
 
             env:
-              # Generate a token on Sonarcloud.io, add it to the secrets of this repo with the name SONAR_TOKEN (Settings > Secrets > Actions > add new repository secret)
               SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
             with:
               args:
-                -X
                 -Dsonar.projectKey=GreenCityProject_GreenCityUser21_team1
                 -Dsonar.organization=greencityproject
                 -Dsonar.binaries=target/classes

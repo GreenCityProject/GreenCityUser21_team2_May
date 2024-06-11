@@ -43,6 +43,7 @@ jobs:
               SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
             with:
               args:
+                -X
                 -Dsonar.projectKey=GreenCityProject_GreenCityUser21_team1
                 -Dsonar.organization=greencityproject
                 -Dsonar.binaries=target/classes

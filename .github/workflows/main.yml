@@ -43,8 +43,6 @@ jobs:
               SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
             with:
               args:
-                 # Unique keys of your project and organization. You can find them in SonarCloud > Information (bottom-left menu)
-                 # mandatory
-                -Dsonar.projectKey=
-                -Dsonar.organization=
+                -Dsonar.projectKey=GreenCityProject_GreenCityUser21_team1
+                -Dsonar.organization=greencityproject
               projectBaseDir: 'src/main/java/greencity'

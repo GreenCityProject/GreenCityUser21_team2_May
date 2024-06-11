@@ -36,7 +36,7 @@ jobs:
       steps:
           - name: Analyze with SonarCloud
 
-            uses: SonarSource/sonarcloud-github-action@v1.8
+            uses: SonarSource/sonarcloud-github-action@v2.2.0
 
             env:
               # Generate a token on Sonarcloud.io, add it to the secrets of this repo with the name SONAR_TOKEN (Settings > Secrets > Actions > add new repository secret)

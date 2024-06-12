@@ -83,7 +83,8 @@ class EmailServiceImplTest {
         String placeStatus = "test place status";
         String authorEmail = TestConst.EMAIL;
 
-        assertThrows(NotFoundException.class, () -> service.sendChangePlaceStatusEmail(authorFirstName, placeName, placeStatus, authorEmail));
+        assertThrows(NotFoundException.class,
+            () -> service.sendChangePlaceStatusEmail(authorFirstName, placeName, placeStatus, authorEmail));
     }
 
     @Test

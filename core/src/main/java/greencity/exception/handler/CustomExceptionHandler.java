@@ -382,8 +382,8 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(PasswordSameAsOldException.class)
     public final ResponseEntity<Object> handlePasswordSameAsOldException(
-            PasswordSameAsOldException exception,
-            WebRequest request) {
+        PasswordSameAsOldException exception,
+        WebRequest request) {
 
         log.info(exception.getMessage());
         ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));

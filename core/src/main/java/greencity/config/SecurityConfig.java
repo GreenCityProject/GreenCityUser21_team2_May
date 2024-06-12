@@ -103,12 +103,14 @@ public class SecurityConfig {
                         .requestMatchers("/static/css/**", "/static/img/**").permitAll()
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers(
+                                "/subscriber/unsubscribe",
                                 "/v2/api-docs/**",
                                 "/v3/api-docs/**",
                                 "/swagger.json",
                                 "/swagger-ui.html")
                         .permitAll()
                         .requestMatchers(
+                                "/error",
                                 "/swagger-resources/**",
                                 "/webjars/**",
                                 "/swagger-ui/**")
@@ -129,6 +131,7 @@ public class SecurityConfig {
                                 "/user/get-user-rating")
                         .permitAll()
                         .requestMatchers(HttpMethod.POST,
+                                "subscriber/subscribe",
                                 "/ownSecurity/signUp",
                                 "/ownSecurity/signIn",
                                 "/ownSecurity/updatePassword")
@@ -192,7 +195,11 @@ public class SecurityConfig {
                                 "/user/markUserAsDeactivated",
                                 "/user/markUserAsActivated")
                         .hasAnyRole(ADMIN, UBS_EMPLOYEE, MODERATOR, EMPLOYEE)
+                        .requestMatchers(HttpMethod.POST,
+                        "subscriber/sendEcoNews")
+                        .hasAnyRole(ADMIN, UBS_EMPLOYEE, MODERATOR, EMPLOYEE)
                         .requestMatchers(HttpMethod.GET,
+                                "/subscriber",
                                 "/user/get-all-authorities",
                                 "/user/get-positions-authorities",
                                 "/user/get-employee-login-positions")

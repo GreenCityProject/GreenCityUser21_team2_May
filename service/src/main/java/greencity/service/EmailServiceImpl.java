@@ -7,6 +7,7 @@ import greencity.constant.LogMessage;
 import greencity.dto.category.CategoryDto;
 import greencity.dto.econews.AddEcoNewsDtoResponse;
 import greencity.dto.econews.EcoNewsForSendEmailDto;
+import greencity.dto.econews.SendNewsDto;
 import greencity.dto.newssubscriber.NewsSubscriberResponseDto;
 import greencity.dto.notification.NotificationDto;
 import greencity.dto.place.PlaceNotificationDto;
@@ -28,6 +29,7 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.ITemplateEngine;
 import org.thymeleaf.context.Context;
+
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -51,6 +53,7 @@ public class EmailServiceImpl implements EmailService {
     private final String clientLink;
     private final String ecoNewsLink;
     private final String serverLink;
+    private final String serverLink8060 = "http://localhost:8060";
     private final String senderEmailAddress;
     private static final String PARAM_USER_ID = "&user_id=";
 
@@ -118,13 +121,21 @@ public class EmailServiceImpl implements EmailService {
         model.put(EmailConstants.ECO_NEWS_LINK, ecoNewsLink);
         model.put(EmailConstants.NEWS_RESULT, newsDto);
         for (NewsSubscriberResponseDto dto : subscribers) {
-            try {
-                model.put(EmailConstants.UNSUBSCRIBE_LINK, serverLink + "/newsSubscriber/unsubscribe?email="
-                        + URLEncoder.encode(dto.getEmail(), StandardCharsets.UTF_8.toString())
-                        + "&unsubscribeToken=" + dto.getUnsubscribeToken());
-            } catch (UnsupportedEncodingException e) {
-                log.error(e.getMessage());
-            }
+            model.put(EmailConstants.UNSUBSCRIBE_LINK, serverLink8060 + "/subscriber/unsubscribe?unsubscribeToken=" + dto.getUnsubscribeToken());
+            String template = createEmailTemplate(model, EmailConstants.NEWS_RECEIVE_EMAIL_PAGE);
+            sendEmail(dto.getEmail(), EmailConstants.NEWS, template);
+        }
+    }
+
+    @Override
+    public void sendNewsForSubscriber(List<NewsSubscriberResponseDto> subscribers,
+                                      SendNewsDto newsDto) {
+        Map<String, Object> model = new HashMap<>();
+        model.put(EmailConstants.ECO_NEWS_LINK, ecoNewsLink);
+        model.put(EmailConstants.NEWS_RESULT, newsDto);
+        for (NewsSubscriberResponseDto dto : subscribers) {
+            // change serverLink from serverLink8060 to serverLink
+            model.put(EmailConstants.UNSUBSCRIBE_LINK, serverLink8060 + "/subscriber/unsubscribe?unsubscribeToken=" + dto.getUnsubscribeToken());
             String template = createEmailTemplate(model, EmailConstants.NEWS_RECEIVE_EMAIL_PAGE);
             sendEmail(dto.getEmail(), EmailConstants.NEWS, template);
         }

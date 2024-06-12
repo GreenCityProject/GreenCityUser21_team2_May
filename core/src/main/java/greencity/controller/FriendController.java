@@ -20,6 +20,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.data.domain.Pageable;
 
+import javax.annotation.Nullable;
+
 
 @AllArgsConstructor
 @RestController
@@ -45,6 +47,26 @@ public class FriendController {
     }
 
 
+    @Operation(summary = "Add new Friend for Current logged in user")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = HttpStatuses.CREATED),
+            @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED),
+            @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN),
+            @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND),
+            @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST)
+    })
+
+    @PostMapping("/addFriend/{friendId}")
+    public ResponseEntity<FriendDto> addFriendForCurrentUser(
+            @Parameter(hidden = true) @CurrentUser UserVO userVO,
+            @Parameter @PathVariable long friendId){
+
+
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(friendService.addNewFriend(userVO.getId(), friendId));
+    }
+
 
     @Operation(summary = "Delete friend for Current User")
     @ApiResponses(value = {
@@ -65,6 +87,25 @@ public class FriendController {
                 .status(HttpStatus.OK)
                 .build();
     }
+
+    @GetMapping("/searchNewFriend/{searchName}/{cityFilter}/{mutualFriend}")
+    public ResponseEntity<PageableDto<FriendDto>> searchNewFriend(
+            @Parameter(hidden = true) Pageable page,
+            @Parameter(hidden = true) @CurrentUser UserVO userVO,
+            @Parameter @PathVariable String searchName,
+            @Parameter @PathVariable @Nullable Boolean cityFilter,
+            @Parameter @PathVariable @Nullable Boolean mutualFriend
+    ){
+
+        String city = null;
+        if (Boolean.TRUE.equals(cityFilter)) city = userVO.getCity();
+        PageableDto<FriendDto> friendsResult = friendService.searchNewFriend(userVO.getId(), searchName, city, mutualFriend, page);
+
+
+        return ResponseEntity.status(HttpStatus.OK).body(friendsResult);
+    }
+
+
 
     /**
      * Method that find all user's friends.

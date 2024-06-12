@@ -88,11 +88,30 @@ class FriendControllerTest {
         UserVO userVO = ModelUtils.getUserVO();
         when(userService.findByEmail(principal.getName())).thenReturn(userVO);
 
-
         mockMvc.perform(delete( friendLink + "/deleteFriend/" + 2L )
                         .principal(principal))
                 .andExpect(status().isOk());
         verify(friendService).deleteFriendOfUser(userVO.getId(),2L);
+
+    }
+
+    @Test
+    @DisplayName("Search friends by name")
+    void searchFriendByName() throws Exception{
+
+        Principal principal = mock(Principal.class);
+        when(principal.getName()).thenReturn(TestConst.EMAIL);
+        UserVO userVO = ModelUtils.getUserVO();
+        when(userService.findByEmail(principal.getName())).thenReturn(userVO);
+
+        int pageNumber = 0;
+        int pageSize = 20;
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+
+        mockMvc.perform(get( friendLink + "/searchNewFriend/USB/false/false" )
+                        .principal(principal))
+                .andExpect(status().isOk());
+        verify(friendService).searchNewFriend(userVO.getId(),"USB",null, false, pageable);
 
     }
 

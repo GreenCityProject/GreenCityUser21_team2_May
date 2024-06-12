@@ -2,6 +2,7 @@ package greencity.service;
 
 import greencity.dto.PageableDto;
 import greencity.dto.user.FriendDto;
+
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
@@ -10,6 +11,11 @@ public interface FriendService {
     PageableDto<FriendDto> getAllFriendsOfUser(long userId, Pageable pageable);
 
     void deleteFriendOfUser(Long id, Long friendId);
+
+    PageableDto<FriendDto> searchNewFriend(Long userId, String filteringName, String city, Boolean mutualFriends, Pageable pageable);
+
+
+    FriendDto addNewFriend(Long id, long friendId);
 
     /**
      * Method that allow you to find {@link List} of {@link FriendDto} by user's ID.
@@ -51,4 +57,6 @@ public interface FriendService {
      * @author Maksym Petukhov
      */
     Integer getTotalAmountOfFriendsByUserId(Long userId);
+
+
 }

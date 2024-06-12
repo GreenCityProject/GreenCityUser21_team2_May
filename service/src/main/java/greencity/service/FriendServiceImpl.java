@@ -3,11 +3,13 @@ package greencity.service;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
 import greencity.dto.user.FriendDto;
+
 import greencity.entity.User;
+import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.WrongIdException;
 import greencity.repository.UserRepo;
-import lombok.AllArgsConstructor;
+
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
@@ -38,7 +40,7 @@ public class FriendServiceImpl implements FriendService{
         Page<User> friends =userRepo.getAllFriendsOfUserIdPage(userId, pageable);
 
         List<FriendDto> friendList =
-                friends.stream().map(friend -> modelMapper.map(friend, FriendDto.class))
+                friends.stream().map(friend -> mapFriendDto(userId, friend))
                         .toList();
 
         return new PageableDto<>(
@@ -56,9 +58,63 @@ public class FriendServiceImpl implements FriendService{
         userRepo.deleteUserFriendById(userId, friendId);
     }
 
+    @Override
+    public PageableDto<FriendDto> searchNewFriend(Long userId, String filteringName, String city, Boolean mutualFriends, Pageable pageable) {
+        validateUserExistence(userId);
+
+        Page<User> users = userRepo.getUsersNameExceptMainUserAndFriends( userId,  filteringName, city,  pageable);
+
+
+        List<FriendDto> friendList =
+                users.stream().map(user -> mapFriendDto(userId, user))
+                        .toList();
+
+        if (Boolean.TRUE.equals(mutualFriends)) friendList = friendList.stream().filter(u -> u.getMutualFriends()>0).toList();
+
+        return new PageableDto<>(
+                friendList,
+                users.getTotalElements(),
+                users.getPageable().getPageNumber(),
+                users.getTotalPages());
+    }
+
+    private FriendDto mapFriendDto(Long userId, User user) {
+        FriendDto friendDto = modelMapper.map(user, FriendDto.class);
+        Integer mutualFriendsCount = userRepo.countOfMutualFriends(userId, friendDto.getId());
+        friendDto.setMutualFriends(mutualFriendsCount);
+        return friendDto;
+    }
+
+    @Override
+    public FriendDto addNewFriend(Long userId, long friendId) {
+        validateUserExistence(userId);
+        validateUserExistence(friendId);
+        validateUserAndFriendNotSamePerson(userId, friendId);
+        validateNotYetFriends(userId,friendId);
+        userRepo.addNewFriend(userId,friendId);
+        User friend = userRepo.findById(friendId)
+                .orElseThrow(() -> new WrongIdException(ErrorMessage.USER_NOT_FOUND_BY_ID + friendId));
+       return mapFriendDto(userId, friend);
+
+    }
+
+
+
+    private void validateUserAndFriendNotSamePerson(Long userId, long friendId) {
+    if (userId == friendId) {
+        throw new BadRequestException(ErrorMessage.OWN_USER_ID + friendId);
+    }
+    }
+
     private void validateFriendsExistence(Long userId, Long friendId) {
         if(!userRepo.isFriend(userId,friendId)){
             throw new NotFoundException(ErrorMessage.USER_FRIEND_NOT_FOUND +  ": " + userId + " and " + friendId);
+        }
+    }
+
+    private void validateNotYetFriends(Long userId, Long friendId) {
+        if(userRepo.isFriend(userId,friendId)){
+            throw new BadRequestException(ErrorMessage.USERS_ARE_FRIENDS_ALREADY +  ": " + userId + " and " + friendId);
         }
     }
 
@@ -143,9 +199,7 @@ public class FriendServiceImpl implements FriendService{
     private PageableDto<FriendDto> getFriendDtoPageableDto(Long userId, Page<User> usersFriendsList) {
         List<FriendDto> userForListDtos = usersFriendsList.stream()
                 .map(user -> {
-                    FriendDto friendDto = modelMapper.map(user, FriendDto.class);
-                    Integer mutualFriendsCount = userRepo.countOfMutualFriends(userId, friendDto.getId());
-                    friendDto.setMutualFriends(mutualFriendsCount);
+                    FriendDto friendDto = mapFriendDto(userId, user);
                     friendDto.setOnline(this.checkIfTheUserIsOnline(friendDto.getId()));
                     return friendDto;
                 })

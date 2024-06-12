@@ -216,6 +216,23 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
                 "WHERE uf1.user_id = :userId AND uf2.user_id = :friendId")
     int countOfMutualFriends(Long userId, Long friendId);
 
+
+    /**
+     * Method that returns list of all users that are not in friend list and filters matching city
+     */
+    @Query(nativeQuery = true, value = "SELECT * FROM users u "
+            + "WHERE u.id != :userId "
+            + "AND (:city is null or u.city=:city)"
+            + "AND u.id NOT IN ("
+            + "      SELECT friend_id AS id FROM user_friends WHERE user_id = :userId ) "
+            + "AND LOWER(u.name) LIKE LOWER(CONCAT('%', :filteringName, '%')) " )
+
+    Page<User> getUsersNameExceptMainUserAndFriends(Long userId, String filteringName, String city, Pageable pageable);
+
+
+
+
+
     /**
      * Method, that return status from table user_friends.
      *
@@ -333,4 +350,10 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
         value = "SELECT * FROM users WHERE id IN (SELECT friend_id FROM user_friends WHERE user_id = :userId) LIMIT 6")
     Optional<List<User>> findTop6FriendsByUserId(Long userId);
 
+    @Modifying
+    @Transactional
+    @Query(nativeQuery = true,
+            value = "INSERT INTO user_friends(user_id, friend_id, created_at) "
+                    + "VALUES (:userId, :friendId, CURRENT_TIMESTAMP) ")
+    void addNewFriend(Long userId, long friendId);
 }

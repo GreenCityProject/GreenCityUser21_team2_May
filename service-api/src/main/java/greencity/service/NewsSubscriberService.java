@@ -11,7 +11,7 @@ import java.util.List;
  */
 
 public interface NewsSubscriberService {
-    NewsSubscriberRequestDto subscribe(NewsSubscriberRequestDto subscriberRequestDto);
+    NewsSubscriberResponseDto subscribe(NewsSubscriberRequestDto subscriberRequestDto);
 
     List<NewsSubscriberResponseDto> getAll();
 

@@ -8,25 +8,29 @@ import greencity.repository.NewsSubscriberRepo;
 import greencity.security.jwt.JwtTool;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class NewsSubscriberServiceImpl implements NewsSubscriberService {
 
     private final NewsSubscriberRepo newsSubscriberRepo;
     private final JwtTool jwtTool;
 
+    ModelMapper modelMapper = new ModelMapper();
+
     @Override
     @Transactional
-    public NewsSubscriberRequestDto subscribe(NewsSubscriberRequestDto subscriberRequestDto) {
+    public NewsSubscriberResponseDto subscribe(NewsSubscriberRequestDto subscriberRequestDto) {
         if (isSubscriberExists(subscriberRequestDto.getEmail()))
             throw new SubscribeException("Email already subscribed");
-        this.newsSubscriberRepo.save(new NewsSubscriber(null, subscriberRequestDto.getEmail(), jwtTool.generateTokenKey()));
-        return subscriberRequestDto;
+        NewsSubscriber newsSubscriber = new NewsSubscriber(null, subscriberRequestDto.getEmail(), jwtTool.generateTokenKey());
+        return modelMapper.map(newsSubscriberRepo.save(newsSubscriber), NewsSubscriberResponseDto.class);
     }
 
     private boolean isSubscriberExists(String email){

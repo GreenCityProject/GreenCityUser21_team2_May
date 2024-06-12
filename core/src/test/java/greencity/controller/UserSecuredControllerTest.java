@@ -45,16 +45,16 @@ class UserSecuredControllerTest {
     @BeforeEach
     public void setup() {
         this.mockMvc = MockMvcBuilders
-                .webAppContextSetup(context)
-                .apply(SecurityMockMvcConfigurers.springSecurity())
-                .build();
+            .webAppContextSetup(context)
+            .apply(SecurityMockMvcConfigurers.springSecurity())
+            .build();
     }
 
     @Test
     @DisplayName("Test response status for user is online endpoint as unauthenticated user")
     void userIsOnline_EndpointResponse_StatusIsUnauthorized() throws Exception {
         mockMvc.perform(get(USER_LINK + "/isOnline/{userId}/", 1L))
-                .andExpect(status().isUnauthorized());
+            .andExpect(status().isUnauthorized());
     }
 
     @Test
@@ -62,7 +62,7 @@ class UserSecuredControllerTest {
     @WithMockUser(roles = ROLE_USER)
     void userIsOnline_EndpointResponse_StatusIsForbidden() throws Exception {
         mockMvc.perform(get(USER_LINK + "/isOnline/{userId}/", 1L))
-                .andExpect(status().isForbidden());
+            .andExpect(status().isForbidden());
     }
 
     @Test
@@ -70,6 +70,6 @@ class UserSecuredControllerTest {
     @WithMockUser(roles = ROLE_ADMIN)
     void userIsOnline_EndpointResponse_StatusIsNotFound() throws Exception {
         mockMvc.perform(get(USER_LINK + "/isOnline/{userId}/", 1L))
-                .andExpect(status().isNotFound());
+            .andExpect(status().isNotFound());
     }
 }

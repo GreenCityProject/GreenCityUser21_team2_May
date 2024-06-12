@@ -94,35 +94,36 @@ class EmailControllerTest {
     @Test
     void changePlaceStatus() throws Exception {
         String content = "{" +
-                "\"authorEmail\":\"test@example.com\"," +
-                "\"authorFirstName\":\"John\"," +
-                "\"placeName\":\"Central Park\"," +
-                "\"placeStatus\":\"Open\"" +
-                "}";
+            "\"authorEmail\":\"test@example.com\"," +
+            "\"authorFirstName\":\"John\"," +
+            "\"placeName\":\"Central Park\"," +
+            "\"placeStatus\":\"Open\"" +
+            "}";
 
         mockPerform(content, "/changePlaceStatus");
 
         ObjectMapper objectMapper = new ObjectMapper();
-        SendChangePlaceStatusEmailMessage message = objectMapper.readValue(content, SendChangePlaceStatusEmailMessage.class);
+        SendChangePlaceStatusEmailMessage message =
+            objectMapper.readValue(content, SendChangePlaceStatusEmailMessage.class);
 
         verify(emailService).sendChangePlaceStatusEmail(
-                message.getAuthorFirstName(), message.getPlaceName(),
-                message.getPlaceStatus(), message.getAuthorEmail());
+            message.getAuthorFirstName(), message.getPlaceName(),
+            message.getPlaceStatus(), message.getAuthorEmail());
     }
 
     @Test
     void changePlaceStatus_whenInvalidEmail_returnsBadRequest() throws Exception {
         String invalidEmailContent = "{" +
-                "\"authorEmail\":\"invalid-email\"," +
-                "\"authorFirstName\":\"John\"," +
-                "\"placeName\":\"Central Park\"," +
-                "\"placeStatus\":\"Open\"" +
-                "}";
+            "\"authorEmail\":\"invalid-email\"," +
+            "\"authorFirstName\":\"John\"," +
+            "\"placeName\":\"Central Park\"," +
+            "\"placeStatus\":\"Open\"" +
+            "}";
 
         mockMvc.perform(post(LINK + "/changePlaceStatus")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(invalidEmailContent))
-                .andExpect(status().isBadRequest());
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(invalidEmailContent))
+            .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -175,8 +176,8 @@ class EmailControllerTest {
 
     private void mockPerform(String content, String subLink) throws Exception {
         mockMvc.perform(post(LINK + subLink)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(content))
-                .andExpect(status().isOk());
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(content))
+            .andExpect(status().isOk());
     }
 }

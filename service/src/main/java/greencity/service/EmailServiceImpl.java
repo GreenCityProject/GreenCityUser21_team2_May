@@ -134,7 +134,7 @@ public class EmailServiceImpl implements EmailService {
             model.put(EmailConstants.ECO_NEWS_LINK, ecoNewsLink);
             model.put(EmailConstants.NEWS_RESULT, newDto);
             model.put(EmailConstants.UNSUBSCRIBE_LINK,
-                    serverLink
+                serverLink
                     + "/newSubscriber/unsubscribe?email="
                     + URLEncoder.encode(newDto.getAuthor().getEmail(), StandardCharsets.UTF_8)
                     + "&unsubscribeToken=" + newDto.getUnsubscribeToken());

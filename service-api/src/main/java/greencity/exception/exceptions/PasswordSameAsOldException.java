@@ -1,6 +1,5 @@
 package greencity.exception.exceptions;
 
-
 /**
  * Exception that we get when user when passwords same as old Exception.
  *

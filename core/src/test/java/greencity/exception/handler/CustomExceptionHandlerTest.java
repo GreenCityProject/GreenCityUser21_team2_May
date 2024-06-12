@@ -230,9 +230,10 @@ class CustomExceptionHandlerTest {
         ExceptionResponse expectedResponse = new ExceptionResponse(objectMap);
 
         when(errorAttributes.getErrorAttributes(eq(webRequest),
-                any(ErrorAttributeOptions.class))).thenReturn(objectMap);
+            any(ErrorAttributeOptions.class))).thenReturn(objectMap);
 
-        ResponseEntity<Object> actualResponse = customExceptionHandler.handlePasswordSameAsOldException(passwordSameAsOldException, webRequest);
+        ResponseEntity<Object> actualResponse =
+            customExceptionHandler.handlePasswordSameAsOldException(passwordSameAsOldException, webRequest);
 
         assertEquals(expectedHttpStatus, actualResponse.getStatusCode());
         assertEquals(expectedResponse, actualResponse.getBody());

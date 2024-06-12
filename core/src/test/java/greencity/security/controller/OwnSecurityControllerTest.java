@@ -159,23 +159,22 @@ class OwnSecurityControllerTest {
         verify(passwordRecoveryService).updatePasswordUsingToken(form);
     }
 
-
     @Test
     void setPasswordTest_Success() throws Exception {
         String jsonContent = """
-        {
-            "password": "newPassword123=",
-            "confirmPassword": "newPassword123="
-        }
-        """;
+            {
+                "password": "newPassword123=",
+                "confirmPassword": "newPassword123="
+            }
+            """;
 
         setupMockSecurityContext();
         doNothing().when(ownSecurityService).setPassword(any(SetPasswordDto.class), anyString());
 
         mockMvc.perform(post(LINK + "/set-password")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(jsonContent))
-                .andExpect(status().isCreated());
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(jsonContent))
+            .andExpect(status().isCreated());
 
         verify(ownSecurityService).setPassword(any(SetPasswordDto.class), anyString());
     }
@@ -195,10 +194,10 @@ class OwnSecurityControllerTest {
         setupMockSecurityContext();
         doNothing().when(ownSecurityService).updateCurrentPassword(dto, "test@mail.com");
 
-        mockMvc.perform(post(LINK+ "/changePassword")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(content))
-                .andExpect(status().isCreated());
+        mockMvc.perform(post(LINK + "/changePassword")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(content))
+            .andExpect(status().isCreated());
 
         verify(ownSecurityService).updateCurrentPassword(dto, "test@mail.com");
     }

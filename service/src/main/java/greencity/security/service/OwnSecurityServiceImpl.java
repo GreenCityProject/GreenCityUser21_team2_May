@@ -391,7 +391,7 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
     @Transactional
     public void updateCurrentPassword(UpdatePasswordDto dto, String email) {
         User user = userRepo.findByEmail(email)
-                .orElseThrow(() -> new WrongEmailException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL));
+            .orElseThrow(() -> new WrongEmailException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL));
 
         validateCurrentPassword(dto.getCurrentPassword(), user);
         ensureNewPasswordIsValid(dto.getNewPassword(), dto.getConfirmPassword(), user.getOwnSecurity().getPassword());

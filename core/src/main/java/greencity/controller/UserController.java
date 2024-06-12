@@ -209,7 +209,8 @@ public class UserController {
         @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN)
     })
     @GetMapping
-    public ResponseEntity<UserUpdateDto> getUserByPrincipal(@Parameter(hidden = true) @AuthenticationPrincipal Principal principal) {
+    public ResponseEntity<UserUpdateDto> getUserByPrincipal(
+        @Parameter(hidden = true) @AuthenticationPrincipal Principal principal) {
         String email = principal.getName();
         return ResponseEntity.status(HttpStatus.OK).body(userService.getUserUpdateDtoByEmail(email));
     }
@@ -619,7 +620,8 @@ public class UserController {
      *
      * @param id        {@link Long} - user's id.
      * @param adminLang {@link String} - current administrator language.
-     * @return {@link List} of {@link String} - reasons for deactivation of the current user.
+     * @return {@link List} of {@link String} - reasons for deactivation of the
+     *         current user.
      * @author Vlad Pikhotskyi
      */
     @Operation(summary = "Get list reasons of deactivating the user")

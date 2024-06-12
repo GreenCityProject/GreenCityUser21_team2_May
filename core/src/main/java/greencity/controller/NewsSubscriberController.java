@@ -1,7 +1,6 @@
 package greencity.controller;
 
 import greencity.constant.HttpStatuses;
-import greencity.dto.econews.AddEcoNewsDtoResponse;
 import greencity.dto.econews.SendNewsDto;
 import greencity.dto.newssubscriber.NewsSubscriberRequestDto;
 import greencity.dto.newssubscriber.NewsSubscriberResponseDto;

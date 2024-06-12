@@ -25,6 +25,9 @@ public class SendNewsDto implements Serializable {
     private String text;
 
     @NotEmpty
+    private String author;
+
+    @NotEmpty
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private ZonedDateTime creationDate;
 

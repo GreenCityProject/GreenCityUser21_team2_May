@@ -130,7 +130,8 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.POST,
                     "/ownSecurity/signUp",
                     "/ownSecurity/signIn",
-                    "/ownSecurity/updatePassword")
+                    "/ownSecurity/updatePassword",
+                    "/ownSecurity/changePassword")
                 .permitAll()
                 .requestMatchers(HttpMethod.GET, USER_LINK,
                     "/user/shopping-list-items/habits/{habitId}/shopping-list",
@@ -169,7 +170,6 @@ public class SecurityConfig {
                     "/email/general/notification")
                 .hasAnyRole(USER, ADMIN, UBS_EMPLOYEE, MODERATOR, EMPLOYEE)
                 .requestMatchers(HttpMethod.PUT,
-                    "/ownSecurity/changePassword",
                     "/user/profile",
                     "/user/{id}/updateUserLastActivityTime/{date}",
                     "/user/language/{languageId}",

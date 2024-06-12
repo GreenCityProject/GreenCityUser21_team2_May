@@ -409,11 +409,11 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
     }
 
     private void ensureNewPasswordIsValid(String newPassword, String confirmPassword, String oldPasswordHashed) {
-        if (passwordEncoder.matches(newPassword, oldPasswordHashed)) {
-            throw new PasswordSameAsOldException(ErrorMessage.NEW_PASSWORD_SAME_AS_OLD);
-        }
         if (!newPassword.equals(confirmPassword)) {
             throw new PasswordsDoNotMatchesException(ErrorMessage.PASSWORDS_DO_NOT_MATCH);
+        }
+        if (passwordEncoder.matches(newPassword, oldPasswordHashed)) {
+            throw new PasswordSameAsOldException(ErrorMessage.NEW_PASSWORD_SAME_AS_OLD);
         }
     }
 

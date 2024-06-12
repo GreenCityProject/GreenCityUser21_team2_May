@@ -2,6 +2,7 @@ package greencity.controller;
 
 import greencity.constant.HttpStatuses;
 import greencity.dto.econews.AddEcoNewsDtoResponse;
+import greencity.dto.econews.SendNewsDto;
 import greencity.dto.newssubscriber.NewsSubscriberRequestDto;
 import greencity.dto.newssubscriber.NewsSubscriberResponseDto;
 import greencity.exception.exceptions.NotFoundException;
@@ -95,8 +96,8 @@ public class NewsSubscriberController {
             @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED)
     })
     @PostMapping("/sendEcoNews")
-    public ResponseEntity<Object> sendEcoNews(@RequestBody AddEcoNewsDtoResponse message) {
-        emailService.sendNewNewsForSubscriber(subscriberService.getAll(), message);
+    public ResponseEntity<Object> sendEcoNews(@RequestBody SendNewsDto message) {
+        emailService.sendNewsForSubscriber(subscriberService.getAll(), message);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 }

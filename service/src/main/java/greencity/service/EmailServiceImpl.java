@@ -6,6 +6,7 @@ import greencity.constant.LogMessage;
 import greencity.dto.category.CategoryDto;
 import greencity.dto.econews.AddEcoNewsDtoResponse;
 import greencity.dto.econews.EcoNewsForSendEmailDto;
+import greencity.dto.econews.SendNewsDto;
 import greencity.dto.newssubscriber.NewsSubscriberResponseDto;
 import greencity.dto.notification.NotificationDto;
 import greencity.dto.place.PlaceNotificationDto;
@@ -26,7 +27,7 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.ITemplateEngine;
 import org.thymeleaf.context.Context;
-import java.io.UnsupportedEncodingException;
+
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
@@ -112,6 +113,19 @@ public class EmailServiceImpl implements EmailService {
     @Override
     public void sendNewNewsForSubscriber(List<NewsSubscriberResponseDto> subscribers,
         AddEcoNewsDtoResponse newsDto) {
+        Map<String, Object> model = new HashMap<>();
+        model.put(EmailConstants.ECO_NEWS_LINK, ecoNewsLink);
+        model.put(EmailConstants.NEWS_RESULT, newsDto);
+        for (NewsSubscriberResponseDto dto : subscribers) {
+            model.put(EmailConstants.UNSUBSCRIBE_LINK, serverLink8060 + "/subscriber/unsubscribe?unsubscribeToken=" + dto.getUnsubscribeToken());
+            String template = createEmailTemplate(model, EmailConstants.NEWS_RECEIVE_EMAIL_PAGE);
+            sendEmail(dto.getEmail(), EmailConstants.NEWS, template);
+        }
+    }
+
+    @Override
+    public void sendNewsForSubscriber(List<NewsSubscriberResponseDto> subscribers,
+                                      SendNewsDto newsDto) {
         Map<String, Object> model = new HashMap<>();
         model.put(EmailConstants.ECO_NEWS_LINK, ecoNewsLink);
         model.put(EmailConstants.NEWS_RESULT, newsDto);

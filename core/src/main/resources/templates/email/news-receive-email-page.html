@@ -156,18 +156,18 @@
                     <td class="background-msg-clr" align="left"
                         style="padding: 24px; font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; font-size: 16px;">
                         <div>
+                            <img th:src="${news.imagePath}">
                             <h3>
                                 <span th:text="${news.creationDate.toLocalDate().toString()}" style="font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif;
-                            font-size: 8px;"></span>
+                            font-size: 15px;"></span>
                                 <br>
                                 <span th:text="${news.title}"></span>
                             </h3>
                             <br>
                             <span th:text="${news.text}"></span>
                             <br>
-                            <span th:href="${ecoNewsLink}" class="gCity-link">Read more</span>
+                            <a th:href="${news.source}" class="gCity-link">Read more</a>
                             <br>
-                            </ul>
                         </div>
                     </td>
                 </tr>

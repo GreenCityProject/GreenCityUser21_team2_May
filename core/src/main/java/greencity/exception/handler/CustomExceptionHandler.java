@@ -74,6 +74,7 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
         WebRequest request) {
         log.info(ex.getMessage());
         ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
+        exceptionResponse.setMessage(ex.getMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
     }
 
@@ -290,7 +291,7 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
         List<ValidationExceptionDto> collect =
             ex.getBindingResult().getFieldErrors().stream()
                 .map(ValidationExceptionDto::new)
-                .collect(Collectors.toList());
+                .toList();
         log.trace(ex.getMessage(), ex);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(collect);
     }

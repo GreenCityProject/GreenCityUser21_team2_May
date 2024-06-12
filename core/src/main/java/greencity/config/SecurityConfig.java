@@ -98,6 +98,8 @@ public class SecurityConfig {
                                 SC_FORBIDDEN, "You don't have authorities.")))
                 .authorizeHttpRequests(req -> req
                         .requestMatchers("/error").permitAll()
+                        .requestMatchers(HttpMethod.GET, USER_LINK)
+                        .hasAnyRole(ADMIN, UBS_EMPLOYEE, MODERATOR, EMPLOYEE)
                         .requestMatchers("/static/css/**", "/static/img/**").permitAll()
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers(
@@ -114,7 +116,6 @@ public class SecurityConfig {
                                 "/swagger-ui/**")
                         .permitAll()
                         .requestMatchers(HttpMethod.GET,
-                                "/error",
                                 "/ownSecurity/verifyEmail",
                                 "/ownSecurity/updateAccessToken",
                                 "/ownSecurity/restorePassword",
@@ -155,8 +156,16 @@ public class SecurityConfig {
                                 "/user/lang",
                                 "/user/createUbsRecord",
                                 "/user/{userId}/sixUserFriends/",
+                                "/friends/{userId}/findAllFriends",
+                                "/friends/{userId}/totalAmountOfFriends",
+                                "/friends/{userId}/findAllFriendsByCity",
+                                "/friends/{userId}/findAllFriendsByRating",
+                                "/friends/{userId}/findAllFriendsByHabit",
                                 "/ownSecurity/password-status",
                                 "/user/emailNotifications")
+                        .hasAnyRole(USER, ADMIN, UBS_EMPLOYEE, MODERATOR, EMPLOYEE)
+                        .requestMatchers(HttpMethod.GET,
+                                "/friends")
                         .hasAnyRole(USER, ADMIN, UBS_EMPLOYEE, MODERATOR, EMPLOYEE)
                         .requestMatchers(HttpMethod.GET, "/user/isOnline/{userId}/")
                         .hasAnyRole(ADMIN, UBS_EMPLOYEE, MODERATOR, EMPLOYEE)
@@ -178,6 +187,8 @@ public class SecurityConfig {
                                 "/user/employee-email")
                         .hasAnyRole(USER, ADMIN, UBS_EMPLOYEE, MODERATOR, EMPLOYEE)
                         .requestMatchers(HttpMethod.PUT,
+                                "/user/updateUserLastActivityTime/{date}",
+                                "/user/{id}",
                                 "/user/edit-authorities",
                                 "/user/authorities",
                                 "/user/deactivate-employee",
@@ -200,7 +211,8 @@ public class SecurityConfig {
                         .hasAnyRole(USER, ADMIN, UBS_EMPLOYEE, MODERATOR, EMPLOYEE)
                         .requestMatchers(HttpMethod.DELETE,
                                 "/user/shopping-list-items/user-shopping-list-items",
-                                "/user/shopping-list-items")
+                                "/user/shopping-list-items",
+                                "/friends/deleteFriend/{friendId}")
                         .hasAnyRole(USER, ADMIN, UBS_EMPLOYEE, MODERATOR, EMPLOYEE)
                         .requestMatchers(HttpMethod.GET,
                                 "/user/all",

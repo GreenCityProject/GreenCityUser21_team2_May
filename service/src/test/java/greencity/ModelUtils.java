@@ -6,15 +6,7 @@ import greencity.dto.econews.AddEcoNewsDtoResponse;
 import greencity.dto.language.LanguageVO;
 import greencity.dto.ownsecurity.OwnSecurityVO;
 import greencity.dto.ubs.UbsProfileCreationDto;
-import greencity.dto.user.EcoNewsAuthorDto;
-import greencity.dto.user.UserAdminRegistrationDto;
-import greencity.dto.user.UserEmployeeAuthorityDto;
-import greencity.dto.user.UserManagementDto;
-import greencity.dto.user.UserManagementUpdateDto;
-import greencity.dto.user.UserProfileDtoRequest;
-import greencity.dto.user.UserProfilePictureDto;
-import greencity.dto.user.UserProfileStatisticsDto;
-import greencity.dto.user.UserVO;
+import greencity.dto.user.*;
 import greencity.dto.verifyemail.VerifyEmailVO;
 import greencity.dto.violation.UserViolationMailDto;
 
@@ -329,5 +321,12 @@ public class ModelUtils {
             .email("ubsuser@mail.com")
             .uuid("f81d4fae-7dec-11d0-a765-00a0c91e6bf6")
             .build();
+    }
+
+    public static FriendDto getFrindDto() {
+        return  FriendDto.builder()
+                .id(1L)
+                .name(TestConst.NAME)
+                .build();
     }
 }

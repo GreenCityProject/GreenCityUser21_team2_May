@@ -16,6 +16,14 @@ import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.handler.CustomExceptionHandler;
 import greencity.repository.UserRepo;
 import greencity.service.UserService;
+import java.security.Principal;
+import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -73,6 +81,21 @@ class UserControllerTest {
                 .setControllerAdvice(new CustomExceptionHandler(new DefaultErrorAttributes()))
             .build();
         objectMapper = new ObjectMapper();
+    }
+
+    @Test
+    void updateUserLastActivityTimeTest() throws Exception{
+
+        Principal principal = mock(Principal.class);
+        UserVO userVO = ModelUtils.TEST_USER_VO;
+
+        when(userService.findByEmail(principal.getName())).thenReturn(userVO);
+
+        LocalDateTime newDate = LocalDateTime.now();
+
+        mockMvc.perform(put(userLink + "/updateUserLastActivityTime/" + newDate)
+                        .principal(principal))
+                .andExpect(status().isOk());
     }
 
     @Test

@@ -97,21 +97,25 @@ public class SecurityConfig {
                         .accessDeniedHandler((req, resp, exc) -> resp.sendError(
                                 SC_FORBIDDEN, "You don't have authorities.")))
                 .authorizeHttpRequests(req -> req
+                        .requestMatchers("/error").permitAll()
+                        .requestMatchers(HttpMethod.GET, USER_LINK)
+                        .hasAnyRole(ADMIN, UBS_EMPLOYEE, MODERATOR, EMPLOYEE)
                         .requestMatchers("/static/css/**", "/static/img/**").permitAll()
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers(
+                                "/subscriber/unsubscribe",
                                 "/v2/api-docs/**",
                                 "/v3/api-docs/**",
                                 "/swagger.json",
                                 "/swagger-ui.html")
                         .permitAll()
                         .requestMatchers(
+                                "/error",
                                 "/swagger-resources/**",
                                 "/webjars/**",
                                 "/swagger-ui/**")
                         .permitAll()
                         .requestMatchers(HttpMethod.GET,
-                                "/error",
                                 "/ownSecurity/verifyEmail",
                                 "/ownSecurity/updateAccessToken",
                                 "/ownSecurity/restorePassword",
@@ -127,6 +131,7 @@ public class SecurityConfig {
                                 "/user/get-user-rating")
                         .permitAll()
                         .requestMatchers(HttpMethod.POST,
+                                "subscriber/subscribe",
                                 "/ownSecurity/signUp",
                                 "/ownSecurity/signIn",
                                 "/ownSecurity/updatePassword")
@@ -134,7 +139,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, USER_LINK,
                                 "/user/shopping-list-items/habits/{habitId}/shopping-list",
                                 "/user/{userId}/{habitId}/custom-shopping-list-items/available",
-                                "/user/{userId}/profile/", "/user/isOnline/{userId}/",
+                                "/user/{userId}/profile/",
                                 "/user/{userId}/profileStatistics/",
                                 "/user/userAndSixFriendsWithOnlineStatus",
                                 "/user/userAndAllFriendsWithOnlineStatus",
@@ -151,9 +156,19 @@ public class SecurityConfig {
                                 "/user/lang",
                                 "/user/createUbsRecord",
                                 "/user/{userId}/sixUserFriends/",
+                                "/friends/{userId}/findAllFriends",
+                                "/friends/{userId}/totalAmountOfFriends",
+                                "/friends/{userId}/findAllFriendsByCity",
+                                "/friends/{userId}/findAllFriendsByRating",
+                                "/friends/{userId}/findAllFriendsByHabit",
                                 "/ownSecurity/password-status",
                                 "/user/emailNotifications")
                         .hasAnyRole(USER, ADMIN, UBS_EMPLOYEE, MODERATOR, EMPLOYEE)
+                        .requestMatchers(HttpMethod.GET,
+                                "/friends")
+                        .hasAnyRole(USER, ADMIN, UBS_EMPLOYEE, MODERATOR, EMPLOYEE)
+                        .requestMatchers(HttpMethod.GET, "/user/isOnline/{userId}/")
+                        .hasAnyRole(ADMIN, UBS_EMPLOYEE, MODERATOR, EMPLOYEE)
                         .requestMatchers(HttpMethod.POST, USER_LINK,
                                 "/user/shopping-list-items",
                                 "/user/{userId}/habit",
@@ -172,13 +187,19 @@ public class SecurityConfig {
                                 "/user/employee-email")
                         .hasAnyRole(USER, ADMIN, UBS_EMPLOYEE, MODERATOR, EMPLOYEE)
                         .requestMatchers(HttpMethod.PUT,
+                                "/user/updateUserLastActivityTime/{date}",
+                                "/user/{id}",
                                 "/user/edit-authorities",
                                 "/user/authorities",
                                 "/user/deactivate-employee",
                                 "/user/markUserAsDeactivated",
                                 "/user/markUserAsActivated")
                         .hasAnyRole(ADMIN, UBS_EMPLOYEE, MODERATOR, EMPLOYEE)
+                        .requestMatchers(HttpMethod.POST,
+                        "subscriber/sendEcoNews")
+                        .hasAnyRole(ADMIN, UBS_EMPLOYEE, MODERATOR, EMPLOYEE)
                         .requestMatchers(HttpMethod.GET,
+                                "/subscriber",
                                 "/user/get-all-authorities",
                                 "/user/get-positions-authorities",
                                 "/user/get-employee-login-positions")
@@ -190,7 +211,8 @@ public class SecurityConfig {
                         .hasAnyRole(USER, ADMIN, UBS_EMPLOYEE, MODERATOR, EMPLOYEE)
                         .requestMatchers(HttpMethod.DELETE,
                                 "/user/shopping-list-items/user-shopping-list-items",
-                                "/user/shopping-list-items")
+                                "/user/shopping-list-items",
+                                "/friends/deleteFriend/{friendId}")
                         .hasAnyRole(USER, ADMIN, UBS_EMPLOYEE, MODERATOR, EMPLOYEE)
                         .requestMatchers(HttpMethod.GET,
                                 "/user/all",

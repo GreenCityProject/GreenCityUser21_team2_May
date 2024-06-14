@@ -156,25 +156,25 @@
                     <td class="background-msg-clr" align="left"
                         style="padding: 24px; font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; font-size: 16px;">
                         <div>
+                            <img th:src="${news.imagePath}">
                             <h3>
                                 <span th:text="${news.creationDate.toLocalDate().toString()}" style="font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif;
-                            font-size: 8px;"></span>
+                            font-size: 15px;"></span>
                                 <br>
                                 <span th:text="${news.title}"></span>
                             </h3>
                             <br>
-                            <span th:text="${news.text}"></span>
+                            <span th:text="${news.text}" style="display: block; text-align: justify;"></span>
+                            <a th:href="${news.source}" style="font-size: 25px" class="gCity-link">Read more</a>
                             <br>
-                            <span th:href="${ecoNewsLink}" class="gCity-link">Read more</span>
-                            <br>
-                            </ul>
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td class="background-msg-clr" align="left"
                         style="padding: 24px; font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; font-size: 10px; line-height: 24px; border-bottom: 3px solid #d4dadf">
-                        <p style="margin: 0;">Sincerely yours, GreenCity's team</p>
+                        <p th:text="${news.author}" style="font-weight: bold; text-align: right"></p>
+                        <p style="margin: 0; text-align: right">Sincerely yours, GreenCity's team</p>
                     </td>
                 </tr>
                 <!-- end copy -->
@@ -205,7 +205,7 @@
             <p style="margin: 0;">
                 You received this email because you subscribed for notifications about news via e-mail.
                 If you didn't request this action you can unsubscribe from next news clicking on this
-                <span th:href="${unsubscribeLink}" class="gCity-link">LINK</span>
+                <a th:href="${unsubscribeLink}" class="gCity-link">LINK</a>
                 or copy this link (<span style="margin: 0;" th:text="${unsubscribeLink}">
                 </span>) on browser.
             </p>

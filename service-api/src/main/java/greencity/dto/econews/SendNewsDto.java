@@ -1,14 +1,11 @@
 package greencity.dto.econews;
 
-import greencity.dto.user.EcoNewsAuthorDto;
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.io.Serializable;
 import java.time.ZonedDateTime;
-import java.util.List;
 
 @Builder
 @NoArgsConstructor

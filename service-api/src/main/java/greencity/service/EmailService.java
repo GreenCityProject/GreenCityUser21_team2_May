@@ -5,6 +5,7 @@ import greencity.dto.econews.AddEcoNewsDtoResponse;
 import greencity.dto.econews.EcoNewsForSendEmailDto;
 import greencity.dto.econews.SendNewsDto;
 import greencity.dto.newssubscriber.NewsSubscriberResponseDto;
+import greencity.dto.notification.EventCommentNotificationDto;
 import greencity.dto.notification.NotificationDto;
 import greencity.dto.place.PlaceNotificationDto;
 import greencity.dto.user.PlaceAuthorDto;
@@ -40,6 +41,9 @@ public interface EmailService {
 
     void sendNewsForSubscriber(List<NewsSubscriberResponseDto> subscribers,
                                SendNewsDto newsDto);
+
+
+    void sendCommentForEventOrganizer(EventCommentNotificationDto commentDto);
 
     /**
      * Method for sending created news for author.

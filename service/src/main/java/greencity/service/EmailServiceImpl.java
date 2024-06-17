@@ -9,6 +9,7 @@ import greencity.dto.econews.AddEcoNewsDtoResponse;
 import greencity.dto.econews.EcoNewsForSendEmailDto;
 import greencity.dto.econews.SendNewsDto;
 import greencity.dto.newssubscriber.NewsSubscriberResponseDto;
+import greencity.dto.notification.EventCommentNotificationDto;
 import greencity.dto.notification.NotificationDto;
 import greencity.dto.place.PlaceNotificationDto;
 import greencity.dto.user.PlaceAuthorDto;
@@ -31,7 +32,6 @@ import org.thymeleaf.ITemplateEngine;
 import org.thymeleaf.context.Context;
 
 
-import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
@@ -139,6 +139,16 @@ public class EmailServiceImpl implements EmailService {
             String template = createEmailTemplate(model, EmailConstants.NEWS_RECEIVE_EMAIL_PAGE);
             sendEmail(dto.getEmail(), EmailConstants.NEWS, template);
         }
+    }
+
+    @Override
+    public void sendCommentForEventOrganizer(EventCommentNotificationDto commentDto) {
+        Map<String, Object> model = new HashMap<>();
+        model.put(EmailConstants.ECO_NEWS_LINK, ecoNewsLink);
+        model.put(EmailConstants.EVENT_COMMENT, commentDto);
+
+        String template = createEmailTemplate(model, EmailConstants.COMMENT_UNDER_YOUR_EVENT_PAGE);
+        sendEmail(commentDto.getAuthorEmail(), "New comment: " + commentDto.getEventTitle(), template);
     }
 
     @Override

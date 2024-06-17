@@ -7,7 +7,7 @@ permissions:
 
 
 jobs:
-  testing:
+  Testing:
 
     runs-on: ubuntu-latest
 

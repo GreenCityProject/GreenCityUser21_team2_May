@@ -1,6 +1,6 @@
 package greencity.exception.exceptions;
 
-public class SubscribeException extends BadRequestException{
+public class SubscribeException extends BadRequestException {
     /**
      * Constructor for BadRequestException.
      *

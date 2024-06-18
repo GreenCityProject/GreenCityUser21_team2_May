@@ -132,6 +132,9 @@ public class EmailServiceImpl implements EmailService {
     }
 
     @Override
+    public void sendNewsForSubscriber(List<NewsSubscriberResponseDto> subscribers, SendNewsDto newsDto) {}
+
+    @Override
     public void sendCreatedNewsForAuthor(EcoNewsForSendEmailDto newDto) {
         if (userRepo.findByEmail(newDto.getAuthor().getEmail()).isPresent()) {
             Map<String, Object> model = new HashMap<>();

@@ -7,7 +7,6 @@ import greencity.exception.exceptions.SubscribeException;
 import greencity.repository.NewsSubscriberRepo;
 import greencity.security.jwt.JwtTool;
 import jakarta.transaction.Transactional;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -33,7 +32,7 @@ public class NewsSubscriberServiceImpl implements NewsSubscriberService {
         return modelMapper.map(newsSubscriberRepo.save(newsSubscriber), NewsSubscriberResponseDto.class);
     }
 
-    private boolean isSubscriberExists(String email){
+    private boolean isSubscriberExists(String email) {
         return this.newsSubscriberRepo.findByEmail(email).isPresent();
     }
 
@@ -50,8 +49,7 @@ public class NewsSubscriberServiceImpl implements NewsSubscriberService {
     public void unsubscribe(String unsubscribeToken) {
         if (checkToken(unsubscribeToken)) {
             newsSubscriberRepo.deleteByUnsubscribeToken(unsubscribeToken);
-        }
-        else {
+        } else {
             throw new SubscribeException("Invalid token");
         }
     }

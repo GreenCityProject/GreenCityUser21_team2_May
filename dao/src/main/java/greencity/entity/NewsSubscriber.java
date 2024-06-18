@@ -1,6 +1,5 @@
 package greencity.entity;
 
-
 import jakarta.persistence.*;
 import lombok.*;
 

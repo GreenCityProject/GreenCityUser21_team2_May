@@ -324,9 +324,9 @@ public class ModelUtils {
     }
 
     public static FriendDto getFrindDto() {
-        return  FriendDto.builder()
-                .id(1L)
-                .name(TestConst.NAME)
-                .build();
+        return FriendDto.builder()
+            .id(1L)
+            .name(TestConst.NAME)
+            .build();
     }
 }

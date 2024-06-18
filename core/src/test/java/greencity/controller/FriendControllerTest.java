@@ -54,15 +54,15 @@ class FriendControllerTest {
     @BeforeEach
     void setup() {
         this.mockMvc = MockMvcBuilders
-                .standaloneSetup(friendController)
-                .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver(),
-                        new UserArgumentResolver(userService, new ModelMapper()))
-                .build();
+            .standaloneSetup(friendController)
+            .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver(),
+                new UserArgumentResolver(userService, new ModelMapper()))
+            .build();
         objectMapper = new ObjectMapper();
     }
 
     @Test
-    void getAllFriendsOfUser() throws Exception{
+    void getAllFriendsOfUser() throws Exception {
         Principal principal = mock(Principal.class);
         when(principal.getName()).thenReturn(TestConst.EMAIL);
         UserVO userVO = ModelUtils.getUserVO();
@@ -72,27 +72,26 @@ class FriendControllerTest {
         int pageSize = 20;
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
 
-        mockMvc.perform(get( friendLink + "?page=1" )
-                        .principal(principal))
-                .andExpect(status().isOk());
+        mockMvc.perform(get(friendLink + "?page=1")
+            .principal(principal))
+            .andExpect(status().isOk());
 
         verify(friendService).getAllFriendsOfUser(userVO.getId(), pageable);
     }
 
     @Test
     @DisplayName("Delete non_Existing friend")
-    void deleteFriendForUserTest() throws Exception{
+    void deleteFriendForUserTest() throws Exception {
 
         Principal principal = mock(Principal.class);
         when(principal.getName()).thenReturn(TestConst.EMAIL);
         UserVO userVO = ModelUtils.getUserVO();
         when(userService.findByEmail(principal.getName())).thenReturn(userVO);
 
-
-        mockMvc.perform(delete( friendLink + "/deleteFriend/" + 2L )
-                        .principal(principal))
-                .andExpect(status().isOk());
-        verify(friendService).deleteFriendOfUser(userVO.getId(),2L);
+        mockMvc.perform(delete(friendLink + "/deleteFriend/" + 2L)
+            .principal(principal))
+            .andExpect(status().isOk());
+        verify(friendService).deleteFriendOfUser(userVO.getId(), 2L);
 
     }
 

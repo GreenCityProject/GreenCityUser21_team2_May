@@ -1,6 +1,5 @@
 package greencity.controller;
 
-
 import greencity.annotations.CurrentUser;
 import greencity.constant.HttpStatuses;
 import greencity.dto.PageableDto;
@@ -20,135 +19,138 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.data.domain.Pageable;
 
-
 @AllArgsConstructor
 @RestController
 @RequestMapping("/friends")
 public class FriendController {
-
     private final FriendService friendService;
-
 
     @Operation(summary = "Get all friends of Current User")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
-            @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
-                    content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED)))
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
+            content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED)))
     })
     @GetMapping
     public ResponseEntity<PageableDto<FriendDto>> getAllFriendsOfUser(
-            @Parameter(hidden = true) Pageable page,
-            @Parameter(hidden = true) @CurrentUser UserVO userVO) {
+        @Parameter(hidden = true) Pageable page,
+        @Parameter(hidden = true) @CurrentUser UserVO userVO) {
         return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(friendService.getAllFriendsOfUser( userVO.getId(), page));
+            .status(HttpStatus.OK)
+            .body(friendService.getAllFriendsOfUser(userVO.getId(), page));
     }
-
-
 
     @Operation(summary = "Delete friend for Current User")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
-            @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
-                    content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
-            @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
-                    content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
-            @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
-                    content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
+            content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
+            content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
+        @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
+            content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
     })
     @DeleteMapping("/deleteFriend/{friendId}")
     public ResponseEntity<FriendDto> deleteFriendForUser(
-            @Parameter(hidden = true) @CurrentUser UserVO userVO,
-            @Parameter @PathVariable long friendId) {
-        friendService.deleteFriendOfUser( userVO.getId(), friendId);
+        @Parameter(hidden = true) @CurrentUser UserVO userVO,
+        @Parameter @PathVariable long friendId) {
+        friendService.deleteFriendOfUser(userVO.getId(), friendId);
         return ResponseEntity
-                .status(HttpStatus.OK)
-                .build();
+            .status(HttpStatus.OK)
+            .build();
     }
 
     /**
      * Method that find all user's friends.
      *
-     * @param userId - user id
+     * @param userId   - user id
      * @param pageable - pageable configuration
      * @return {@link PageableDto} of {@link FriendDto}
      */
     @Operation(summary = "Find all user's friends")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
-            @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED),
-            @ApiResponse(responseCode = "404", description = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED),
+        @ApiResponse(responseCode = "404", description = HttpStatuses.BAD_REQUEST),
     })
     @GetMapping("/{userId}/findAllFriends")
-    public ResponseEntity<PageableDto<FriendDto>> findAllFriends(@PathVariable Long userId, @ParameterObject Pageable pageable) {
+    public ResponseEntity<PageableDto<FriendDto>> findAllFriends(@PathVariable Long userId,
+        @ParameterObject Pageable pageable) {
         return ResponseEntity.status(HttpStatus.OK).body(friendService.getAllFriendsByUserId(pageable, userId));
     }
 
     /**
      * Method that find all user's friends by user's city.
      *
-     * @param userId - user id
+     * @param userId   - user id
      * @param pageable - pageable configuration
      * @return {@link PageableDto} of {@link FriendDto}
      */
     @Operation(summary = "Find all user's friends by user's city")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
-            @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED),
-            @ApiResponse(responseCode = "404", description = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED),
+        @ApiResponse(responseCode = "404", description = HttpStatuses.BAD_REQUEST),
     })
     @GetMapping("/{userId}/findAllFriendsByCity")
-    public ResponseEntity<PageableDto<FriendDto>> findAllFriendsByCity(@PathVariable Long userId, @ParameterObject Pageable pageable) {
+    public ResponseEntity<PageableDto<FriendDto>> findAllFriendsByCity(@PathVariable Long userId,
+        @ParameterObject Pageable pageable) {
         return ResponseEntity.status(HttpStatus.OK).body(friendService.getAllFriendsByUserIdAndCity(pageable, userId));
     }
 
     /**
      * Method that find all user's friends sorted by rating.
      *
-     * @param userId - user id
+     * @param userId   - user id
      * @param pageable - pageable configuration
      * @return {@link PageableDto} of {@link FriendDto}
      */
     @Operation(summary = "Find all user's friends sorted by rating")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
-            @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED),
-            @ApiResponse(responseCode = "404", description = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED),
+        @ApiResponse(responseCode = "404", description = HttpStatuses.BAD_REQUEST),
     })
     @GetMapping("/{userId}/findAllFriendsByRating")
-    public ResponseEntity<PageableDto<FriendDto>> findAllFriendsByRating(@PathVariable Long userId, @ParameterObject Pageable pageable) {
-        return ResponseEntity.status(HttpStatus.OK).body(friendService.getAllFriendsByUserIdAndRating(pageable, userId));
+    public ResponseEntity<PageableDto<FriendDto>> findAllFriendsByRating(@PathVariable Long userId,
+        @ParameterObject Pageable pageable) {
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(friendService.getAllFriendsByUserIdAndRating(pageable, userId));
     }
 
     /**
-     * Method that find all user's friends by user's and his/her friends assigned habits.
+     * Method that find all user's friends by user's and his/her friends assigned
+     * habits.
      *
-     * @param userId - user id
+     * @param userId   - user id
      * @param pageable - pageable configuration
      * @return {@link PageableDto} of {@link FriendDto}
      */
     @Operation(summary = "Find all user's friends by user's and his/her friends assigned habits")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
-            @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED),
-            @ApiResponse(responseCode = "404", description = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED),
+        @ApiResponse(responseCode = "404", description = HttpStatuses.BAD_REQUEST),
     })
     @GetMapping("/{userId}/findAllFriendsByHabit")
-    public ResponseEntity<PageableDto<FriendDto>> findAllFriendsByHabit(@PathVariable Long userId, @ParameterObject Pageable pageable) {
-        return ResponseEntity.status(HttpStatus.OK).body(friendService.getAllFriendsByUserIdAndHabitsAssigned(pageable, userId));
+    public ResponseEntity<PageableDto<FriendDto>> findAllFriendsByHabit(@PathVariable Long userId,
+        @ParameterObject Pageable pageable) {
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(friendService.getAllFriendsByUserIdAndHabitsAssigned(pageable, userId));
     }
 
     /**
-     * Method that find all user's friends by user's and his/her friends assigned habits.
+     * Method that find all user's friends by user's and his/her friends assigned
+     * habits.
      *
      * @param userId - user id
      * @return {@link Integer} - total amount of friends
      */
     @Operation(summary = "Get total amount of friends by user id")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
-            @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED),
-            @ApiResponse(responseCode = "404", description = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED),
+        @ApiResponse(responseCode = "404", description = HttpStatuses.BAD_REQUEST),
     })
     @GetMapping("/{userId}/totalAmountOfFriends")
     public ResponseEntity<Integer> getTotalAmountOfFriends(@PathVariable Long userId) {

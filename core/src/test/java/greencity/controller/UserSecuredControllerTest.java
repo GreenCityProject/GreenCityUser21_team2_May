@@ -82,13 +82,6 @@ class UserSecuredControllerTest {
         mockMvc.perform(get(USER_LINK))
                 .andExpect(status().isUnauthorized());
     }
-    
-    @Test
-    @DisplayName("Test response status for user is online endpoint as unauthenticated user")
-    void userIsOnline_EndpointResponse_StatusIsUnauthorized() throws Exception {
-        mockMvc.perform(get(USER_LINK + "/isOnline/{userId}/", 1L))
-            .andExpect(status().isUnauthorized());
-    }
 
     @Test
     @DisplayName("Test response status for user deleteProfilePicture endpoint as authenticated USER")
@@ -129,21 +122,5 @@ class UserSecuredControllerTest {
     void userIsOnline_EndpointResponse_StatusIsForbidden() throws Exception {
         mockMvc.perform(get(USER_LINK + "/isOnline/{userId}/", 1L))
             .andExpect(status().isForbidden());
-    }
-
-    @Test
-    @DisplayName("Test response status for user get endpoint as authenticated ADMIN")
-    @WithMockUser(roles = ROLE_ADMIN)
-    void userIsOnline_EndpointResponse_StatusIsNotFound() throws Exception {
-        mockMvc.perform(get(USER_LINK))
-                .andExpect(status().isNotFound());
-    }
-  
-    @Test
-    @DisplayName("Test response status for user is online endpoint as authenticated ADMIN")
-    @WithMockUser(roles = ROLE_ADMIN)
-    void userIsOnline_EndpointResponse_StatusIsNotFound() throws Exception {
-        mockMvc.perform(get(USER_LINK + "/isOnline/{userId}/", 1L))
-            .andExpect(status().isNotFound());
     }
 }

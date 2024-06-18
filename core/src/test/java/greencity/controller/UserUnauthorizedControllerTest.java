@@ -37,7 +37,7 @@ class UserUnauthorizedControllerTest {
 
     static final String USER_LINK = "/user";
     static final String ROLE_USER = "USER";
-   
+
     @MockBean
     UserService userService;
 
@@ -52,9 +52,9 @@ class UserUnauthorizedControllerTest {
     @BeforeEach
     public void setup() {
         this.mockMvc = MockMvcBuilders
-                .webAppContextSetup(context)
-                .apply(SecurityMockMvcConfigurers.springSecurity())
-                .build();
+            .webAppContextSetup(context)
+            .apply(SecurityMockMvcConfigurers.springSecurity())
+            .build();
     }
 
     @Test
@@ -62,17 +62,16 @@ class UserUnauthorizedControllerTest {
     void updateStatusTest() throws Exception {
 
         String content = "{\n"
-                + "  \"id\": 0,\n"
-                + "  \"userStatus\": \"BLOCKED\"\n"
-                + "}";
+            + "  \"id\": 0,\n"
+            + "  \"userStatus\": \"BLOCKED\"\n"
+            + "}";
 
         mockMvc.perform(patch(USER_LINK + "/status")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(content))
-                .andExpect(status().isForbidden());
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(content))
+            .andExpect(status().isForbidden());
 
-
-        verify(userService,times(0)).updateStatus(0L, UserStatus.BLOCKED, "");
+        verify(userService, times(0)).updateStatus(0L, UserStatus.BLOCKED, "");
     }
 
 }

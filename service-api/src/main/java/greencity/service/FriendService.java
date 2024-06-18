@@ -3,7 +3,6 @@ package greencity.service;
 import greencity.dto.PageableDto;
 import greencity.dto.user.FriendDto;
 import org.springframework.data.domain.Pageable;
-
 import java.util.List;
 
 public interface FriendService {
@@ -20,7 +19,8 @@ public interface FriendService {
     PageableDto<FriendDto> getAllFriendsByUserId(Pageable pageable, Long userId);
 
     /**
-     * Method that allow you to find {@link List} of {@link FriendDto} by user's ID and city.
+     * Method that allow you to find {@link List} of {@link FriendDto} by user's ID
+     * and city.
      *
      * @param userId a value of {@link Long}
      * @return {@link List} of {@link FriendDto}
@@ -28,7 +28,8 @@ public interface FriendService {
     PageableDto<FriendDto> getAllFriendsByUserIdAndCity(Pageable pageable, Long userId);
 
     /**
-     * Method that allow you to find {@link List} of {@link FriendDto} by user's ID and sorted by rating.
+     * Method that allow you to find {@link List} of {@link FriendDto} by user's ID
+     * and sorted by rating.
      *
      * @param userId a value of {@link Long}
      * @return {@link List} of {@link FriendDto}
@@ -36,7 +37,8 @@ public interface FriendService {
     PageableDto<FriendDto> getAllFriendsByUserIdAndRating(Pageable pageable, Long userId);
 
     /**
-     * Method that allow you to find {@link List} of {@link FriendDto} by user's ID and sorted by habits assigned.
+     * Method that allow you to find {@link List} of {@link FriendDto} by user's ID
+     * and sorted by habits assigned.
      *
      * @param userId a value of {@link Long}
      * @return {@link List} of {@link FriendDto}
@@ -46,7 +48,7 @@ public interface FriendService {
     /**
      * Method that allow you to get total amount of friends by user's ID.
      *
-     * @param userId
+     * @param userId a value of {@link Long}
      * @return {@link Integer} total amount of friends
      * @author Maksym Petukhov
      */

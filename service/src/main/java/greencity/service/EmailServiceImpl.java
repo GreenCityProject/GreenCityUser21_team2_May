@@ -7,6 +7,7 @@ import greencity.constant.LogMessage;
 import greencity.dto.category.CategoryDto;
 import greencity.dto.econews.AddEcoNewsDtoResponse;
 import greencity.dto.econews.EcoNewsForSendEmailDto;
+import greencity.dto.econews.SendNewsDto;
 import greencity.dto.newssubscriber.NewsSubscriberResponseDto;
 import greencity.dto.notification.NotificationDto;
 import greencity.dto.place.PlaceNotificationDto;
@@ -50,6 +51,7 @@ public class EmailServiceImpl implements EmailService {
     private final String clientLink;
     private final String ecoNewsLink;
     private final String serverLink;
+    private final String serverLink8060 = "http://localhost:8060";
     private final String senderEmailAddress;
     private static final String PARAM_USER_ID = "&user_id=";
 

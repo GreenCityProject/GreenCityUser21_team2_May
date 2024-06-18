@@ -36,7 +36,7 @@ public class EmailController {
         @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED)
     })
     @PostMapping("/addEcoNews")
-    public ResponseEntity<Object> addEcoNews(@RequestBody EcoNewsForSendEmailDto message) {
+    public ResponseEntity<Object> addEcoNews(@Valid @RequestBody EcoNewsForSendEmailDto message) {
         emailService.sendCreatedNewsForAuthor(message);
         return ResponseEntity.status(HttpStatus.OK).build();
     }

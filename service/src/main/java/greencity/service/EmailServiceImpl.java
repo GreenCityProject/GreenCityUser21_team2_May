@@ -1,11 +1,13 @@
 package greencity.service;
 
+import greencity.constant.AppConstant;
 import greencity.constant.EmailConstants;
 import greencity.constant.ErrorMessage;
 import greencity.constant.LogMessage;
 import greencity.dto.category.CategoryDto;
 import greencity.dto.econews.AddEcoNewsDtoResponse;
 import greencity.dto.econews.EcoNewsForSendEmailDto;
+import greencity.dto.econews.SendNewsDto;
 import greencity.dto.newssubscriber.NewsSubscriberResponseDto;
 import greencity.dto.notification.NotificationDto;
 import greencity.dto.place.PlaceNotificationDto;
@@ -13,6 +15,7 @@ import greencity.dto.user.PlaceAuthorDto;
 import greencity.dto.user.UserActivationDto;
 import greencity.dto.user.UserDeactivationReasonDto;
 import greencity.dto.violation.UserViolationMailDto;
+import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.repository.UserRepo;
 import jakarta.mail.MessagingException;
@@ -26,6 +29,8 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.ITemplateEngine;
 import org.thymeleaf.context.Context;
+
+
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -48,6 +53,7 @@ public class EmailServiceImpl implements EmailService {
     private final String clientLink;
     private final String ecoNewsLink;
     private final String serverLink;
+    private final String serverLink8060 = "http://localhost:8060";
     private final String senderEmailAddress;
     private static final String PARAM_USER_ID = "&user_id=";
 
@@ -56,13 +62,13 @@ public class EmailServiceImpl implements EmailService {
      */
     @Autowired
     public EmailServiceImpl(JavaMailSender javaMailSender,
-        ITemplateEngine templateEngine,
-        UserRepo userRepo,
-        @Qualifier("sendEmailExecutor") Executor executor,
-        @Value("${client.address}") String clientLink,
-        @Value("${econews.address}") String ecoNewsLink,
-        @Value("${address}") String serverLink,
-        @Value("${sender.email.address}") String senderEmailAddress) {
+                            ITemplateEngine templateEngine,
+                            UserRepo userRepo,
+                            @Qualifier("sendEmailExecutor") Executor executor,
+                            @Value("${client.address}") String clientLink,
+                            @Value("${econews.address}") String ecoNewsLink,
+                            @Value("${address}") String serverLink,
+                            @Value("${sender.email.address}") String senderEmailAddress) {
         this.javaMailSender = javaMailSender;
         this.templateEngine = templateEngine;
         this.userRepo = userRepo;
@@ -75,7 +81,7 @@ public class EmailServiceImpl implements EmailService {
 
     @Override
     public void sendChangePlaceStatusEmail(String authorName, String placeName,
-        String placeStatus, String authorEmail) {
+                                           String placeStatus, String authorEmail) {
         log.info(LogMessage.IN_SEND_CHANGE_PLACE_STATUS_EMAIL, placeName);
         Map<String, Object> model = new HashMap<>();
         model.put(EmailConstants.CLIENT_LINK, clientLink);
@@ -93,8 +99,8 @@ public class EmailServiceImpl implements EmailService {
 
     @Override
     public void sendAddedNewPlacesReportEmail(List<PlaceAuthorDto> subscribers,
-        Map<CategoryDto, List<PlaceNotificationDto>> categoriesWithPlaces,
-        String notification) {
+                                              Map<CategoryDto, List<PlaceNotificationDto>> categoriesWithPlaces,
+                                              String notification) {
         log.info(LogMessage.IN_SEND_ADDED_NEW_PLACES_REPORT_EMAIL, null, null, notification);
         Map<String, Object> model = new HashMap<>();
         model.put(EmailConstants.CLIENT_LINK, clientLink);
@@ -110,18 +116,26 @@ public class EmailServiceImpl implements EmailService {
 
     @Override
     public void sendNewNewsForSubscriber(List<NewsSubscriberResponseDto> subscribers,
-        AddEcoNewsDtoResponse newsDto) {
+                                         AddEcoNewsDtoResponse newsDto) {
         Map<String, Object> model = new HashMap<>();
         model.put(EmailConstants.ECO_NEWS_LINK, ecoNewsLink);
         model.put(EmailConstants.NEWS_RESULT, newsDto);
         for (NewsSubscriberResponseDto dto : subscribers) {
-            try {
-                model.put(EmailConstants.UNSUBSCRIBE_LINK, serverLink + "/newsSubscriber/unsubscribe?email="
-                    + URLEncoder.encode(dto.getEmail(), StandardCharsets.UTF_8.toString())
-                    + "&unsubscribeToken=" + dto.getUnsubscribeToken());
-            } catch (UnsupportedEncodingException e) {
-                log.error(e.getMessage());
-            }
+            model.put(EmailConstants.UNSUBSCRIBE_LINK, serverLink8060 + "/subscriber/unsubscribe?unsubscribeToken=" + dto.getUnsubscribeToken());
+            String template = createEmailTemplate(model, EmailConstants.NEWS_RECEIVE_EMAIL_PAGE);
+            sendEmail(dto.getEmail(), EmailConstants.NEWS, template);
+        }
+    }
+
+    @Override
+    public void sendNewsForSubscriber(List<NewsSubscriberResponseDto> subscribers,
+                                      SendNewsDto newsDto) {
+        Map<String, Object> model = new HashMap<>();
+        model.put(EmailConstants.ECO_NEWS_LINK, ecoNewsLink);
+        model.put(EmailConstants.NEWS_RESULT, newsDto);
+        for (NewsSubscriberResponseDto dto : subscribers) {
+            // change serverLink from serverLink8060 to serverLink
+            model.put(EmailConstants.UNSUBSCRIBE_LINK, serverLink8060 + "/subscriber/unsubscribe?unsubscribeToken=" + dto.getUnsubscribeToken());
             String template = createEmailTemplate(model, EmailConstants.NEWS_RECEIVE_EMAIL_PAGE);
             sendEmail(dto.getEmail(), EmailConstants.NEWS, template);
         }
@@ -134,10 +148,10 @@ public class EmailServiceImpl implements EmailService {
             model.put(EmailConstants.ECO_NEWS_LINK, ecoNewsLink);
             model.put(EmailConstants.NEWS_RESULT, newDto);
             model.put(EmailConstants.UNSUBSCRIBE_LINK,
-                serverLink
-                    + "/newSubscriber/unsubscribe?email="
-                    + URLEncoder.encode(newDto.getAuthor().getEmail(), StandardCharsets.UTF_8)
-                    + "&unsubscribeToken=" + newDto.getUnsubscribeToken());
+                    serverLink
+                            + "/newSubscriber/unsubscribe?email="
+                            + URLEncoder.encode(newDto.getAuthor().getEmail(), StandardCharsets.UTF_8)
+                            + "&unsubscribeToken=" + newDto.getUnsubscribeToken());
             String template = createEmailTemplate(model, EmailConstants.NEWS_RECEIVE_EMAIL_PAGE);
             sendEmail(newDto.getAuthor().getEmail(), EmailConstants.CREATED_NEWS, template);
         } else {
@@ -152,7 +166,7 @@ public class EmailServiceImpl implements EmailService {
      */
     @Override
     public void sendVerificationEmail(Long id, String name, String email, String token, String language,
-        boolean isUbs) {
+                                      boolean isUbs) {
         Map<String, Object> model = new HashMap<>();
         String baseLink = clientLink + "#/" + (isUbs ? "ubs" : "");
         model.put(EmailConstants.CLIENT_LINK, baseLink);
@@ -175,7 +189,7 @@ public class EmailServiceImpl implements EmailService {
         model.put(EmailConstants.CLIENT_LINK, clientLink);
         model.put(EmailConstants.USER_NAME, name);
         model.put(EmailConstants.APPROVE_REGISTRATION, clientLink + "#/auth/restore?" + "token=" + token
-            + PARAM_USER_ID + userId);
+                + PARAM_USER_ID + userId);
         String template = createEmailTemplate(model, EmailConstants.USER_APPROVAL_EMAIL_PAGE);
         sendEmail(email, EmailConstants.APPROVE_REGISTRATION_SUBJECT, template);
     }
@@ -190,13 +204,13 @@ public class EmailServiceImpl implements EmailService {
      */
     @Override
     public void sendRestoreEmail(Long userId, String userName, String userEmail, String token, String language,
-        boolean isUbs) {
+                                 boolean isUbs) {
         Map<String, Object> model = new HashMap<>();
         String baseLink = clientLink + "/#" + (isUbs ? "/ubs" : "");
         model.put(EmailConstants.CLIENT_LINK, baseLink);
         model.put(EmailConstants.USER_NAME, userName);
         model.put(EmailConstants.RESTORE_PASS, baseLink + "/auth/restore?" + "token=" + token
-            + PARAM_USER_ID + userId);
+                + PARAM_USER_ID + userId);
         changeLocale(language);
         model.put(EmailConstants.IS_UBS, isUbs);
         String template = createEmailTemplate(model, EmailConstants.RESTORE_EMAIL_PAGE);
@@ -245,7 +259,15 @@ public class EmailServiceImpl implements EmailService {
     public void sendHabitNotification(String name, String email) {
         String subject = "Notification about not marked habits";
         String content = "Dear " + name + ", you haven't marked any habit during last 3 days";
-        sendEmail(email, subject, content);
+
+        if (email.matches(AppConstant.VALIDATION_EMAIL)){
+            if (!userRepo.existsUserByEmail(email)) {
+                throw new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email);
+            }
+            sendEmail(email, subject, content);
+        } else {
+            throw new BadRequestException("Email " + email + " is not valid");
+        }
     }
 
     @Override
@@ -278,7 +300,11 @@ public class EmailServiceImpl implements EmailService {
         model.put(EmailConstants.LANGUAGE, dto.getLanguage());
         changeLocale(dto.getLanguage());
         String template = createEmailTemplate(model, EmailConstants.USER_VIOLATION_PAGE);
-        sendEmail(dto.getEmail(), EmailConstants.VIOLATION_EMAIL, template);
+        if (userRepo.existsUserByEmail(dto.getEmail())) {
+            sendEmail(dto.getEmail(), EmailConstants.VIOLATION_EMAIL, template);
+        } else {
+            throw new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + dto.getEmail());
+        }
     }
 
     @Override

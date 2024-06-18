@@ -755,7 +755,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserVO findAdminById(Long id) {
         User user = userRepo.findById(id)
-                .orElseThrow(() -> new WrongIdException(ErrorMessage.USER_NOT_FOUND_BY_ID));
+            .orElseThrow(() -> new WrongIdException(ErrorMessage.USER_NOT_FOUND_BY_ID));
 
         if (user.getRole().equals(Role.ROLE_ADMIN)) {
             return modelMapper.map(user, UserVO.class);

@@ -50,21 +50,19 @@ class FriendServiceImplTest {
         FriendDto expectedResult = ModelUtils.getFrindDto();
 
         User user = User.builder()
-                .id(1L)
-                .name(TestConst.NAME)
-                .email(TestConst.EMAIL)
-                .build();
+            .id(1L)
+            .name(TestConst.NAME)
+            .email(TestConst.EMAIL)
+            .build();
 
         Page<User> UserFriendsPage = new PageImpl<>(List.of(user), pageable, totalElements);
-
 
         when(userRepo.existsById(userId)).thenReturn(true);
         when(userRepo.getAllFriendsOfUserIdPage(userId, pageable)).thenReturn(UserFriendsPage);
         when(modelMapper.map(user, FriendDto.class)).thenReturn(expectedResult);
 
-
         PageableDto<FriendDto> pageableDto =
-                friendService.getAllFriendsOfUser(userId, pageable);
+            friendService.getAllFriendsOfUser(userId, pageable);
 
         assertNotNull(pageableDto);
         assertNotNull(pageableDto.getPage());
@@ -74,7 +72,6 @@ class FriendServiceImplTest {
         assertEquals(page, pageableDto.getCurrentPage());
         assertEquals(expectedResult, pageableDto.getPage().get(0));
 
-
         verify(userRepo).existsById(userId);
         verify(userRepo).getAllFriendsOfUserIdPage(userId, pageable);
 
@@ -82,11 +79,11 @@ class FriendServiceImplTest {
 
     @Test
     @DisplayName("Test that deletion of Friend that is not in friends list is not successfull")
-    void deleteNonExistentFriendOfUser(){
+    void deleteNonExistentFriendOfUser() {
         long userId = 1L;
         long friendId = 2L;
 
-        assertThrows(NotFoundException.class, () -> friendService.deleteFriendOfUser(userId,friendId));
-        verify(userRepo,  times(0)).deleteUserFriendById(userId,friendId);
+        assertThrows(NotFoundException.class, () -> friendService.deleteFriendOfUser(userId, friendId));
+        verify(userRepo, times(0)).deleteUserFriendById(userId, friendId);
     }
 }

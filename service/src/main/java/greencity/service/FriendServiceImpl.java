@@ -7,14 +7,12 @@ import greencity.entity.User;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.WrongIdException;
 import greencity.repository.UserRepo;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -24,7 +22,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class FriendServiceImpl implements FriendService{
+public class FriendServiceImpl implements FriendService {
     private final UserRepo userRepo;
     private final ModelMapper modelMapper;
 
@@ -35,33 +33,32 @@ public class FriendServiceImpl implements FriendService{
     public PageableDto<FriendDto> getAllFriendsOfUser(long userId, Pageable pageable) {
         validateUserExistence(userId);
 
-        Page<User> friends =userRepo.getAllFriendsOfUserIdPage(userId, pageable);
+        Page<User> friends = userRepo.getAllFriendsOfUserIdPage(userId, pageable);
 
         List<FriendDto> friendList =
-                friends.stream().map(friend -> modelMapper.map(friend, FriendDto.class))
-                        .toList();
+            friends.stream().map(friend -> modelMapper.map(friend, FriendDto.class))
+                .toList();
 
         return new PageableDto<>(
-                friendList,
-                friends.getTotalElements(),
-                friends.getPageable().getPageNumber(),
-                friends.getTotalPages());
+            friendList,
+            friends.getTotalElements(),
+            friends.getPageable().getPageNumber(),
+            friends.getTotalPages());
     }
 
     @Override
     public void deleteFriendOfUser(Long userId, Long friendId) {
         validateUserExistence(userId);
         validateUserExistence(friendId);
-        validateFriendsExistence(userId,friendId);
+        validateFriendsExistence(userId, friendId);
         userRepo.deleteUserFriendById(userId, friendId);
     }
 
     private void validateFriendsExistence(Long userId, Long friendId) {
-        if(!userRepo.isFriend(userId,friendId)){
-            throw new NotFoundException(ErrorMessage.USER_FRIEND_NOT_FOUND +  ": " + userId + " and " + friendId);
+        if (!userRepo.isFriend(userId, friendId)) {
+            throw new NotFoundException(ErrorMessage.USER_FRIEND_NOT_FOUND + ": " + userId + " and " + friendId);
         }
     }
-
 
     private void validateUserExistence(long userId) {
         if (!userRepo.existsById(userId)) {
@@ -75,7 +72,7 @@ public class FriendServiceImpl implements FriendService{
     @Override
     public PageableDto<FriendDto> getAllFriendsByUserId(Pageable pageable, Long userId) {
         userRepo.findById(userId)
-                .orElseThrow(() -> new WrongIdException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId));
+            .orElseThrow(() -> new WrongIdException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId));
 
         Page<User> usersFriendsList;
         String pageableWithSort = pageable.getSort().toString();
@@ -96,7 +93,7 @@ public class FriendServiceImpl implements FriendService{
     @Override
     public PageableDto<FriendDto> getAllFriendsByUserIdAndCity(Pageable pageable, Long userId) {
         userRepo.findById(userId)
-                .orElseThrow(() -> new WrongIdException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId));
+            .orElseThrow(() -> new WrongIdException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId));
 
         Page<User> usersFriendsList = userRepo.findAllFriendsByUserIdAndCity(userId, pageable);
 
@@ -109,7 +106,7 @@ public class FriendServiceImpl implements FriendService{
     @Override
     public PageableDto<FriendDto> getAllFriendsByUserIdAndRating(Pageable pageable, Long userId) {
         userRepo.findById(userId)
-                .orElseThrow(() -> new WrongIdException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId));
+            .orElseThrow(() -> new WrongIdException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId));
 
         Page<User> usersFriendsList = userRepo.findAllFriendsByUserIdAndRating(userId, pageable);
 
@@ -122,7 +119,7 @@ public class FriendServiceImpl implements FriendService{
     @Override
     public PageableDto<FriendDto> getAllFriendsByUserIdAndHabitsAssigned(Pageable pageable, Long userId) {
         userRepo.findById(userId)
-                .orElseThrow(() -> new WrongIdException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId));
+            .orElseThrow(() -> new WrongIdException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId));
 
         Page<User> usersFriendsList = userRepo.findAllFriendsByUserIdAndHabitsAssigned(userId, pageable);
 
@@ -135,28 +132,27 @@ public class FriendServiceImpl implements FriendService{
     @Override
     public Integer getTotalAmountOfFriendsByUserId(Long userId) {
         userRepo.findById(userId)
-                .orElseThrow(() -> new WrongIdException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId));
+            .orElseThrow(() -> new WrongIdException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId));
 
         return userRepo.totalAmountOfFriendsByUserId(userId);
     }
 
     private PageableDto<FriendDto> getFriendDtoPageableDto(Long userId, Page<User> usersFriendsList) {
         List<FriendDto> userForListDtos = usersFriendsList.stream()
-                .map(user -> {
-                    FriendDto friendDto = modelMapper.map(user, FriendDto.class);
-                    Integer mutualFriendsCount = userRepo.countOfMutualFriends(userId, friendDto.getId());
-                    friendDto.setMutualFriends(mutualFriendsCount);
-                    friendDto.setOnline(this.checkIfTheUserIsOnline(friendDto.getId()));
-                    return friendDto;
-                })
-                .toList();
+            .map(user -> {
+                FriendDto friendDto = modelMapper.map(user, FriendDto.class);
+                Integer mutualFriendsCount = userRepo.countOfMutualFriends(userId, friendDto.getId());
+                friendDto.setMutualFriends(mutualFriendsCount);
+                friendDto.setOnline(this.checkIfTheUserIsOnline(friendDto.getId()));
+                return friendDto;
+            })
+            .toList();
 
         return new PageableDto<>(
-                userForListDtos,
-                usersFriendsList.getTotalElements(),
-                usersFriendsList.getPageable().getPageNumber(),
-                usersFriendsList.getTotalPages()
-        );
+            userForListDtos,
+            usersFriendsList.getTotalElements(),
+            usersFriendsList.getPageable().getPageNumber(),
+            usersFriendsList.getTotalPages());
     }
 
     private boolean checkIfTheUserIsOnline(Long userId) {

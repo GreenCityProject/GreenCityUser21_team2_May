@@ -132,7 +132,8 @@ public class EmailServiceImpl implements EmailService {
     }
 
     @Override
-    public void sendNewsForSubscriber(List<NewsSubscriberResponseDto> subscribers, SendNewsDto newsDto) {}
+    public void sendNewsForSubscriber(List<NewsSubscriberResponseDto> subscribers, SendNewsDto newsDto) {
+    }
 
     @Override
     public void sendCreatedNewsForAuthor(EcoNewsForSendEmailDto newDto) {

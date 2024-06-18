@@ -7,18 +7,15 @@ import greencity.exception.exceptions.SubscribeException;
 import greencity.repository.NewsSubscriberRepo;
 import greencity.security.jwt.JwtTool;
 import jakarta.transaction.Transactional;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class NewsSubscriberServiceImpl implements NewsSubscriberService {
-
     private final NewsSubscriberRepo newsSubscriberRepo;
     private final JwtTool jwtTool;
 

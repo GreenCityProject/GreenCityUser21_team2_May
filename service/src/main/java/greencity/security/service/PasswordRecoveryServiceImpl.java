@@ -96,7 +96,6 @@ public class PasswordRecoveryServiceImpl implements PasswordRecoveryService {
     @Transactional
     @Override
     public void updatePasswordUsingToken(OwnRestoreDto form) {
-
         RestorePasswordEmail restorePasswordEmail = restorePasswordEmailRepo
             .findByToken(form.getToken())
             .orElseThrow(() -> new NotFoundException(ErrorMessage.LINK_IS_NO_ACTIVE));

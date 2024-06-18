@@ -10,24 +10,22 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class NewsSubscriberServiceImpl implements NewsSubscriberService {
-
     private final NewsSubscriberRepo newsSubscriberRepo;
     private final JwtTool jwtTool;
-
     ModelMapper modelMapper = new ModelMapper();
 
     @Override
     @Transactional
     public NewsSubscriberResponseDto subscribe(NewsSubscriberRequestDto subscriberRequestDto) {
-        if (isSubscriberExists(subscriberRequestDto.getEmail()))
+        if (isSubscriberExists(subscriberRequestDto.getEmail())) {
             throw new SubscribeException("Email already subscribed");
+        }
         NewsSubscriber newsSubscriber =
             new NewsSubscriber(null, subscriberRequestDto.getEmail(), jwtTool.generateTokenKey());
         return modelMapper.map(newsSubscriberRepo.save(newsSubscriber), NewsSubscriberResponseDto.class);

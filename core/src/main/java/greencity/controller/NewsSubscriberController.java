@@ -23,9 +23,7 @@ import java.util.List;
 @RequestMapping("/subscriber")
 @AllArgsConstructor
 public class NewsSubscriberController {
-
     private final NewsSubscriberService subscriberService;
-
     private final EmailService emailService;
 
     /**

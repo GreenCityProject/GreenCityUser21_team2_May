@@ -73,7 +73,7 @@ class UserSecuredControllerTest {
     @WithMockUser(roles = ROLE_ADMIN)
     void deleteProfilePictureAsAdmin_StatusIsNotFound() throws Exception {
         mockMvc.perform(patch(USER_LINK + "/deleteProfilePicture"))
-                .andExpect(status().isNotFound());
+            .andExpect(status().isNotFound());
     }
 
     @Test
@@ -82,12 +82,12 @@ class UserSecuredControllerTest {
         mockMvc.perform(get(USER_LINK))
             .andExpect(status().isUnauthorized());
     }
-    
+
     @Test
     @DisplayName("Test response status for user is online endpoint as unauthenticated user")
     void userIsOnline_EndpointResponse_StatusIsUnauthorized() throws Exception {
         mockMvc.perform(get(USER_LINK + "/isOnline/{userId}/", 1L))
-                .andExpect(status().isUnauthorized());
+            .andExpect(status().isUnauthorized());
     }
 
     @Test
@@ -137,7 +137,7 @@ class UserSecuredControllerTest {
     @WithMockUser(roles = ROLE_ADMIN)
     void getEndpointAsAdmin_StatusIsNotFound() throws Exception {
         mockMvc.perform(get(USER_LINK))
-                .andExpect(status().isNotFound());
+            .andExpect(status().isNotFound());
     }
 
     @Test
@@ -145,6 +145,6 @@ class UserSecuredControllerTest {
     @WithMockUser(roles = ROLE_ADMIN)
     void userOnlineStatusAsAdmin_StatusIsNotFound() throws Exception {
         mockMvc.perform(get(USER_LINK + "/isOnline/{userId}/", 1L))
-                .andExpect(status().isNotFound());
+            .andExpect(status().isNotFound());
     }
 }

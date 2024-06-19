@@ -30,7 +30,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ContextConfiguration(classes = {SecurityConfig.class, JwtTool.class})
 @WebMvcTest(OwnSecurityController.class)
 class UserSecuredControllerTest {
-
     static final String USER_LINK = "/user";
     static final String ROLE_USER = "USER";
     static final String ROLE_ADMIN = "ADMIN";

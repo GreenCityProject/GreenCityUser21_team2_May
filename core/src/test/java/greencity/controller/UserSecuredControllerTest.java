@@ -70,10 +70,11 @@ class UserSecuredControllerTest {
     }
 
     @Test
-    @DisplayName("Test response status for user is online endpoint as unauthenticated user")
-    void userIsOnline_EndpointResponse_StatusIsUnauthorized() throws Exception {
+    @DisplayName("Test response status for deleting profile picture as authenticated ADMIN")
+    @WithMockUser(roles = ROLE_ADMIN)
+    void deleteProfilePictureAsAdmin_StatusIsNotFound() throws Exception {
         mockMvc.perform(patch(USER_LINK + "/deleteProfilePicture"))
-            .andExpect(status().isUnauthorized());
+                .andExpect(status().isNotFound());
     }
 
     @Test
@@ -87,7 +88,7 @@ class UserSecuredControllerTest {
     @DisplayName("Test response status for user is online endpoint as unauthenticated user")
     void userIsOnline_EndpointResponse_StatusIsUnauthorized() throws Exception {
         mockMvc.perform(get(USER_LINK + "/isOnline/{userId}/", 1L))
-            .andExpect(status().isUnauthorized());
+                .andExpect(status().isUnauthorized());
     }
 
     @Test
@@ -135,16 +136,16 @@ class UserSecuredControllerTest {
     @Test
     @DisplayName("Test response status for user get endpoint as authenticated ADMIN")
     @WithMockUser(roles = ROLE_ADMIN)
-    void userIsOnline_EndpointResponse_StatusIsNotFound() throws Exception {
+    void getEndpointAsAdmin_StatusIsNotFound() throws Exception {
         mockMvc.perform(get(USER_LINK))
                 .andExpect(status().isNotFound());
     }
-  
+
     @Test
-    @DisplayName("Test response status for user is online endpoint as authenticated ADMIN")
+    @DisplayName("Test response status for checking online status of user as authenticated ADMIN")
     @WithMockUser(roles = ROLE_ADMIN)
-    void userIsOnline_EndpointResponse_StatusIsNotFound() throws Exception {
+    void userOnlineStatusAsAdmin_StatusIsNotFound() throws Exception {
         mockMvc.perform(get(USER_LINK + "/isOnline/{userId}/", 1L))
-            .andExpect(status().isNotFound());
+                .andExpect(status().isNotFound());
     }
 }

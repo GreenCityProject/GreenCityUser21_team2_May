@@ -26,7 +26,6 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -483,10 +482,10 @@ public class UserController {
      */
     @Operation(summary = "update via UserManagement")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
-            @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED),
-            @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN),
-            @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND)
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED),
+        @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN),
+        @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND)
     })
     @PutMapping("/{id}")
     public void updateUserManagement(
@@ -618,7 +617,8 @@ public class UserController {
      *
      * @param id        {@link Long} - user's id.
      * @param adminLang {@link String} - current administrator language.
-     * @return {@link List} of {@link String} - reasons for deactivation of the current user.
+     * @return {@link List} of {@link String} - reasons for deactivation of the
+     *         current user.
      * @author Vlad Pikhotskyi
      */
     @Operation(summary = "Get list reasons of deactivating the user")

@@ -58,7 +58,7 @@ class UserSecuredControllerTest {
     @DisplayName("Test response status for user get endpoint as unauthenticated user")
     void getUser_EndpointResponse_StatusIsUnauthorized() throws Exception {
         mockMvc.perform(get(USER_LINK))
-                .andExpect(status().isUnauthorized());
+            .andExpect(status().isUnauthorized());
     }
 
     @Test
@@ -66,21 +66,21 @@ class UserSecuredControllerTest {
     @WithMockUser(roles = ROLE_USER)
     void getUser_EndpointResponse_StatusIsForbidden() throws Exception {
         mockMvc.perform(get(USER_LINK))
-                .andExpect(status().isForbidden());
+            .andExpect(status().isForbidden());
     }
-    
+
     @Test
     @DisplayName("Test response status for user is online endpoint as unauthenticated user")
     void userIsOnline_EndpointResponse_StatusIsUnauthorized() throws Exception {
         mockMvc.perform(patch(USER_LINK + "/deleteProfilePicture"))
-                .andExpect(status().isUnauthorized());
+            .andExpect(status().isUnauthorized());
     }
-    
+
     @Test
     @DisplayName("Test response status for user patch profilePicture as unauthenticated user")
     void userProfilePicture_EndpointResponse_StatusIsUnauthorized() throws Exception {
         mockMvc.perform(get(USER_LINK))
-                .andExpect(status().isUnauthorized());
+            .andExpect(status().isUnauthorized());
     }
     
     @Test
@@ -95,7 +95,7 @@ class UserSecuredControllerTest {
     @WithMockUser(roles = ROLE_USER)
     void userIsOnline_EndpointResponse_StatusIsOk() throws Exception {
         mockMvc.perform(patch(USER_LINK + "/deleteProfilePicture"))
-                .andExpect(status().isNotFound());
+            .andExpect(status().isNotFound());
     }
 
     @Test
@@ -104,15 +104,16 @@ class UserSecuredControllerTest {
     void userProfilePicture_EndpointResponse_StatusIsNotFound() throws Exception {
         String base64 = "your_base64_string";
 
-        MockMultipartFile image = new MockMultipartFile("image", "test.jpg", "image/jpeg", "test image content".getBytes());
+        MockMultipartFile image =
+            new MockMultipartFile("image", "test.jpg", "image/jpeg", "test image content".getBytes());
         mockMvc.perform(MockMvcRequestBuilders.multipart(USER_LINK + "/profilePicture")
-                        .file(image)
-                        .param("base64", base64)
-                        .with(request -> {
-                            request.setMethod("PATCH");
-                            return request;
-                        }))
-                .andExpect(status().isNotFound());
+            .file(image)
+            .param("base64", base64)
+            .with(request -> {
+                request.setMethod("PATCH");
+                return request;
+            }))
+            .andExpect(status().isNotFound());
     }
 
     @Test
@@ -120,9 +121,9 @@ class UserSecuredControllerTest {
     @WithMockUser(roles = ROLE_ADMIN)
     void userIsOnline_EndpointResponse_StatusIsNotFound() throws Exception {
         mockMvc.perform(patch(USER_LINK + "/deleteProfilePicture"))
-          .andExpect(status().isNotFound());
+            .andExpect(status().isNotFound());
     }
-  
+
     @Test
     @DisplayName("Test response status for user is online endpoint as authenticated USER")
     @WithMockUser(roles = ROLE_USER)

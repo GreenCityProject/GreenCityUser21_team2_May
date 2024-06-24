@@ -383,4 +383,8 @@ public interface UserService {
      * @author Ihor Volianskyi
      */
     UserVO findAdminById(Long id);
+
+    List<TagUserDto> searchByNickname(String nickname);
+
+    TagUserDto getUserByNickname(String nickname);
 }

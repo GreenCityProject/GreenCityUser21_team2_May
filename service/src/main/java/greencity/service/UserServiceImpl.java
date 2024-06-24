@@ -763,4 +763,20 @@ public class UserServiceImpl implements UserService {
 
         throw new LowRoleLevelException("You do not have authorities");
     }
+
+    @Override
+    public List<TagUserDto> searchByNickname(String nickname) {
+        List<User> users = userRepo.searchByNickname(nickname);
+
+        return users.stream()
+                .map(user -> modelMapper.map(user, TagUserDto.class))
+                .toList();
+    }
+
+    @Override
+    public TagUserDto getUserByNickname(String nickname) {
+        User user = userRepo.findByNickname(nickname).orElseThrow(() -> new NotFoundException("User with nickname '" + nickname + "' not found"));
+
+        return new ModelMapper().map(user, TagUserDto.class);
+    }
 }

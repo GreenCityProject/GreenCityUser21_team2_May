@@ -116,6 +116,7 @@ public class SecurityConfig {
                                 "/swagger-ui/**")
                         .permitAll()
                         .requestMatchers(HttpMethod.GET,
+                                "/tagging/getByNickname",
                                 "/ownSecurity/verifyEmail",
                                 "/ownSecurity/updateAccessToken",
                                 "/ownSecurity/restorePassword",
@@ -137,6 +138,7 @@ public class SecurityConfig {
                                 "/ownSecurity/updatePassword")
                         .permitAll()
                         .requestMatchers(HttpMethod.GET, USER_LINK,
+                                "tagging/searchByNickname",
                                 "/user/shopping-list-items/habits/{habitId}/shopping-list",
                                 "/user/{userId}/{habitId}/custom-shopping-list-items/available",
                                 "/user/{userId}/profile/",

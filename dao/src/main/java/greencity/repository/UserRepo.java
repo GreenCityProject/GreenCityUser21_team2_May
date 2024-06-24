@@ -333,4 +333,9 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
         value = "SELECT * FROM users WHERE id IN (SELECT friend_id FROM user_friends WHERE user_id = :userId) LIMIT 6")
     Optional<List<User>> findTop6FriendsByUserId(Long userId);
 
+
+    @Query("SELECT u FROM User u WHERE (:nickname IS NULL OR :nickname = '' OR LOWER(u.nickname) LIKE LOWER(CONCAT('%', :nickname, '%')))")
+    List<User> searchByNickname(String nickname);
+
+    Optional<User> findByNickname(String nickname);
 }

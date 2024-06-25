@@ -1,9 +1,6 @@
 package greencity.controller;
 
-import greencity.annotations.ApiPageable;
-import greencity.annotations.CurrentUser;
-import greencity.annotations.CurrentUserId;
-import greencity.annotations.ImageValidation;
+import greencity.annotations.*;
 import greencity.constant.HttpStatuses;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.PageableDto;
@@ -798,7 +795,7 @@ public class UserController {
     })
     @PatchMapping(path = "/nickname")
     public ResponseEntity<TagUserDto> updateUserNickname(
-            @RequestParam(name = "nickname") String nickname,
+            @RequestParam(name = "nickname") @NicknameValidation String nickname,
             @ApiIgnore @AuthenticationPrincipal String principal) {
         return ResponseEntity.status(HttpStatus.OK).body(userService.updateUserNickname(nickname, principal));
     }

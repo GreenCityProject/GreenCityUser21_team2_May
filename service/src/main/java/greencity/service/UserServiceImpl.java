@@ -4,8 +4,7 @@ import greencity.constant.AppConstant;
 import greencity.constant.UpdateConstants;
 import greencity.dto.ubs.UbsTableCreationDto;
 import greencity.dto.user.*;
-import greencity.entity.Language;
-import greencity.entity.UserDeactivationReason;
+import greencity.entity.*;
 import greencity.filters.SearchCriteria;
 import greencity.client.RestClient;
 import greencity.constant.ErrorMessage;
@@ -14,14 +13,13 @@ import greencity.dto.PageableAdvancedDto;
 import greencity.dto.PageableDto;
 import greencity.dto.filter.FilterUserDto;
 import greencity.dto.shoppinglist.CustomShoppingListItemResponseDto;
-import greencity.entity.User;
-import greencity.entity.VerifyEmail;
 import greencity.enums.EmailNotification;
 import greencity.enums.Role;
 import greencity.enums.UserStatus;
 import greencity.exception.exceptions.*;
 import greencity.filters.UserSpecification;
 import greencity.repository.LanguageRepo;
+import greencity.repository.NicknamesArchiveRepo;
 import greencity.repository.UserDeactivationRepo;
 import greencity.repository.UserRepo;
 import greencity.repository.options.UserFilter;
@@ -56,6 +54,7 @@ public class UserServiceImpl implements UserService {
      * Autowired greencity.repository.
      */
     private final UserRepo userRepo;
+    private final NicknamesArchiveRepo nicknamesArchiveRepo;
     private final RestClient restClient;
     private final LanguageRepo languageRepo;
     private final UserDeactivationRepo userDeactivationRepo;
@@ -786,9 +785,15 @@ public class UserServiceImpl implements UserService {
 
         Optional<User> optionalUser = userRepo.findByNickname(nickname);
         if (optionalUser.isPresent()){
-            if(optionalUser.get().getNickname().equals(nickname)) throw new BadRequestException("Your  nickname is '" + nickname + "' already");
-            else throw new BadRequestException("User with  nickname '" + nickname + "' already exists");
+            if(optionalUser.get().getEmail().equals(principal)) throw new BadRequestException("Your  nickname is '" + nickname + "' already");
+            else throw new BadRequestException("User with nickname '" + nickname + "' already exists");
         }
+
+        List<String> nicknamesFromArchive = nicknamesArchiveRepo.findAll().stream().map(NicknamesArchive::getNickname).toList();
+        if (nicknamesFromArchive.contains(nickname)) throw new BadRequestException("Nickname '" + nickname + "' is already taken");
+
+        nicknamesArchiveRepo.save(NicknamesArchive.builder().nickname(nickname).activity(true).user(user).build());
+        nicknamesArchiveRepo.setFalseActivityForAllUserNicknamesExcept(user, nickname);
 
         userRepo.updateUserNickname(user.getId(), nickname);
 

@@ -37,6 +37,7 @@ import greencity.exception.exceptions.UserBlockedException;
 import greencity.exception.exceptions.UserDeactivatedException;
 import greencity.exception.exceptions.WrongEmailException;
 import greencity.exception.exceptions.WrongPasswordException;
+import greencity.repository.NicknamesArchiveRepo;
 import greencity.repository.UserRepo;
 import greencity.security.dto.ownsecurity.EmployeeSignUpDto;
 import greencity.security.dto.ownsecurity.OwnSignInDto;
@@ -90,6 +91,9 @@ class OwnSecurityServiceImplTest {
     UserRepo userRepo;
 
     @Mock
+    NicknamesArchiveRepo nicknamesArchiveRepo;
+
+    @Mock
     EmailService emailService;
 
     private OwnSecurityService ownSecurityService;
@@ -105,7 +109,7 @@ class OwnSecurityServiceImplTest {
         initMocks(this);
         ownSecurityService = new OwnSecurityServiceImpl(ownSecurityRepo, userService, passwordEncoder,
             jwtTool, 1, restorePasswordEmailRepo, modelMapper,
-            userRepo, emailService);
+            userRepo, emailService, nicknamesArchiveRepo);
 
         verifiedUser = UserVO.builder()
             .email("test@gmail.com")

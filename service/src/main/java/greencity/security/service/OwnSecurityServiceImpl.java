@@ -5,11 +5,7 @@ import greencity.constant.ErrorMessage;
 import greencity.dto.user.UserAdminRegistrationDto;
 import greencity.dto.user.UserManagementDto;
 import greencity.dto.user.UserVO;
-import greencity.entity.Language;
-import greencity.entity.OwnSecurity;
-import greencity.entity.RestorePasswordEmail;
-import greencity.entity.User;
-import greencity.entity.VerifyEmail;
+import greencity.entity.*;
 import greencity.enums.EmailNotification;
 import greencity.enums.Role;
 import greencity.enums.UserStatus;
@@ -23,6 +19,7 @@ import greencity.exception.exceptions.UserBlockedException;
 import greencity.exception.exceptions.UserDeactivatedException;
 import greencity.exception.exceptions.WrongEmailException;
 import greencity.exception.exceptions.WrongPasswordException;
+import greencity.repository.NicknamesArchiveRepo;
 import greencity.repository.UserRepo;
 import greencity.security.dto.AccessRefreshTokensDto;
 import greencity.security.dto.SuccessSignInDto;
@@ -68,6 +65,7 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
     private final RestorePasswordEmailRepo restorePasswordEmailRepo;
     private final ModelMapper modelMapper;
     private final UserRepo userRepo;
+    private final NicknamesArchiveRepo nicknamesArchiveRepo;
     private static final String VALID_PW_CHARS =
         "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()-_=+{}[]|:;<>?,./";
     private final EmailService emailService;
@@ -84,7 +82,8 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
         RestorePasswordEmailRepo restorePasswordEmailRepo,
         ModelMapper modelMapper,
         UserRepo userRepo,
-        EmailService emailService) {
+        EmailService emailService,
+       NicknamesArchiveRepo nicknamesArchiveRepo) {
         this.ownSecurityRepo = ownSecurityRepo;
         this.userService = userService;
         this.passwordEncoder = passwordEncoder;
@@ -94,6 +93,7 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
         this.modelMapper = modelMapper;
         this.userRepo = userRepo;
         this.emailService = emailService;
+        this.nicknamesArchiveRepo = nicknamesArchiveRepo;
     }
 
     /**
@@ -109,6 +109,7 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
         user.setUuid(UUID.randomUUID().toString());
         try {
             User savedUser = userRepo.save(user);
+            nicknamesArchiveRepo.save(NicknamesArchive.builder().activity(true).nickname(user.getNickname()).user(user).build());
             user.setId(savedUser.getId());
             emailService.sendVerificationEmail(savedUser.getId(), savedUser.getName(), savedUser.getEmail(),
                 savedUser.getVerifyEmail().getToken(), language, dto.isUbs());

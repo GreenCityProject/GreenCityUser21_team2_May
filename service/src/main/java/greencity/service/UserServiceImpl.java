@@ -779,4 +779,18 @@ public class UserServiceImpl implements UserService {
 
         return new ModelMapper().map(user, TagUserDto.class);
     }
+
+    @Override
+    public TagUserDto updateUserNickname(String nickname, String principal) {
+        User user = userRepo.findByEmail(principal).orElseThrow(() -> new WrongEmailException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + principal));
+
+        Optional<User> optionalUser = userRepo.findByNickname(nickname);
+        if (optionalUser.isPresent()) throw new BadRequestException("User with  nickname '" + nickname + "' already exists");
+
+        userRepo.updateUserNickname(user.getId(), nickname);
+
+        user.setNickname(nickname);
+
+        return new ModelMapper().map(user, TagUserDto.class);
+    }
 }

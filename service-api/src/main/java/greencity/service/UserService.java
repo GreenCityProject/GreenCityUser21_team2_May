@@ -387,4 +387,6 @@ public interface UserService {
     List<TagUserDto> searchByNickname(String nickname);
 
     TagUserDto getUserByNickname(String nickname);
+
+    TagUserDto updateUserNickname(String nickname, String principal);
 }

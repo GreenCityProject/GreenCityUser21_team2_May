@@ -337,5 +337,19 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
     @Query("SELECT u FROM User u WHERE (:nickname IS NULL OR :nickname = '' OR LOWER(u.nickname) LIKE LOWER(CONCAT('%', :nickname, '%')))")
     List<User> searchByNickname(String nickname);
 
+
     Optional<User> findByNickname(String nickname);
+
+
+    /**
+     * Updates nickname for a given user.
+     *
+     * @param userId               - {@link User}'s id
+     * @param userNickname - new {@link User}'s last activity time
+     * @author Dmytro Fedotov
+     */
+    @Modifying
+    @Transactional
+    @Query("UPDATE User u SET u.nickname = :userNickname WHERE u.id = :userId")
+    void updateUserNickname(Long userId, String userNickname);
 }

@@ -3,18 +3,12 @@ package greencity.controller;
 
 import greencity.annotations.ApiPageable;
 import greencity.constant.HttpStatuses;
-import greencity.dto.PageableAdvancedDto;
 import greencity.dto.user.TagUserDto;
-import greencity.dto.user.UserManagementDto;
-import greencity.dto.user.UserUpdateDto;
-import greencity.dto.user.UserVO;
 import greencity.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.AllArgsConstructor;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;

@@ -785,7 +785,10 @@ public class UserServiceImpl implements UserService {
         User user = userRepo.findByEmail(principal).orElseThrow(() -> new WrongEmailException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + principal));
 
         Optional<User> optionalUser = userRepo.findByNickname(nickname);
-        if (optionalUser.isPresent()) throw new BadRequestException("User with  nickname '" + nickname + "' already exists");
+        if (optionalUser.isPresent()){
+            if(optionalUser.get().getNickname().equals(nickname)) throw new BadRequestException("Your  nickname is '" + nickname + "' already");
+            else throw new BadRequestException("User with  nickname '" + nickname + "' already exists");
+        }
 
         userRepo.updateUserNickname(user.getId(), nickname);
 

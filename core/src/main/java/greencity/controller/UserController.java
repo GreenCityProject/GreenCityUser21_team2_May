@@ -36,6 +36,7 @@ import springfox.documentation.annotations.ApiIgnore;
 import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 @RestController
@@ -797,6 +798,6 @@ public class UserController {
     public ResponseEntity<TagUserDto> updateUserNickname(
             @RequestParam(name = "nickname") @NicknameValidation String nickname,
             @ApiIgnore @AuthenticationPrincipal String principal) {
-        return ResponseEntity.status(HttpStatus.OK).body(userService.updateUserNickname(nickname, principal));
+        return ResponseEntity.status(HttpStatus.OK).body(userService.updateUserNickname(nickname.toLowerCase(), principal));
     }
 }

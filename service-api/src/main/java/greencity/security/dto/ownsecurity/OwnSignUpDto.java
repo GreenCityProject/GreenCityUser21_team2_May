@@ -1,6 +1,7 @@
 package greencity.security.dto.ownsecurity;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import greencity.annotations.NicknameValidation;
 import greencity.annotations.PasswordValidation;
 import greencity.constant.ValidationConstants;
 import jakarta.validation.constraints.Email;
@@ -36,4 +37,8 @@ public class OwnSignUpDto {
     private String password;
     @JsonProperty("isUbs")
     private boolean isUbs;
+
+    @NotBlank
+    @NicknameValidation
+    private String nickname;
 }

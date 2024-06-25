@@ -104,6 +104,7 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
     public SuccessSignUpDto signUp(OwnSignUpDto dto, String language) {
         User user = createNewRegisteredUser(dto, jwtTool.generateTokenKey(), language);
         setUsersFields(dto, user);
+        user.setNickname(dto.getNickname());
         user.setVerifyEmail(createVerifyEmail(user, jwtTool.generateTokenKey()));
         user.setUuid(UUID.randomUUID().toString());
         try {
@@ -112,7 +113,7 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
             emailService.sendVerificationEmail(savedUser.getId(), savedUser.getName(), savedUser.getEmail(),
                 savedUser.getVerifyEmail().getToken(), language, dto.isUbs());
         } catch (DataIntegrityViolationException e) {
-            throw new UserAlreadyRegisteredException(ErrorMessage.USER_ALREADY_REGISTERED_WITH_THIS_EMAIL);
+            throw new UserAlreadyRegisteredException(ErrorMessage.USER_ALREADY_REGISTERED);
         }
         user.setShowLocation(true);
         user.setShowEcoPlace(true);

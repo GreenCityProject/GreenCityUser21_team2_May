@@ -18,7 +18,6 @@ import java.util.Optional;
 public class NewsSubscriberServiceImpl implements NewsSubscriberService {
     private final NewsSubscriberRepo newsSubscriberRepo;
     private final JwtTool jwtTool;
-
     ModelMapper modelMapper = new ModelMapper();
 
     @Override

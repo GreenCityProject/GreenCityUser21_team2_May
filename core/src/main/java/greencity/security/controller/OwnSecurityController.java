@@ -196,27 +196,6 @@ public class OwnSecurityController {
     }
 
     /**
-     * Method for updating current password.
-     *
-     * @param updateDto - {@link UpdatePasswordDto}
-     * @return - {@link ResponseEntity}
-     * @author Dmytro Dovhal
-     */
-    @Operation(summary = "Updating current password.")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
-        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST),
-        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED)
-    })
-    @PutMapping("/changePassword")
-    public ResponseEntity<Object> updatePassword(@Valid @RequestBody UpdatePasswordDto updateDto) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String email = authentication.getName();
-        service.updateCurrentPassword(updateDto, email);
-        return ResponseEntity.ok().build();
-    }
-
-    /**
      * Register new user from admin panel.
      *
      * @param userDto - dto with info for registering user.
@@ -272,6 +251,22 @@ public class OwnSecurityController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = authentication.getName();
         service.setPassword(dto, email);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @Operation(summary = "Reset password for user.")
+    @ResponseStatus(value = HttpStatus.CREATED)
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "201", description = HttpStatuses.CREATED),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED)
+    })
+    @PostMapping("/changePassword")
+    public ResponseEntity<Object> updateCurrentPassword(@Valid @RequestBody UpdatePasswordDto dto) {
+        var authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+
+        service.updateCurrentPassword(dto, email);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 }

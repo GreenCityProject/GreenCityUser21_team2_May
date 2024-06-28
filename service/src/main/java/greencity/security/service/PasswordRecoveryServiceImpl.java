@@ -99,13 +99,17 @@ public class PasswordRecoveryServiceImpl implements PasswordRecoveryService {
         RestorePasswordEmail restorePasswordEmail = restorePasswordEmailRepo
             .findByToken(form.getToken())
             .orElseThrow(() -> new NotFoundException(ErrorMessage.LINK_IS_NO_ACTIVE));
+
         if (!form.getPassword().equals(form.getConfirmPassword())) {
             throw new BadRequestException(ErrorMessage.PASSWORDS_DO_NOT_MATCH);
         }
+
         User user = restorePasswordEmail.getUser();
         UserStatus userStatus = restorePasswordEmail.getUser().getUserStatus();
+
         if (isNotExpired(restorePasswordEmail.getExpiryDate())) {
             updatePassword(form.getPassword(), restorePasswordEmail.getUser().getId());
+
             emailService.sendSuccessRestorePasswordByEmail(user.getEmail(), user.getLanguage().getCode(),
                 user.getName(), form.getIsUbs());
             applicationEventPublisher.publishEvent(

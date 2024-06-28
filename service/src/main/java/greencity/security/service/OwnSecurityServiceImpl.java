@@ -13,25 +13,12 @@ import greencity.entity.VerifyEmail;
 import greencity.enums.EmailNotification;
 import greencity.enums.Role;
 import greencity.enums.UserStatus;
-import greencity.exception.exceptions.BadRefreshTokenException;
-import greencity.exception.exceptions.BadUserStatusException;
-import greencity.exception.exceptions.EmailNotVerified;
-import greencity.exception.exceptions.PasswordsDoNotMatchesException;
-import greencity.exception.exceptions.UserAlreadyHasPasswordException;
-import greencity.exception.exceptions.UserAlreadyRegisteredException;
-import greencity.exception.exceptions.UserBlockedException;
-import greencity.exception.exceptions.UserDeactivatedException;
-import greencity.exception.exceptions.WrongEmailException;
-import greencity.exception.exceptions.WrongPasswordException;
+import greencity.exception.exceptions.*;
 import greencity.repository.UserRepo;
 import greencity.security.dto.AccessRefreshTokensDto;
 import greencity.security.dto.SuccessSignInDto;
 import greencity.security.dto.SuccessSignUpDto;
-import greencity.security.dto.ownsecurity.EmployeeSignUpDto;
-import greencity.security.dto.ownsecurity.OwnSignInDto;
-import greencity.security.dto.ownsecurity.OwnSignUpDto;
-import greencity.security.dto.ownsecurity.SetPasswordDto;
-import greencity.security.dto.ownsecurity.UpdatePasswordDto;
+import greencity.security.dto.ownsecurity.*;
 import greencity.security.jwt.JwtTool;
 import greencity.security.repository.OwnSecurityRepo;
 import greencity.security.repository.RestorePasswordEmailRepo;
@@ -271,35 +258,6 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
 
     /**
      * {@inheritDoc}
-     *
-     * @author Dmytro Dovhal
-     */
-    @Override
-    public void updatePassword(String pass, Long id) {
-        String password = passwordEncoder.encode(pass);
-        ownSecurityRepo.updatePassword(password, id);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    @Transactional
-    public void updateCurrentPassword(UpdatePasswordDto updatePasswordDto, String email) {
-        UserVO user = userService.findByEmail(email);
-
-        if (user.getUserStatus() != UserStatus.ACTIVATED) {
-            throw new EmailNotVerified(ErrorMessage.USER_EMAIL_IS_NOT_VERIFIED);
-        }
-
-        if (!updatePasswordDto.getPassword().equals(updatePasswordDto.getConfirmPassword())) {
-            throw new PasswordsDoNotMatchesException(ErrorMessage.PASSWORDS_DO_NOT_MATCH);
-        }
-        updatePassword(updatePasswordDto.getPassword(), user.getId());
-    }
-
-    /**
-     * {@inheritDoc}
      */
     @Transactional
     @Override
@@ -427,5 +385,40 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
             .user(user)
             .build());
         userRepo.save(user);
+    }
+
+    @Override
+    @Transactional
+    public void updateCurrentPassword(UpdatePasswordDto dto, String email) {
+        User user = userRepo.findByEmail(email)
+            .orElseThrow(() -> new WrongEmailException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL));
+
+        validateCurrentPassword(dto.getCurrentPassword(), user);
+        ensureNewPasswordIsValid(dto.getNewPassword(), dto.getConfirmPassword(), user.getOwnSecurity().getPassword());
+
+        updatePassword(dto.getConfirmPassword(), user.getId());
+    }
+
+    private void validateCurrentPassword(String currentPassword, User user) {
+        if (user.getUserStatus() != UserStatus.ACTIVATED) {
+            throw new EmailNotVerified(ErrorMessage.USER_EMAIL_IS_NOT_VERIFIED);
+        }
+        if (!passwordEncoder.matches(currentPassword, user.getOwnSecurity().getPassword())) {
+            throw new WrongPasswordException(ErrorMessage.BAD_PASSWORD);
+        }
+    }
+
+    private void ensureNewPasswordIsValid(String newPassword, String confirmPassword, String oldPasswordHashed) {
+        if (!newPassword.equals(confirmPassword)) {
+            throw new PasswordsDoNotMatchesException(ErrorMessage.PASSWORDS_DO_NOT_MATCH);
+        }
+        if (passwordEncoder.matches(newPassword, oldPasswordHashed)) {
+            throw new PasswordSameAsOldException(ErrorMessage.NEW_PASSWORD_SAME_AS_OLD);
+        }
+    }
+
+    private void updatePassword(String pass, Long id) {
+        String password = passwordEncoder.encode(pass);
+        ownSecurityRepo.updatePassword(password, id);
     }
 }

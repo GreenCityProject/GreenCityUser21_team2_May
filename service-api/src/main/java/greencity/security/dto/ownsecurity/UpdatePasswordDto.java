@@ -2,19 +2,21 @@ package greencity.security.dto.ownsecurity;
 
 import greencity.annotations.PasswordValidation;
 import jakarta.validation.constraints.NotBlank;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
+@EqualsAndHashCode
 public class UpdatePasswordDto {
     @NotBlank
     @PasswordValidation
-    private String password;
+    private String currentPassword;
+
+    @NotBlank
+    @PasswordValidation
+    private String newPassword;
 
     @NotBlank
     @PasswordValidation

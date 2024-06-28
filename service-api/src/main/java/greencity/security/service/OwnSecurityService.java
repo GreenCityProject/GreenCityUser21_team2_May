@@ -49,23 +49,6 @@ public interface OwnSecurityService {
     AccessRefreshTokensDto updateAccessTokens(String refreshToken);
 
     /**
-     * Method for updating password.
-     *
-     * @param pass {@link String}
-     * @param id   {@link Long}
-     */
-    void updatePassword(String pass, Long id);
-
-    /**
-     * Method for updating current password.
-     *
-     * @param updatePasswordDto {@link UpdatePasswordDto}
-     * @param email             {@link String} - user email.
-     * @author Dmytro Dovhal
-     */
-    void updateCurrentPassword(UpdatePasswordDto updatePasswordDto, String email);
-
-    /**
      * Method for registering a user from admin panel.
      *
      * @param dto a value of {@link UserManagementDto}
@@ -88,4 +71,12 @@ public interface OwnSecurityService {
      * @param email {@link String} email of user.
      */
     void setPassword(SetPasswordDto dto, String email);
+
+    /**
+     * Resets password for user that doesn't have one.
+     *
+     * @param dto   {@link UpdatePasswordDto} password to be set.
+     * @param email {@link String} email of user.
+     */
+    void updateCurrentPassword(UpdatePasswordDto dto, String email);
 }

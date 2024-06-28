@@ -2,7 +2,6 @@ package greencity.service;
 
 import greencity.dto.newssubscriber.NewsSubscriberRequestDto;
 import greencity.dto.newssubscriber.NewsSubscriberResponseDto;
-
 import java.util.List;
 
 /**

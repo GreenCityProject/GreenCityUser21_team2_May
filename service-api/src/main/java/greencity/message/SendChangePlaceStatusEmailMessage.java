@@ -1,8 +1,7 @@
 package greencity.message;
 
-import java.io.Serializable;
-
 import greencity.constant.ValidationConstants;
+import java.io.Serializable;
 import jakarta.validation.constraints.Email;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -14,7 +13,6 @@ import lombok.ToString;
 @AllArgsConstructor
 @NoArgsConstructor
 public final class SendChangePlaceStatusEmailMessage implements Serializable {
-
     private String authorFirstName;
 
     private String placeName;

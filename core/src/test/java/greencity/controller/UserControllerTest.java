@@ -3,24 +3,17 @@ package greencity.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import greencity.ModelUtils;
 import greencity.TestConst;
-
-import static greencity.constant.AppConstant.AUTHORIZATION;
-
 import greencity.constant.AppConstant;
 import greencity.converters.UserArgumentResolver;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.filter.FilterUserDto;
 import greencity.dto.language.LanguageVO;
 import greencity.dto.ubs.UbsTableCreationDto;
-import greencity.dto.user.UserManagementUpdateDto;
-import greencity.dto.user.UserManagementVO;
-import greencity.dto.user.UserManagementViewDto;
-import greencity.dto.user.UserProfileDtoRequest;
-import greencity.dto.user.UserStatusDto;
-import greencity.dto.user.UserUpdateDto;
-import greencity.dto.user.UserVO;
+import greencity.dto.user.*;
 import greencity.enums.EmailNotification;
 import greencity.enums.Role;
+import greencity.exception.exceptions.BadRequestException;
+import greencity.exception.handler.CustomExceptionHandler;
 import greencity.repository.UserRepo;
 import greencity.service.UserService;
 import java.security.Principal;
@@ -37,16 +30,11 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import org.modelmapper.ModelMapper;
+import org.springframework.boot.web.servlet.error.DefaultErrorAttributes;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
@@ -58,13 +46,18 @@ import org.springframework.test.web.servlet.request.MockMultipartHttpServletRequ
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import java.security.Principal;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+
+import static greencity.constant.AppConstant.AUTHORIZATION;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -85,6 +78,7 @@ class UserControllerTest {
             .standaloneSetup(userController)
             .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver(),
                 new UserArgumentResolver(userService, new ModelMapper()))
+            .setControllerAdvice(new CustomExceptionHandler(new DefaultErrorAttributes()))
             .build();
         objectMapper = new ObjectMapper();
     }
@@ -428,6 +422,19 @@ class UserControllerTest {
             .andExpect(jsonPath("$.page.length()").value(1))
             .andExpect(jsonPath("$.totalElements").value(1L))
             .andExpect(jsonPath("$.totalPages").value(1));
+    }
+
+    @Test
+    void findUserForManagement_InvalidSortInput_BadRequest() throws Exception {
+        mockMvc.perform(get(userLink + "/findUserForManagement")
+            .param("sort", "wrongProperty,DESC"))
+            .andExpect(status().isBadRequest())
+            .andExpect(result -> assertInstanceOf(BadRequestException.class, result.getResolvedException()))
+            .andExpect(result -> assertEquals(
+                "Some sort property don`t match with User property: [wrongProperty]",
+                Objects.requireNonNull(result.getResolvedException()).getMessage()))
+            .andExpect(
+                jsonPath("$.message").value("Some sort property don`t match with User property: [wrongProperty]"));
     }
 
     @Test

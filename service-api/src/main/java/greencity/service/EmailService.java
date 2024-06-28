@@ -39,7 +39,7 @@ public interface EmailService {
         AddEcoNewsDtoResponse newsDto);
 
     void sendNewsForSubscriber(List<NewsSubscriberResponseDto> subscribers,
-                               SendNewsDto newsDto);
+        SendNewsDto newsDto);
 
     /**
      * Method for sending created news for author.

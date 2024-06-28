@@ -94,20 +94,36 @@ class EmailControllerTest {
     @Test
     void changePlaceStatus() throws Exception {
         String content = "{" +
-            "\"authorEmail\":\"string\"," +
-            "\"authorFirstName\":\"string\"," +
-            "\"placeName\":\"string\"," +
-            "\"placeStatus\":\"string\"" +
+            "\"authorEmail\":\"test@example.com\"," +
+            "\"authorFirstName\":\"John\"," +
+            "\"placeName\":\"Central Park\"," +
+            "\"placeStatus\":\"Open\"" +
             "}";
 
         mockPerform(content, "/changePlaceStatus");
 
+        ObjectMapper objectMapper = new ObjectMapper();
         SendChangePlaceStatusEmailMessage message =
-            new ObjectMapper().readValue(content, SendChangePlaceStatusEmailMessage.class);
+            objectMapper.readValue(content, SendChangePlaceStatusEmailMessage.class);
 
         verify(emailService).sendChangePlaceStatusEmail(
             message.getAuthorFirstName(), message.getPlaceName(),
             message.getPlaceStatus(), message.getAuthorEmail());
+    }
+
+    @Test
+    void changePlaceStatus_whenInvalidEmail_returnsBadRequest() throws Exception {
+        String invalidEmailContent = "{" +
+            "\"authorEmail\":\"invalid-email\"," +
+            "\"authorFirstName\":\"John\"," +
+            "\"placeName\":\"Central Park\"," +
+            "\"placeStatus\":\"Open\"" +
+            "}";
+
+        mockMvc.perform(post(LINK + "/changePlaceStatus")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(invalidEmailContent))
+            .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -123,13 +139,6 @@ class EmailControllerTest {
             new ObjectMapper().readValue(content, SendHabitNotification.class);
 
         verify(emailService).sendHabitNotification(notification.getName(), notification.getEmail());
-    }
-
-    private void mockPerform(String content, String subLink) throws Exception {
-        mockMvc.perform(post(LINK + subLink)
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(content))
-            .andExpect(status().isOk());
     }
 
     @Test
@@ -163,5 +172,12 @@ class EmailControllerTest {
 
         NotificationDto notification = new ObjectMapper().readValue(content, NotificationDto.class);
         verify(emailService).sendNotificationByEmail(notification, email);
+    }
+
+    private void mockPerform(String content, String subLink) throws Exception {
+        mockMvc.perform(post(LINK + subLink)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(content))
+            .andExpect(status().isOk());
     }
 }

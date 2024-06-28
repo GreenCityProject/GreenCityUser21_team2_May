@@ -30,7 +30,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ContextConfiguration(classes = {SecurityConfig.class, JwtTool.class})
 @WebMvcTest(OwnSecurityController.class)
 class UserSecuredControllerTest {
-
     static final String USER_LINK = "/user";
     static final String ROLE_USER = "USER";
     static final String ROLE_ADMIN = "ADMIN";
@@ -70,16 +69,24 @@ class UserSecuredControllerTest {
     }
 
     @Test
-    @DisplayName("Test response status for user is online endpoint as unauthenticated user")
-    void userIsOnline_EndpointResponse_StatusIsUnauthorized() throws Exception {
+    @DisplayName("Test response status for deleting profile picture as authenticated ADMIN")
+    @WithMockUser(roles = ROLE_ADMIN)
+    void deleteProfilePictureAsAdmin_StatusIsNotFound() throws Exception {
         mockMvc.perform(patch(USER_LINK + "/deleteProfilePicture"))
-            .andExpect(status().isUnauthorized());
+            .andExpect(status().isNotFound());
     }
 
     @Test
     @DisplayName("Test response status for user patch profilePicture as unauthenticated user")
     void userProfilePicture_EndpointResponse_StatusIsUnauthorized() throws Exception {
         mockMvc.perform(get(USER_LINK))
+            .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @DisplayName("Test response status for user is online endpoint as unauthenticated user")
+    void userIsOnline_EndpointResponse_StatusIsUnauthorized() throws Exception {
+        mockMvc.perform(get(USER_LINK + "/isOnline/{userId}/", 1L))
             .andExpect(status().isUnauthorized());
     }
 
@@ -123,5 +130,21 @@ class UserSecuredControllerTest {
     void userIsOnline_EndpointResponse_StatusIsForbidden() throws Exception {
         mockMvc.perform(get(USER_LINK + "/isOnline/{userId}/", 1L))
             .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @DisplayName("Test response status for user get endpoint as authenticated ADMIN")
+    @WithMockUser(roles = ROLE_ADMIN)
+    void getEndpointAsAdmin_StatusIsNotFound() throws Exception {
+        mockMvc.perform(get(USER_LINK))
+            .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @DisplayName("Test response status for checking online status of user as authenticated ADMIN")
+    @WithMockUser(roles = ROLE_ADMIN)
+    void userOnlineStatusAsAdmin_StatusIsNotFound() throws Exception {
+        mockMvc.perform(get(USER_LINK + "/isOnline/{userId}/", 1L))
+            .andExpect(status().isNotFound());
     }
 }

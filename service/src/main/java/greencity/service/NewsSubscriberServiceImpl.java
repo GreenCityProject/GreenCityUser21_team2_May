@@ -29,11 +29,12 @@ public class NewsSubscriberServiceImpl implements NewsSubscriberService {
     public NewsSubscriberResponseDto subscribe(NewsSubscriberRequestDto subscriberRequestDto) {
         if (isSubscriberExists(subscriberRequestDto.getEmail()))
             throw new SubscribeException("Email already subscribed");
-        NewsSubscriber newsSubscriber = new NewsSubscriber(null, subscriberRequestDto.getEmail(), jwtTool.generateTokenKey());
+        NewsSubscriber newsSubscriber =
+            new NewsSubscriber(null, subscriberRequestDto.getEmail(), jwtTool.generateTokenKey());
         return modelMapper.map(newsSubscriberRepo.save(newsSubscriber), NewsSubscriberResponseDto.class);
     }
 
-    private boolean isSubscriberExists(String email){
+    private boolean isSubscriberExists(String email) {
         return this.newsSubscriberRepo.findByEmail(email).isPresent();
     }
 
@@ -41,8 +42,8 @@ public class NewsSubscriberServiceImpl implements NewsSubscriberService {
     public List<NewsSubscriberResponseDto> getAll() {
         List<NewsSubscriber> subscribers = this.newsSubscriberRepo.findAll();
         return subscribers.stream()
-                .map(this::mapToDto)
-                .toList();
+            .map(this::mapToDto)
+            .toList();
     }
 
     @Override
@@ -50,8 +51,7 @@ public class NewsSubscriberServiceImpl implements NewsSubscriberService {
     public void unsubscribe(String unsubscribeToken) {
         if (checkToken(unsubscribeToken)) {
             newsSubscriberRepo.deleteByUnsubscribeToken(unsubscribeToken);
-        }
-        else {
+        } else {
             throw new SubscribeException("Invalid token");
         }
     }
@@ -63,8 +63,8 @@ public class NewsSubscriberServiceImpl implements NewsSubscriberService {
 
     private NewsSubscriberResponseDto mapToDto(NewsSubscriber subscriber) {
         return NewsSubscriberResponseDto.builder()
-                .email(subscriber.getEmail())
-                .unsubscribeToken(subscriber.getUnsubscribeToken())
-                .build();
+            .email(subscriber.getEmail())
+            .unsubscribeToken(subscriber.getUnsubscribeToken())
+            .build();
     }
 }

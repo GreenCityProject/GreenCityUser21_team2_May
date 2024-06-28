@@ -78,7 +78,7 @@ class UserControllerTest {
             .standaloneSetup(userController)
             .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver(),
                 new UserArgumentResolver(userService, new ModelMapper()))
-                .setControllerAdvice(new CustomExceptionHandler(new DefaultErrorAttributes()))
+            .setControllerAdvice(new CustomExceptionHandler(new DefaultErrorAttributes()))
             .build();
         objectMapper = new ObjectMapper();
     }
@@ -427,13 +427,14 @@ class UserControllerTest {
     @Test
     void findUserForManagement_InvalidSortInput_BadRequest() throws Exception {
         mockMvc.perform(get(userLink + "/findUserForManagement")
-                        .param("sort", "wrongProperty,DESC"))
-                .andExpect(status().isBadRequest())
-                .andExpect(result -> assertInstanceOf(BadRequestException.class, result.getResolvedException()))
-                .andExpect(result -> assertEquals(
-                        "Some sort property don`t match with User property: [wrongProperty]",
-                        Objects.requireNonNull(result.getResolvedException()).getMessage()))
-                .andExpect(jsonPath("$.message").value("Some sort property don`t match with User property: [wrongProperty]"));
+            .param("sort", "wrongProperty,DESC"))
+            .andExpect(status().isBadRequest())
+            .andExpect(result -> assertInstanceOf(BadRequestException.class, result.getResolvedException()))
+            .andExpect(result -> assertEquals(
+                "Some sort property don`t match with User property: [wrongProperty]",
+                Objects.requireNonNull(result.getResolvedException()).getMessage()))
+            .andExpect(
+                jsonPath("$.message").value("Some sort property don`t match with User property: [wrongProperty]"));
     }
 
     @Test

@@ -23,7 +23,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-
 @ExtendWith(MockitoExtension.class)
 class NewsSubscriberControllerTest {
 
@@ -43,9 +42,9 @@ class NewsSubscriberControllerTest {
     @BeforeEach
     void setUp() {
         this.mockMvc = MockMvcBuilders
-                .standaloneSetup(newsSubscriberController)
-                .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
-                .build();
+            .standaloneSetup(newsSubscriberController)
+            .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
+            .build();
     }
 
     @Test
@@ -53,24 +52,25 @@ class NewsSubscriberControllerTest {
         NewsSubscriberRequestDto newsSubscriberRequestDto = NewsSubscriberRequestDto.builder().email(EMAIL).build();
 
         mockMvc.perform(post(LINK + "/subscribe")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(new ObjectMapper().writeValueAsString(newsSubscriberRequestDto)))
-                        .andExpect(status().isCreated());
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(new ObjectMapper().writeValueAsString(newsSubscriberRequestDto)))
+            .andExpect(status().isCreated());
 
         verify(subscriberService).subscribe(newsSubscriberRequestDto);
     }
 
     @Test
     void getAllSubscribersTest() throws Exception {
-        NewsSubscriberResponseDto newsSubscriberResponseDto = NewsSubscriberResponseDto.builder().email(EMAIL).unsubscribeToken(TOKEN).build();
+        NewsSubscriberResponseDto newsSubscriberResponseDto =
+            NewsSubscriberResponseDto.builder().email(EMAIL).unsubscribeToken(TOKEN).build();
         List<NewsSubscriberResponseDto> dtoList = List.of(newsSubscriberResponseDto);
 
         when(subscriberService.getAll()).thenReturn(dtoList);
 
         mockMvc.perform(get(LINK)
-                        .contentType(MediaType.APPLICATION_JSON))
-                        .andExpect(status().isOk())
-                        .andExpect(jsonPath("$[0]").value(newsSubscriberResponseDto));
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$[0]").value(newsSubscriberResponseDto));
 
         verify(subscriberService).getAll();
     }
@@ -78,8 +78,8 @@ class NewsSubscriberControllerTest {
     @Test
     void unsubscribeTest() throws Exception {
         mockMvc.perform(get(LINK + "/unsubscribe")
-                        .param("unsubscribeToken", TOKEN))
-                        .andExpect(status().isOk());
+            .param("unsubscribeToken", TOKEN))
+            .andExpect(status().isOk());
 
         verify(subscriberService).unsubscribe(TOKEN);
     }

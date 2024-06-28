@@ -37,7 +37,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import springfox.documentation.annotations.ApiIgnore;
-
 import java.lang.reflect.Field;
 import java.security.Principal;
 import java.time.LocalDateTime;
@@ -447,10 +446,10 @@ public class UserController {
      */
     @Operation(summary = "Get User for management")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
-            @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST),
-            @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED),
-            @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN)
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED),
+        @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN)
     })
     @GetMapping("/findUserForManagement")
     @ApiPageable
@@ -462,12 +461,12 @@ public class UserController {
 
     private static void pageableValidation(Pageable pageable, Class<?> classToValidateWith) {
         var allProperties = Arrays.stream(classToValidateWith.getDeclaredFields())
-                .map(Field::getName)
-                .collect(Collectors.toSet());
+            .map(Field::getName)
+            .collect(Collectors.toSet());
         var inputProperties = pageable.getSort()
-                .get()
-                .map(Sort.Order::getProperty)
-                .collect(Collectors.toSet());
+            .get()
+            .map(Sort.Order::getProperty)
+            .collect(Collectors.toSet());
 
         if (!allProperties.containsAll(inputProperties)) {
             throw new BadRequestException("Some sort property don`t match with User property: " + inputProperties);

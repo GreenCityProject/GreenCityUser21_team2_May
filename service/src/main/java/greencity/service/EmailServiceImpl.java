@@ -7,6 +7,7 @@ import greencity.constant.LogMessage;
 import greencity.dto.category.CategoryDto;
 import greencity.dto.econews.AddEcoNewsDtoResponse;
 import greencity.dto.econews.EcoNewsForSendEmailDto;
+import greencity.dto.econews.SendNewsDto;
 import greencity.dto.newssubscriber.NewsSubscriberResponseDto;
 import greencity.dto.notification.NotificationDto;
 import greencity.dto.place.PlaceNotificationDto;
@@ -28,7 +29,6 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.ITemplateEngine;
 import org.thymeleaf.context.Context;
-
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -129,6 +129,10 @@ public class EmailServiceImpl implements EmailService {
             String template = createEmailTemplate(model, EmailConstants.NEWS_RECEIVE_EMAIL_PAGE);
             sendEmail(dto.getEmail(), EmailConstants.NEWS, template);
         }
+    }
+
+    @Override
+    public void sendNewsForSubscriber(List<NewsSubscriberResponseDto> subscribers, SendNewsDto newsDto) {
     }
 
     @Override

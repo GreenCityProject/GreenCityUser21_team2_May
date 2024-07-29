@@ -9,6 +9,7 @@ import greencity.dto.econews.AddEcoNewsDtoResponse;
 import greencity.dto.econews.EcoNewsForSendEmailDto;
 import greencity.dto.econews.SendNewsDto;
 import greencity.dto.newssubscriber.NewsSubscriberResponseDto;
+import greencity.dto.notification.EventUpdateNotification;
 import greencity.dto.notification.NotificationDto;
 import greencity.dto.place.PlaceNotificationDto;
 import greencity.dto.user.PlaceAuthorDto;
@@ -320,5 +321,17 @@ public class EmailServiceImpl implements EmailService {
         model.put(EmailConstants.IS_UBS, isUbs);
         String template = createEmailTemplate(model, EmailConstants.SUCCESS_RESTORED_PASSWORD_PAGE);
         sendEmail(email, EmailConstants.RESTORED_PASSWORD, template);
+    }
+
+    @Override
+    public void sendEventUpdateNotification(List<EventUpdateNotification> eventUpdateNotifications) {
+        eventUpdateNotifications.forEach(eventUpdateNotification -> {
+            Map<String, Object> model = new HashMap<>();
+            model.put(EmailConstants.CLIENT_LINK, clientLink);
+            model.put(EmailConstants.USER_NAME, eventUpdateNotification.getName());
+            model.put(EmailConstants.EVENT_TITLE, eventUpdateNotification.getEventTitle());
+            String template = createEmailTemplate(model, EmailConstants.EVENT_UPDATE_NOTIFICATION);
+            sendEmail(eventUpdateNotification.getEmail(), EmailConstants.EVENT_WAS_UPDATED, template);
+        });
     }
 }

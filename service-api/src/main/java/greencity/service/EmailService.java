@@ -5,6 +5,7 @@ import greencity.dto.econews.AddEcoNewsDtoResponse;
 import greencity.dto.econews.EcoNewsForSendEmailDto;
 import greencity.dto.econews.SendNewsDto;
 import greencity.dto.newssubscriber.NewsSubscriberResponseDto;
+import greencity.dto.notification.EventUpdateNotification;
 import greencity.dto.notification.NotificationDto;
 import greencity.dto.place.PlaceNotificationDto;
 import greencity.dto.user.PlaceAuthorDto;
@@ -143,4 +144,6 @@ public interface EmailService {
      * @author Pavlo Hural.
      */
     void sendSuccessRestorePasswordByEmail(String email, String language, String userName, boolean isUbs);
+
+    void sendEventUpdateNotification(List<EventUpdateNotification> eventUpdateNotification);
 }

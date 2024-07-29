@@ -11,6 +11,7 @@ public final class EmailConstants {
     public static final String RESTORED_PASSWORD = "Restore password";
     public static final String CONFIRM_RESTORING_PASS = "Confirm restoring password";
     public static final String APPROVE_REGISTRATION_SUBJECT = "Approve your registration";
+    public static final String EVENT_WAS_UPDATED = "Event was updated";
     public static final String DEACTIVATION = "Your account was deactivated";
     public static final String ACTIVATION = "Your account was activated";
     public static final String VIOLATION_EMAIL = "Violation email";
@@ -32,6 +33,7 @@ public final class EmailConstants {
     public static final String DESCRIPTION = "description";
     public static final String LANGUAGE = "language";
     public static final String IS_UBS = "isUbs";
+    public static final String EVENT_TITLE = "eventTitle";
     // templates
     public static final String VERIFY_EMAIL_PAGE = "verify-email-page";
     public static final String RESTORE_EMAIL_PAGE = "restore-email-page";
@@ -43,6 +45,7 @@ public final class EmailConstants {
     public static final String REASONS_OF_DEACTIVATION_PAGE = "user-reasons-of-deactivation-page";
     public static final String ACTIVATION_PAGE = "user-activation-page";
     public static final String USER_VIOLATION_PAGE = "user-violation-mail";
+    public static final String EVENT_UPDATE_NOTIFICATION = "event-update-notification-mail";
 
     private EmailConstants() {
     }
